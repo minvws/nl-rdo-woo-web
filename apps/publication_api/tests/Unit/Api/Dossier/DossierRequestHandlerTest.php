@@ -11,7 +11,6 @@ use PublicationApi\Api\Dossier\DossierRequestHandler;
 use PublicationApi\Api\Dossier\DossierStrategy;
 use PublicationApi\Api\Dossier\DossierSupportService;
 use PublicationApi\Api\Dossier\ExternalIdInUseException;
-use PublicationApi\FeatureFlag\DossierUpdateGuard;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierRepository;
@@ -75,7 +74,6 @@ final class DossierRequestHandlerTest extends UnitTestCase
             $dossierNumberValidator,
             $dossierRepository,
             $dossierSupportService,
-            Mockery::mock(DossierUpdateGuard::class),
         );
 
         self::assertSame($wooDecision, $dossierRequestHandler->handle($dossierRequestDto, $organisation, $dossierExternalId, $dossierStrategy));
@@ -113,9 +111,6 @@ final class DossierRequestHandlerTest extends UnitTestCase
         $dossierRepository = Mockery::mock(DossierRepository::class);
         $dossierRepository->expects('findByOrganisationAndExternalId')->with($organisation, $dossierExternalId)->andReturn($wooDecision);
 
-        $dossierUpdateGuard = Mockery::mock(DossierUpdateGuard::class);
-        $dossierUpdateGuard->expects('assertDossierIsEditable')->with($wooDecision);
-
         $dossierNumberValidator = Mockery::mock(DossierNumberValidator::class);
         $dossierNumberValidator->expects('validate')->with($dossierNumber, $documentPrefix, $wooDecision->getId());
 
@@ -128,7 +123,6 @@ final class DossierRequestHandlerTest extends UnitTestCase
             $dossierNumberValidator,
             $dossierRepository,
             $dossierSupportService,
-            $dossierUpdateGuard,
         );
 
         self::assertSame($wooDecision, $dossierRequestHandler->handle($dossierRequestDto, $organisation, $dossierExternalId, $dossierStrategy));
@@ -167,7 +161,6 @@ final class DossierRequestHandlerTest extends UnitTestCase
             Mockery::mock(DossierNumberValidator::class),
             $dossierRepository,
             $dossierSupportService,
-            Mockery::mock(DossierUpdateGuard::class),
         );
 
         $this->expectException(ExternalIdInUseException::class);

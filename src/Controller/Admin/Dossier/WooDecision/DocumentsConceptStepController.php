@@ -71,7 +71,7 @@ class DocumentsConceptStepController extends AbstractController
         }
 
         $formSubmitResponse = $this->processFormSubmit($dossier, $inventoryForm, $wizardStatus);
-        if ($formSubmitResponse !== null) {
+        if ($formSubmitResponse instanceof Response) {
             return $formSubmitResponse;
         }
 

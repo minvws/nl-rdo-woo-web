@@ -155,7 +155,7 @@ class Subject implements HasId
     {
         return $this->hasPublishedLandingPage()
             && $this->hasPublishedContentTree()
-            && $this->landingPageContentTree !== null;
+            && $this->landingPageContentTree instanceof SubjectContentTree;
     }
 
     public function getLandingPageSlug(): ?LandingPageSlug
@@ -239,10 +239,10 @@ class Subject implements HasId
 
     public function hasLandingPageContent(): bool
     {
-        return $this->getLandingPageSlug() !== null
-            || $this->getLandingPageTitle() !== null
+        return $this->getLandingPageSlug() instanceof LandingPageSlug
+            || $this->getLandingPageTitle() instanceof LandingPageTitle
             || $this->getLandingPageDescription() !== null
             || $this->hasPublishedContentTree()
-            || $this->getLandingPageContentTree() !== null;
+            || $this->getLandingPageContentTree() instanceof SubjectContentTree;
     }
 }

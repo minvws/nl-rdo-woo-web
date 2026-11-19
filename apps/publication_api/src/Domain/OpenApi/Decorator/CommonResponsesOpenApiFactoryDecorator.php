@@ -71,7 +71,7 @@ final class CommonResponsesOpenApiFactoryDecorator implements OpenApiFactoryInte
             Assert::string($method);
 
             $operation = $this->getOperation($pathItem, $method);
-            if ($operation === null) {
+            if (! $operation instanceof Operation) {
                 continue;
             }
 

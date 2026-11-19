@@ -16,6 +16,8 @@ use Shared\Service\Search\Query\Sort\SortOrder;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Webmozart\Assert\Assert;
 
+use function intdiv;
+
 readonly class SearchParameters
 {
     public function __construct(
@@ -56,7 +58,7 @@ readonly class SearchParameters
             facetInputs: $this->facetInputs->withFacetInput($key, $facetInput),
             operator: $this->operator,
             limit: $this->limit,
-            offset: $this->offset,
+            offset: 0,
             pagination: $this->pagination,
             aggregations: $this->aggregations,
             query: $this->query,
@@ -72,7 +74,7 @@ readonly class SearchParameters
             facetInputs: new FacetInputCollection(),
             operator: $this->operator,
             limit: $this->limit,
-            offset: $this->offset,
+            offset: 0,
             pagination: $this->pagination,
             aggregations: $this->aggregations,
             query: $this->query,
@@ -124,11 +126,21 @@ readonly class SearchParameters
         $params->set('sort', $this->sortField->value);
         $params->set('sortorder', $this->sortOrder->value);
 
-        if ($this->offset > 0) {
-            $params->set('page', $this->offset);
+        $pageNumber = $this->getPageNumber();
+        if ($pageNumber > 1) {
+            $params->set('page', $pageNumber);
         }
 
         return $params;
+    }
+
+    private function getPageNumber(): int
+    {
+        if ($this->limit < 1) {
+            return 1;
+        }
+
+        return intdiv($this->offset, $this->limit) + 1;
     }
 
     public function withSort(SortField $sortField, SortOrder $sortOrder): self

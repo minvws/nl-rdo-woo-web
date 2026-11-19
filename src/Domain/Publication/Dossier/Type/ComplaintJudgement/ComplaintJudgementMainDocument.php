@@ -9,6 +9,7 @@ use Override;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
+use Shared\Domain\Publication\MainDocument\SpreadsheetTable\EntityWithSpreadsheetTable;
 use Shared\ValueObject\PlainDate;
 
 /**
@@ -16,7 +17,7 @@ use Shared\ValueObject\PlainDate;
  */
 #[ORM\Entity(repositoryClass: ComplaintJudgementMainDocumentRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-class ComplaintJudgementMainDocument extends AbstractMainDocument
+class ComplaintJudgementMainDocument extends AbstractMainDocument implements EntityWithSpreadsheetTable
 {
     public function __construct(
         ComplaintJudgement $dossier,

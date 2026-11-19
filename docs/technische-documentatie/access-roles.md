@@ -51,9 +51,9 @@ Permissions that are not listed default to `false`. Filters are supplementary ch
 
 ## Content page
 
-| **Prefix**   | **Roles**        | **Permissions**          |
-|--------------|------------------|--------------------------|
-| content_page | ROLE_SUPER_ADMIN | read: true, update: true |
+| **Prefix**   | **Roles**                            | **Permissions**          |
+|--------------|--------------------------------------|--------------------------|
+| content_page | ROLE_SUPER_ADMIN, ROLE_CONTENT_ADMIN | read: true, update: true |
 
 ## Subject
 

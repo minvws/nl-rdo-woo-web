@@ -232,7 +232,7 @@ overrides the handful of keys that name the organisation. See
 example.
 
 | Key                                | Where it shows up                                                           |
-| ---------------------------------- | --------------------------------------------------------------------------- |
+|------------------------------------|-----------------------------------------------------------------------------|
 | `global.domain_title`              | the `<title>` of every public page                                          |
 | `global.meta_description`          | the `<meta name="description">` of every public page                        |
 | `admin.global.platform_title`      | the heading on the printable credentials page in the admin                  |
@@ -375,11 +375,11 @@ How it is wired up:
 
 Three values differ per tenant:
 
-| Value          | Meaning                                                                       |
-| -------------- | ----------------------------------------------------------------------------- |
-| `_portal_name` | hostname of the public site, by convention `open.<tenant_id>.nl`              |
-| `_balie_name`  | hostname of the admin, by convention `balie.<portal_name>`                    |
-| `logo_text`    | the full official name of the organisation, shown next to the logo            |
+| Value          | Meaning                                                            |
+|----------------|--------------------------------------------------------------------|
+| `_portal_name` | hostname of the public site, by convention `open.<tenant_id>.nl`   |
+| `_balie_name`  | hostname of the admin, by convention `balie.<portal_name>`         |
+| `logo_text`    | the full official name of the organisation, shown next to the logo |
 
 Everything else is derived from those two hostnames: the `portal_*` and `balie_*` MyST substitutions
 used in the manual, and the `:public:` and `:balie:` extlink roles. `minvws` is the exception to the

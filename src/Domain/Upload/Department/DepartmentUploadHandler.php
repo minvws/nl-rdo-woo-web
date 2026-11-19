@@ -7,9 +7,9 @@ namespace Shared\Domain\Upload\Department;
 use Shared\Domain\Department\DepartmentRepository;
 use Shared\Domain\Upload\Event\UploadValidatedEvent;
 use Shared\Domain\Upload\Process\EntityUploadStorer;
+use Shared\Domain\Upload\UploadContextReader;
 use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
-use Symfony\Component\Uid\Uuid;
 
 #[AsEventListener]
 final readonly class DepartmentUploadHandler
@@ -17,6 +17,7 @@ final readonly class DepartmentUploadHandler
     public function __construct(
         private DepartmentRepository $departmentRepository,
         private EntityUploadStorer $entityUploadStorer,
+        private UploadContextReader $uploadContextReader,
     ) {
     }
 
@@ -27,10 +28,7 @@ final readonly class DepartmentUploadHandler
             return;
         }
 
-        $departmentId = Uuid::fromString(
-            $uploadEntity->getContext()->getString('departmentId'),
-        );
-
+        $departmentId = $this->uploadContextReader->getDepartmentId($uploadEntity);
         $department = $this->departmentRepository->findOne($departmentId);
 
         $this->entityUploadStorer->storeDepartmentAssetForEntity($uploadEntity, $department);

@@ -6,14 +6,14 @@ namespace PublicationApi\Tests\Unit\Api\Dossier\Covenant;
 
 use Mockery;
 use PublicationApi\Api\Dossier\Covenant\CovenantMainDocumentRequestDto;
-use PublicationApi\Api\Dossier\Covenant\CovenantMainDocumentSynchronizer;
-use PublicationApi\Api\Dossier\Covenant\CovenantPersister;
+use PublicationApi\Api\Dossier\Covenant\CovenantMainDocumentRequestMapper;
 use PublicationApi\Api\Dossier\Covenant\CovenantRequestDto;
 use PublicationApi\Api\Dossier\Covenant\CovenantRequestMapper;
-use PublicationApi\Api\Dossier\Covenant\CovenantSnapshot;
 use PublicationApi\Api\Dossier\Covenant\CovenantStrategy;
 use PublicationApi\Api\Dossier\DossierAttachmentSynchronizer;
-use PublicationApi\Api\Dossier\NoticeNotPublicSynchronizer;
+use PublicationApi\Api\Dossier\DossierMainDocumentOrNoticeSynchronizer;
+use PublicationApi\Api\Dossier\DossierPersister;
+use PublicationApi\Api\Dossier\MainDocumentSnapshot;
 use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicRequestDto;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
@@ -31,11 +31,11 @@ final class CovenantStrategyTest extends UnitTestCase
     public function testDossierType(): void
     {
         $covenantStrategy = new CovenantStrategy(
-            Mockery::mock(CovenantPersister::class),
+            Mockery::mock(DossierPersister::class),
             Mockery::mock(CovenantRequestMapper::class),
             Mockery::mock(DossierAttachmentSynchronizer::class),
-            Mockery::mock(CovenantMainDocumentSynchronizer::class),
-            Mockery::mock(NoticeNotPublicSynchronizer::class),
+            Mockery::mock(CovenantMainDocumentRequestMapper::class),
+            Mockery::mock(DossierMainDocumentOrNoticeSynchronizer::class),
         );
 
         self::assertSame(Covenant::class, $covenantStrategy->dossierType());
@@ -83,23 +83,26 @@ final class CovenantStrategyTest extends UnitTestCase
             $documentPrefix,
         )->andReturn($covenant);
 
-        $covenantMainDocumentSynchronizer = Mockery::mock(CovenantMainDocumentSynchronizer::class);
-        $covenantMainDocumentSynchronizer->expects('create')->with($covenant, $mainDocumentRequestDto);
+        $covenantMainDocumentRequestMapper = Mockery::mock(CovenantMainDocumentRequestMapper::class);
+
+        $dossierMainDocumentOrNoticeSynchronizer = Mockery::mock(DossierMainDocumentOrNoticeSynchronizer::class);
+        $dossierMainDocumentOrNoticeSynchronizer->expects('create')
+            ->with($covenant, $mainDocumentRequestDto, null, $covenantMainDocumentRequestMapper);
 
         $dossierAttachmentSynchronizer = Mockery::mock(DossierAttachmentSynchronizer::class);
         $dossierAttachmentSynchronizer->expects('create')
             ->with($covenant, $covenantRequestDto->attachments)
             ->andReturn($attachmentEvents);
 
-        $covenantPersister = Mockery::mock(CovenantPersister::class);
-        $covenantPersister->expects('persist')->with($covenant, null, $attachmentEvents);
+        $dossierPersister = Mockery::mock(DossierPersister::class);
+        $dossierPersister->expects('persist')->with($covenant, null, $attachmentEvents);
 
         $covenantStrategy = new CovenantStrategy(
-            $covenantPersister,
+            $dossierPersister,
             $covenantRequestMapper,
             $dossierAttachmentSynchronizer,
-            $covenantMainDocumentSynchronizer,
-            Mockery::mock(NoticeNotPublicSynchronizer::class),
+            $covenantMainDocumentRequestMapper,
+            $dossierMainDocumentOrNoticeSynchronizer,
         );
 
         self::assertSame($covenant, $covenantStrategy->create(
@@ -146,21 +149,24 @@ final class CovenantStrategyTest extends UnitTestCase
         $covenantRequestMapper = Mockery::mock(CovenantRequestMapper::class);
         $covenantRequestMapper->expects('create')->andReturn($covenant);
 
-        $noticeNotPublicSynchronizer = Mockery::mock(NoticeNotPublicSynchronizer::class);
-        $noticeNotPublicSynchronizer->expects('create')->with($covenant, $noticeNotPublicRequestDto);
+        $covenantMainDocumentRequestMapper = Mockery::mock(CovenantMainDocumentRequestMapper::class);
+
+        $dossierMainDocumentOrNoticeSynchronizer = Mockery::mock(DossierMainDocumentOrNoticeSynchronizer::class);
+        $dossierMainDocumentOrNoticeSynchronizer->expects('create')
+            ->with($covenant, null, $noticeNotPublicRequestDto, $covenantMainDocumentRequestMapper);
 
         $dossierAttachmentSynchronizer = Mockery::mock(DossierAttachmentSynchronizer::class);
         $dossierAttachmentSynchronizer->expects('create')->andReturn($attachmentEvents);
 
-        $covenantPersister = Mockery::mock(CovenantPersister::class);
-        $covenantPersister->expects('persist')->with($covenant, null, $attachmentEvents);
+        $dossierPersister = Mockery::mock(DossierPersister::class);
+        $dossierPersister->expects('persist')->with($covenant, null, $attachmentEvents);
 
         $covenantStrategy = new CovenantStrategy(
-            $covenantPersister,
+            $dossierPersister,
             $covenantRequestMapper,
             $dossierAttachmentSynchronizer,
-            Mockery::mock(CovenantMainDocumentSynchronizer::class),
-            $noticeNotPublicSynchronizer,
+            $covenantMainDocumentRequestMapper,
+            $dossierMainDocumentOrNoticeSynchronizer,
         );
 
         self::assertSame($covenant, $covenantStrategy->create(
@@ -201,33 +207,33 @@ final class CovenantStrategyTest extends UnitTestCase
         );
 
         $covenant = new Covenant();
-        $covenantSnapshot = CovenantSnapshot::of($covenant);
+        $mainDocumentSnapshot = MainDocumentSnapshot::of($covenant);
         $attachmentEvents = [];
 
         $covenantRequestMapper = Mockery::mock(CovenantRequestMapper::class);
         $covenantRequestMapper->expects('update')->with($covenant, $covenantRequestDto, $organisation, $department, $subject);
 
-        $noticeNotPublicSynchronizer = Mockery::mock(NoticeNotPublicSynchronizer::class);
-        $noticeNotPublicSynchronizer->expects('delete')->with($covenant);
+        $covenantMainDocumentRequestMapper = Mockery::mock(CovenantMainDocumentRequestMapper::class);
 
-        $covenantMainDocumentSynchronizer = Mockery::mock(CovenantMainDocumentSynchronizer::class);
-        $covenantMainDocumentSynchronizer->expects('update')->with($covenant, $mainDocumentRequestDto);
+        $dossierMainDocumentOrNoticeSynchronizer = Mockery::mock(DossierMainDocumentOrNoticeSynchronizer::class);
+        $dossierMainDocumentOrNoticeSynchronizer->expects('update')
+            ->with($covenant, $mainDocumentRequestDto, null, $covenantMainDocumentRequestMapper);
 
         $dossierAttachmentSynchronizer = Mockery::mock(DossierAttachmentSynchronizer::class);
         $dossierAttachmentSynchronizer->expects('update')
             ->with($covenant, $covenantRequestDto->attachments)
             ->andReturn($attachmentEvents);
 
-        $covenantPersister = Mockery::mock(CovenantPersister::class);
-        $covenantPersister->expects('snapshot')->with($covenant)->andReturn($covenantSnapshot);
-        $covenantPersister->expects('persist')->with($covenant, $covenantSnapshot, $attachmentEvents);
+        $dossierPersister = Mockery::mock(DossierPersister::class);
+        $dossierPersister->expects('snapshot')->with($covenant)->andReturn($mainDocumentSnapshot);
+        $dossierPersister->expects('persist')->with($covenant, $mainDocumentSnapshot, $attachmentEvents);
 
         $covenantStrategy = new CovenantStrategy(
-            $covenantPersister,
+            $dossierPersister,
             $covenantRequestMapper,
             $dossierAttachmentSynchronizer,
-            $covenantMainDocumentSynchronizer,
-            $noticeNotPublicSynchronizer,
+            $covenantMainDocumentRequestMapper,
+            $dossierMainDocumentOrNoticeSynchronizer,
         );
 
         $covenantStrategy->update($covenant, $covenantRequestDto, $organisation, $department, $subject);
@@ -260,31 +266,31 @@ final class CovenantStrategyTest extends UnitTestCase
         );
 
         $covenant = new Covenant();
-        $covenantSnapshot = CovenantSnapshot::of($covenant);
+        $mainDocumentSnapshot = MainDocumentSnapshot::of($covenant);
         $attachmentEvents = [];
 
         $covenantRequestMapper = Mockery::mock(CovenantRequestMapper::class);
         $covenantRequestMapper->expects('update')->with($covenant, $covenantRequestDto, $organisation, $department, null);
 
-        $covenantMainDocumentSynchronizer = Mockery::mock(CovenantMainDocumentSynchronizer::class);
-        $covenantMainDocumentSynchronizer->expects('delete')->with($covenant);
+        $covenantMainDocumentRequestMapper = Mockery::mock(CovenantMainDocumentRequestMapper::class);
 
-        $noticeNotPublicSynchronizer = Mockery::mock(NoticeNotPublicSynchronizer::class);
-        $noticeNotPublicSynchronizer->expects('update')->with($covenant, $noticeNotPublicRequestDto);
+        $dossierMainDocumentOrNoticeSynchronizer = Mockery::mock(DossierMainDocumentOrNoticeSynchronizer::class);
+        $dossierMainDocumentOrNoticeSynchronizer->expects('update')
+            ->with($covenant, null, $noticeNotPublicRequestDto, $covenantMainDocumentRequestMapper);
 
         $dossierAttachmentSynchronizer = Mockery::mock(DossierAttachmentSynchronizer::class);
         $dossierAttachmentSynchronizer->expects('update')->andReturn($attachmentEvents);
 
-        $covenantPersister = Mockery::mock(CovenantPersister::class);
-        $covenantPersister->expects('snapshot')->with($covenant)->andReturn($covenantSnapshot);
-        $covenantPersister->expects('persist')->with($covenant, $covenantSnapshot, $attachmentEvents);
+        $dossierPersister = Mockery::mock(DossierPersister::class);
+        $dossierPersister->expects('snapshot')->with($covenant)->andReturn($mainDocumentSnapshot);
+        $dossierPersister->expects('persist')->with($covenant, $mainDocumentSnapshot, $attachmentEvents);
 
         $covenantStrategy = new CovenantStrategy(
-            $covenantPersister,
+            $dossierPersister,
             $covenantRequestMapper,
             $dossierAttachmentSynchronizer,
-            $covenantMainDocumentSynchronizer,
-            $noticeNotPublicSynchronizer,
+            $covenantMainDocumentRequestMapper,
+            $dossierMainDocumentOrNoticeSynchronizer,
         );
 
         $covenantStrategy->update($covenant, $covenantRequestDto, $organisation, $department, null);

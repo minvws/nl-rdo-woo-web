@@ -208,11 +208,12 @@ Display facet with hyperlinks
                 name="{{ facetInput.facet.requestParameter }}[]"
                 value="{{ entry.key }}"
                 {% if facetInput.contains(entry.key) %}checked{% endif %}
+                data-e2e-name="input_{{ entry.key|url_encode }}"
             >
         </span>
         <label class="grow cursor-pointer" for="input_{{ entry.key|url_encode }}">
             <span class="flex">
-                <span class="grow mr-2 text-base leading-tight">{{ entry.displayValue | trans }}</span>
+                <span class="grow mr-2 text-base leading-tight wrap-anywhere">{{ entry.displayValue | trans }}</span>
                 <span class="woo-muted text-sm" data-e2e-name="{{ entry.key|url_encode }}_count">({{ entry.count }})</span>
             </span>
         </label>

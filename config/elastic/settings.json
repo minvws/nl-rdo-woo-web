@@ -33,7 +33,7 @@
             },
             "dutch_keywords": {
                 "type": "keyword_marker",
-                "keywords": {}
+                "keywords": []
             },
             "dutch_stemmer": {
                 "type": "stemmer",

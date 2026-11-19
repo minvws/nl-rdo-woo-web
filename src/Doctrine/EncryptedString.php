@@ -11,6 +11,7 @@ use Doctrine\DBAL\Types\TextType;
 use Override;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use SensitiveParameter;
 use Shared\Service\Encryption\EncryptionServiceInterface;
 use Throwable;
 use Webmozart\Assert\Assert;
@@ -23,7 +24,7 @@ use function strval;
  */
 class EncryptedString extends TextType
 {
-    public const TYPE = 'encrypted_string';
+    public const string TYPE = 'encrypted_string';
 
     /**
      * See Kernel.php boot() on how and what is injected.
@@ -33,8 +34,10 @@ class EncryptedString extends TextType
     }
 
     #[Override]
-    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
-    {
+    public function convertToDatabaseValue(
+        #[SensitiveParameter] $value,
+        AbstractPlatform $platform,
+    ): ?string {
         if ($value === null) {
             return null;
         }
@@ -53,8 +56,10 @@ class EncryptedString extends TextType
     }
 
     #[Override]
-    public function convertToPHPValue($value, AbstractPlatform $platform): ?string
-    {
+    public function convertToPHPValue(
+        #[SensitiveParameter] $value,
+        AbstractPlatform $platform,
+    ): ?string {
         $value = parent::convertToPHPValue($value, $platform);
 
         if ($value === null || $value === '') {

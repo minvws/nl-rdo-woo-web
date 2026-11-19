@@ -6,13 +6,13 @@ namespace PublicationApi\Tests\Unit\Api\Dossier\ComplaintJudgement;
 
 use Mockery;
 use PublicationApi\Api\Dossier\ComplaintJudgement\ComplaintJudgementMainDocumentRequestDto;
-use PublicationApi\Api\Dossier\ComplaintJudgement\ComplaintJudgementMainDocumentSynchronizer;
-use PublicationApi\Api\Dossier\ComplaintJudgement\ComplaintJudgementPersister;
+use PublicationApi\Api\Dossier\ComplaintJudgement\ComplaintJudgementMainDocumentRequestMapper;
 use PublicationApi\Api\Dossier\ComplaintJudgement\ComplaintJudgementRequestDto;
 use PublicationApi\Api\Dossier\ComplaintJudgement\ComplaintJudgementRequestMapper;
-use PublicationApi\Api\Dossier\ComplaintJudgement\ComplaintJudgementSnapshot;
 use PublicationApi\Api\Dossier\ComplaintJudgement\ComplaintJudgementStrategy;
-use PublicationApi\Api\Dossier\NoticeNotPublicSynchronizer;
+use PublicationApi\Api\Dossier\DossierMainDocumentOrNoticeSynchronizer;
+use PublicationApi\Api\Dossier\DossierPersister;
+use PublicationApi\Api\Dossier\MainDocumentSnapshot;
 use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicRequestDto;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
@@ -31,10 +31,10 @@ final class ComplaintJudgementStrategyTest extends UnitTestCase
     public function testDossierType(): void
     {
         $complaintJudgementStrategy = new ComplaintJudgementStrategy(
-            Mockery::mock(ComplaintJudgementPersister::class),
+            Mockery::mock(DossierPersister::class),
             Mockery::mock(ComplaintJudgementRequestMapper::class),
-            Mockery::mock(ComplaintJudgementMainDocumentSynchronizer::class),
-            Mockery::mock(NoticeNotPublicSynchronizer::class),
+            Mockery::mock(ComplaintJudgementMainDocumentRequestMapper::class),
+            Mockery::mock(DossierMainDocumentOrNoticeSynchronizer::class),
         );
 
         self::assertSame(ComplaintJudgement::class, $complaintJudgementStrategy->dossierType());
@@ -78,17 +78,20 @@ final class ComplaintJudgementStrategyTest extends UnitTestCase
             $documentPrefix,
         )->andReturn($complaintJudgement);
 
-        $complaintJudgementMainDocumentSynchronizer = Mockery::mock(ComplaintJudgementMainDocumentSynchronizer::class);
-        $complaintJudgementMainDocumentSynchronizer->expects('create')->with($complaintJudgement, $mainDocumentRequestDto);
+        $complaintJudgementMainDocumentRequestMapper = Mockery::mock(ComplaintJudgementMainDocumentRequestMapper::class);
 
-        $complaintJudgementPersister = Mockery::mock(ComplaintJudgementPersister::class);
-        $complaintJudgementPersister->expects('persist')->with($complaintJudgement, null);
+        $dossierMainDocumentOrNoticeSynchronizer = Mockery::mock(DossierMainDocumentOrNoticeSynchronizer::class);
+        $dossierMainDocumentOrNoticeSynchronizer->expects('create')
+            ->with($complaintJudgement, $mainDocumentRequestDto, null, $complaintJudgementMainDocumentRequestMapper);
+
+        $dossierPersister = Mockery::mock(DossierPersister::class);
+        $dossierPersister->expects('persist')->with($complaintJudgement, null, []);
 
         $complaintJudgementStrategy = new ComplaintJudgementStrategy(
-            $complaintJudgementPersister,
+            $dossierPersister,
             $complaintJudgementRequestMapper,
-            $complaintJudgementMainDocumentSynchronizer,
-            Mockery::mock(NoticeNotPublicSynchronizer::class),
+            $complaintJudgementMainDocumentRequestMapper,
+            $dossierMainDocumentOrNoticeSynchronizer,
         );
 
         self::assertSame($complaintJudgement, $complaintJudgementStrategy->create(
@@ -130,17 +133,20 @@ final class ComplaintJudgementStrategyTest extends UnitTestCase
         $complaintJudgementRequestMapper = Mockery::mock(ComplaintJudgementRequestMapper::class);
         $complaintJudgementRequestMapper->expects('create')->andReturn($complaintJudgement);
 
-        $noticeNotPublicSynchronizer = Mockery::mock(NoticeNotPublicSynchronizer::class);
-        $noticeNotPublicSynchronizer->expects('create')->with($complaintJudgement, $noticeNotPublicRequestDto);
+        $complaintJudgementMainDocumentRequestMapper = Mockery::mock(ComplaintJudgementMainDocumentRequestMapper::class);
 
-        $complaintJudgementPersister = Mockery::mock(ComplaintJudgementPersister::class);
-        $complaintJudgementPersister->expects('persist')->with($complaintJudgement, null);
+        $dossierMainDocumentOrNoticeSynchronizer = Mockery::mock(DossierMainDocumentOrNoticeSynchronizer::class);
+        $dossierMainDocumentOrNoticeSynchronizer->expects('create')
+            ->with($complaintJudgement, null, $noticeNotPublicRequestDto, $complaintJudgementMainDocumentRequestMapper);
+
+        $dossierPersister = Mockery::mock(DossierPersister::class);
+        $dossierPersister->expects('persist')->with($complaintJudgement, null, []);
 
         $complaintJudgementStrategy = new ComplaintJudgementStrategy(
-            $complaintJudgementPersister,
+            $dossierPersister,
             $complaintJudgementRequestMapper,
-            Mockery::mock(ComplaintJudgementMainDocumentSynchronizer::class),
-            $noticeNotPublicSynchronizer,
+            $complaintJudgementMainDocumentRequestMapper,
+            $dossierMainDocumentOrNoticeSynchronizer,
         );
 
         self::assertSame($complaintJudgement, $complaintJudgementStrategy->create(
@@ -178,27 +184,27 @@ final class ComplaintJudgementStrategyTest extends UnitTestCase
         );
 
         $complaintJudgement = new ComplaintJudgement();
-        $complaintJudgementSnapshot = ComplaintJudgementSnapshot::of($complaintJudgement);
+        $mainDocumentSnapshot = MainDocumentSnapshot::of($complaintJudgement);
 
         $complaintJudgementRequestMapper = Mockery::mock(ComplaintJudgementRequestMapper::class);
         $complaintJudgementRequestMapper->expects('update')
             ->with($complaintJudgement, $complaintJudgementRequestDto, $organisation, $department, $subject);
 
-        $noticeNotPublicSynchronizer = Mockery::mock(NoticeNotPublicSynchronizer::class);
-        $noticeNotPublicSynchronizer->expects('delete')->with($complaintJudgement);
+        $complaintJudgementMainDocumentRequestMapper = Mockery::mock(ComplaintJudgementMainDocumentRequestMapper::class);
 
-        $complaintJudgementMainDocumentSynchronizer = Mockery::mock(ComplaintJudgementMainDocumentSynchronizer::class);
-        $complaintJudgementMainDocumentSynchronizer->expects('update')->with($complaintJudgement, $mainDocumentRequestDto);
+        $dossierMainDocumentOrNoticeSynchronizer = Mockery::mock(DossierMainDocumentOrNoticeSynchronizer::class);
+        $dossierMainDocumentOrNoticeSynchronizer->expects('update')
+            ->with($complaintJudgement, $mainDocumentRequestDto, null, $complaintJudgementMainDocumentRequestMapper);
 
-        $complaintJudgementPersister = Mockery::mock(ComplaintJudgementPersister::class);
-        $complaintJudgementPersister->expects('snapshot')->with($complaintJudgement)->andReturn($complaintJudgementSnapshot);
-        $complaintJudgementPersister->expects('persist')->with($complaintJudgement, $complaintJudgementSnapshot);
+        $dossierPersister = Mockery::mock(DossierPersister::class);
+        $dossierPersister->expects('snapshot')->with($complaintJudgement)->andReturn($mainDocumentSnapshot);
+        $dossierPersister->expects('persist')->with($complaintJudgement, $mainDocumentSnapshot, []);
 
         $complaintJudgementStrategy = new ComplaintJudgementStrategy(
-            $complaintJudgementPersister,
+            $dossierPersister,
             $complaintJudgementRequestMapper,
-            $complaintJudgementMainDocumentSynchronizer,
-            $noticeNotPublicSynchronizer,
+            $complaintJudgementMainDocumentRequestMapper,
+            $dossierMainDocumentOrNoticeSynchronizer,
         );
 
         $complaintJudgementStrategy->update($complaintJudgement, $complaintJudgementRequestDto, $organisation, $department, $subject);
@@ -227,27 +233,27 @@ final class ComplaintJudgementStrategyTest extends UnitTestCase
         );
 
         $complaintJudgement = new ComplaintJudgement();
-        $complaintJudgementSnapshot = ComplaintJudgementSnapshot::of($complaintJudgement);
+        $mainDocumentSnapshot = MainDocumentSnapshot::of($complaintJudgement);
 
         $complaintJudgementRequestMapper = Mockery::mock(ComplaintJudgementRequestMapper::class);
         $complaintJudgementRequestMapper->expects('update')
             ->with($complaintJudgement, $complaintJudgementRequestDto, $organisation, $department, null);
 
-        $complaintJudgementMainDocumentSynchronizer = Mockery::mock(ComplaintJudgementMainDocumentSynchronizer::class);
-        $complaintJudgementMainDocumentSynchronizer->expects('delete')->with($complaintJudgement);
+        $complaintJudgementMainDocumentRequestMapper = Mockery::mock(ComplaintJudgementMainDocumentRequestMapper::class);
 
-        $noticeNotPublicSynchronizer = Mockery::mock(NoticeNotPublicSynchronizer::class);
-        $noticeNotPublicSynchronizer->expects('update')->with($complaintJudgement, $noticeNotPublicRequestDto);
+        $dossierMainDocumentOrNoticeSynchronizer = Mockery::mock(DossierMainDocumentOrNoticeSynchronizer::class);
+        $dossierMainDocumentOrNoticeSynchronizer->expects('update')
+            ->with($complaintJudgement, null, $noticeNotPublicRequestDto, $complaintJudgementMainDocumentRequestMapper);
 
-        $complaintJudgementPersister = Mockery::mock(ComplaintJudgementPersister::class);
-        $complaintJudgementPersister->expects('snapshot')->with($complaintJudgement)->andReturn($complaintJudgementSnapshot);
-        $complaintJudgementPersister->expects('persist')->with($complaintJudgement, $complaintJudgementSnapshot);
+        $dossierPersister = Mockery::mock(DossierPersister::class);
+        $dossierPersister->expects('snapshot')->with($complaintJudgement)->andReturn($mainDocumentSnapshot);
+        $dossierPersister->expects('persist')->with($complaintJudgement, $mainDocumentSnapshot, []);
 
         $complaintJudgementStrategy = new ComplaintJudgementStrategy(
-            $complaintJudgementPersister,
+            $dossierPersister,
             $complaintJudgementRequestMapper,
-            $complaintJudgementMainDocumentSynchronizer,
-            $noticeNotPublicSynchronizer,
+            $complaintJudgementMainDocumentRequestMapper,
+            $dossierMainDocumentOrNoticeSynchronizer,
         );
 
         $complaintJudgementStrategy->update($complaintJudgement, $complaintJudgementRequestDto, $organisation, $department, null);

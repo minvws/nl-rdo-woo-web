@@ -74,8 +74,8 @@ routes from three directories in order:
 3. `tenants/<tenant>/config/` — tenant-specific
 
 Later layers override earlier ones. The kernel also exposes `kernel.application_id` and `kernel.tenant_id` as container
-parameters, and writes cache, build and log directories per tenant and application, so `var/log/minvws/admin/` and
-`var/log/minfin/worker/` are separate.
+parameters, and writes cache, build and log directories per tenant and application, so `var/log/dev/minvws/admin/`
+and `var/log/dev/minfin/worker/` are separate.
 
 ## The Shared domain
 
@@ -122,7 +122,7 @@ A PDF is ingested by `IngestPdfCommand`, which dispatches an `IngestPdfPageComma
 |----------------------|--------------------------------------------------------------------------------|
 | `Index`              | `ElasticDocument`, `ElasticDocumentType`, the per-entity indexers and updaters |
 | `Index/ElasticIndex` | `ElasticIndexManager`, which creates, deletes and aliases indices              |
-| `Index/Rollover`     | Rolling over to a new mapping version                                          |
+| `Index/Rollover`     | Rolling over to a new Elasticsearch mapping                                    |
 | `Index/Schema`       | The mapping-facing helpers (`ElasticPath`, `ElasticHighlights`)                |
 | `Result`             | Search result view models, per dossier type                                    |
 

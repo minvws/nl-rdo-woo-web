@@ -27,10 +27,10 @@ use function trim;
  * Leading numbers in Excel column names are ignore (stripped).
  * Leading and trailing whitespace and casing are also ignored when matching column names.
  */
-class ExcelReaderFactory implements ReaderFactoryInterface
+class ExcelReaderFactory
 {
     /** @var array<array-key, string> */
-    protected $supportedMimeTypes = [
+    protected array $supportedMimeTypes = [
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'application/vnd.ms-excel',
         'application/vnd.oasis.opendocument.spreadsheet',

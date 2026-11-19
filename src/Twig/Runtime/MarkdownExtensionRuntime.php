@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Shared\Twig\Runtime;
 
-use Shared\Domain\Content\Markdown\MarkdownConverter;
+use Shared\Domain\Content\Markdown\MarkdownFormatter;
 use Twig\Extension\RuntimeExtensionInterface;
 
-class MarkdownExtensionRuntime implements RuntimeExtensionInterface
+readonly class MarkdownExtensionRuntime implements RuntimeExtensionInterface
 {
-    public function __construct(private readonly MarkdownConverter $markdownConverter)
-    {
+    public function __construct(
+        private MarkdownFormatter $markdownFormatter,
+    ) {
     }
 
     public function renderMarkdown(?string $input): ?string
@@ -19,6 +20,6 @@ class MarkdownExtensionRuntime implements RuntimeExtensionInterface
             return null;
         }
 
-        return $this->markdownConverter->convert($input)->getContent();
+        return $this->markdownFormatter->toHtml($input);
     }
 }

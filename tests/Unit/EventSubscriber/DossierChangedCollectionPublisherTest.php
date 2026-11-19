@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\EventSubscriber;
 
-use ApiPlatform\Symfony\EventListener\EventPriorities;
 use Mockery;
 use Shared\Domain\Publication\Dossier\Command\UpdateDossierPublicationCommand;
 use Shared\Domain\Publication\Dossier\DossierRepository;
@@ -12,23 +11,10 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\EventSubscriber\DossierChangedCollection;
 use Shared\EventSubscriber\DossierChangedCollectionPublisher;
 use Shared\Tests\Unit\UnitTestCase;
-use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\Messenger\Event\WorkerMessageHandledEvent;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class DossierChangedCollectionPublisherTest extends UnitTestCase
 {
-    public function testGetSubscribedEvents(): void
-    {
-        self::assertEquals(
-            [
-                KernelEvents::TERMINATE => ['processDossierChangedCollection', EventPriorities::PRE_RESPOND],
-                WorkerMessageHandledEvent::class => 'processDossierChangedCollection',
-            ],
-            DossierChangedCollectionPublisher::getSubscribedEvents(),
-        );
-    }
-
     public function testProcessesAndMarksEachDossierAsProcessed(): void
     {
         $wooDecision = new WooDecision();

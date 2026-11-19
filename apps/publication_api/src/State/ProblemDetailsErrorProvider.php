@@ -7,8 +7,10 @@ namespace PublicationApi\State;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ApiResource\Error;
 use ApiPlatform\State\ProviderInterface;
+use PublicationApi\Domain\OpenApi\ProblemDetails;
 use PublicationApi\Domain\OpenApi\ProblemDetailsFactory;
 use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
+use Throwable;
 use Webmozart\Assert\Assert;
 
 #[AsDecorator('api_platform.state.error_provider')]
@@ -30,9 +32,9 @@ final readonly class ProblemDetailsErrorProvider implements ProviderInterface
         Assert::isInstanceOf($error, Error::class);
 
         $original = $error->getPrevious();
-        $problemDetails = $original !== null ? $this->problemDetailsFactory->build($original) : null;
+        $problemDetails = $original instanceof Throwable ? $this->problemDetailsFactory->build($original) : null;
 
-        if ($problemDetails !== null) {
+        if ($problemDetails instanceof ProblemDetails) {
             $error->setType($problemDetails->type);
             $error->setTitle($problemDetails->title);
         } else {

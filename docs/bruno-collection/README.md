@@ -34,6 +34,7 @@ Om met de Test en Acceptatie te communiceren, doe dan het volgende:
    DOMAIN_TEST_MINFIN=
    DOMAIN_ACC_MINVWS=
    DOMAIN_ACC_MINFIN=
+   DOMAIN_ACC_MINOCW=
    ```
 
    Neem voor de waardes contact op met het team.

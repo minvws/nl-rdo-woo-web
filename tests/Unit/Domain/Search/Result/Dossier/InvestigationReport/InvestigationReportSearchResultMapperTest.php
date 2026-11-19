@@ -10,7 +10,6 @@ use Mockery\MockInterface;
 use Shared\ApplicationId;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportRepository;
 use Shared\Domain\Search\Index\ElasticDocumentType;
-use Shared\Domain\Search\Index\Schema\ElasticField;
 use Shared\Domain\Search\Result\Dossier\DossierSearchResultBaseMapper;
 use Shared\Domain\Search\Result\Dossier\InvestigationReport\InvestigationReportSearchResultMapper;
 use Shared\Domain\Search\Result\ResultEntryInterface;
@@ -51,7 +50,6 @@ class InvestigationReportSearchResultMapperTest extends UnitTestCase
                 $hit,
                 $this->repository,
                 ElasticDocumentType::INVESTIGATION_REPORT,
-                [ElasticField::TITLE->value, ElasticField::SUMMARY->value],
                 ApplicationId::ADMIN,
             )
             ->andReturn($expectedResult);

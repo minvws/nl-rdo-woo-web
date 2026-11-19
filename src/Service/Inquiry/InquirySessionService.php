@@ -15,7 +15,7 @@ use function is_array;
  */
 class InquirySessionService
 {
-    protected const INQUIRY_KEY = 'inquiries';
+    protected const string INQUIRY_KEY = 'inquiries';
 
     public function __construct(protected RequestStack $requestStack)
     {

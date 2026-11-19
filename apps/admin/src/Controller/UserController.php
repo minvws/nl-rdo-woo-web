@@ -152,7 +152,7 @@ class UserController extends AbstractController
 
         /** @var array{user_id: int, plainTextPassword: string} $data */
         $user = $this->repository->find($data['user_id']);
-        if (! $user) {
+        if (! $user instanceof User) {
             throw $this->createNotFoundException();
         }
 
@@ -202,7 +202,7 @@ class UserController extends AbstractController
             $this->handleResetTwoFactorAuthForm($userResetTwoFactorAuthForm, $request, $user) ??
             $this->handleDisableForm($userDisableForm, $request, $user) ??
             $this->handleEnableForm($userEnableForm, $request, $user);
-        if ($response) {
+        if ($response instanceof Response) {
             return $response;
         }
 

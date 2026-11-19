@@ -32,7 +32,7 @@ use function strtolower;
 #[AsCommand(name: 'woopie:sql:dump', description: 'Dumps SQL from migrations', help: 'Dumps SQL from migrations')]
 class SqlDump extends Command
 {
-    public const SQL_MIGRATION_PATH = __DIR__ . '/../../migrations/sql';
+    public const string SQL_MIGRATION_PATH = __DIR__ . '/../../migrations/sql';
 
     protected function configure(): void
     {

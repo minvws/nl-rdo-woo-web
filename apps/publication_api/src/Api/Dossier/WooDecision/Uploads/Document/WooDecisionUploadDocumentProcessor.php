@@ -9,7 +9,6 @@ use ApiPlatform\State\ProcessorInterface;
 use ApiPlatform\Validator\Exception\ValidationException;
 use PublicationApi\Api\Uploads\Document\UploadDocumentHandler;
 use PublicationApi\Api\Uploads\Document\UploadDocumentRequestInterface;
-use PublicationApi\FeatureFlag\DocumentUploadGuard;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Organisation\OrganisationRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
@@ -25,7 +24,6 @@ readonly class WooDecisionUploadDocumentProcessor implements ProcessorInterface
         private OrganisationRepository $organisationRepository,
         private UploadDocumentHandler $uploadDocumentHandler,
         private WooDecisionRepository $wooDecisionRepository,
-        private DocumentUploadGuard $documentUploadGuard,
     ) {
     }
 
@@ -44,8 +42,6 @@ readonly class WooDecisionUploadDocumentProcessor implements ProcessorInterface
         if (! $dossier instanceof WooDecision) {
             throw new ValidationException(ConstraintViolationList::createFromMessage('No dossier found for this organisation'));
         }
-
-        $this->documentUploadGuard->assertDocumentUploadIsAllowed($dossier);
 
         $document = $this->documentRepository->findByDossierAndExternalId($dossier, $data->getDocumentExternalId());
         if (! $document instanceof Document) {

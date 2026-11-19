@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace PublicationApi\Tests\Unit\Api\Uploads\MainDocument;
 
+use ApiPlatform\Metadata\Put;
 use ApiPlatform\Validator\Exception\ValidationException;
 use Mockery;
 use Psr\Http\Message\StreamInterface;
+use PublicationApi\Api\Dossier\Covenant\Uploads\MainDocument\CovenantUploadMainDocumentProcessor;
 use PublicationApi\Api\DossierLookup;
 use PublicationApi\Api\OrganisationLookup;
 use PublicationApi\Api\Uploads\MainDocument\UploadMainDocumentHandler;
-use PublicationApi\Api\Uploads\MainDocument\UploadMainDocumentProcessor;
-use PublicationApi\Api\Uploads\MainDocument\UploadMainDocumentRequestInterface;
-use PublicationApi\FeatureFlag\DocumentUploadGuard;
+use PublicationApi\Api\Uploads\MainDocument\UploadMainDocumentRequestDto;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
@@ -21,6 +21,7 @@ use Shared\Domain\Publication\Dossier\Type\DossierRepositoryWithExternalId;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\ExternalId;
+use stdClass;
 use Symfony\Component\Uid\Uuid;
 
 class UploadMainDocumentProcessorTest extends UnitTestCase
@@ -31,10 +32,7 @@ class UploadMainDocumentProcessorTest extends UnitTestCase
         $dossierExternalId = Mockery::mock(ExternalId::class);
         $content = Mockery::mock(StreamInterface::class);
 
-        $request = Mockery::mock(UploadMainDocumentRequestInterface::class);
-        $request->expects('getOrganisationId')->andReturn($organisationId);
-        $request->expects('getDossierExternalId')->andReturn($dossierExternalId);
-        $request->expects('getContent')->andReturn($content);
+        $uploadMainDocumentRequestDto = new UploadMainDocumentRequestDto($content, $organisationId, $dossierExternalId);
 
         $organisation = Mockery::mock(Organisation::class);
         $organisationLookup = Mockery::mock(OrganisationLookup::class);
@@ -51,9 +49,6 @@ class UploadMainDocumentProcessorTest extends UnitTestCase
             ->with($dossierRepository, $organisation, $dossierExternalId)
             ->andReturn($dossier);
 
-        $documentUploadGuard = Mockery::mock(DocumentUploadGuard::class);
-        $documentUploadGuard->expects('assertDocumentUploadIsAllowed')->with($dossier);
-
         $mainDocument = Mockery::mock(AbstractMainDocument::class);
         $dossier->expects('getMainDocument')->andReturn($mainDocument);
 
@@ -61,14 +56,15 @@ class UploadMainDocumentProcessorTest extends UnitTestCase
         $uploadMainDocumentHandler->expects('handle')
             ->with($dossier, $mainDocument, $content);
 
-        $processor = new UploadMainDocumentProcessor(
+        $uploadMainDocumentProcessor = new CovenantUploadMainDocumentProcessor(
             $dossierLookup,
             $organisationLookup,
-            $documentUploadGuard,
             $uploadMainDocumentHandler,
+            $dossierRepository,
+            AbstractMainDocument::class,
         );
 
-        $processor->process($request, $dossierRepository, AbstractMainDocument::class);
+        $uploadMainDocumentProcessor->process($uploadMainDocumentRequestDto, new Put());
     }
 
     public function testProcessThrowsWhenDossierHasNoMainDocument(): void
@@ -76,9 +72,7 @@ class UploadMainDocumentProcessorTest extends UnitTestCase
         $organisationId = Uuid::v6();
         $dossierExternalId = Mockery::mock(ExternalId::class);
 
-        $request = Mockery::mock(UploadMainDocumentRequestInterface::class);
-        $request->expects('getOrganisationId')->andReturn($organisationId);
-        $request->expects('getDossierExternalId')->andReturn($dossierExternalId);
+        $uploadMainDocumentRequestDto = new UploadMainDocumentRequestDto(Mockery::mock(StreamInterface::class), $organisationId, $dossierExternalId);
 
         $organisation = Mockery::mock(Organisation::class);
         $organisationLookup = Mockery::mock(OrganisationLookup::class);
@@ -95,21 +89,19 @@ class UploadMainDocumentProcessorTest extends UnitTestCase
             ->with($dossierRepository, $organisation, $dossierExternalId)
             ->andReturn($dossier);
 
-        $documentUploadGuard = Mockery::mock(DocumentUploadGuard::class);
-        $documentUploadGuard->expects('assertDocumentUploadIsAllowed')->with($dossier);
-
         $uploadMainDocumentHandler = Mockery::mock(UploadMainDocumentHandler::class);
 
-        $processor = new UploadMainDocumentProcessor(
+        $uploadMainDocumentProcessor = new CovenantUploadMainDocumentProcessor(
             $dossierLookup,
             $organisationLookup,
-            $documentUploadGuard,
             $uploadMainDocumentHandler,
+            $dossierRepository,
+            AbstractMainDocument::class,
         );
 
         $this->expectException(ValidationException::class);
 
-        $processor->process($request, $dossierRepository, AbstractMainDocument::class);
+        $uploadMainDocumentProcessor->process($uploadMainDocumentRequestDto, new Put());
     }
 
     public function testProcessThrowsWhenMainDocumentNotFound(): void
@@ -117,9 +109,7 @@ class UploadMainDocumentProcessorTest extends UnitTestCase
         $organisationId = Uuid::v6();
         $dossierExternalId = Mockery::mock(ExternalId::class);
 
-        $request = Mockery::mock(UploadMainDocumentRequestInterface::class);
-        $request->expects('getOrganisationId')->andReturn($organisationId);
-        $request->expects('getDossierExternalId')->andReturn($dossierExternalId);
+        $uploadMainDocumentRequestDto = new UploadMainDocumentRequestDto(Mockery::mock(StreamInterface::class), $organisationId, $dossierExternalId);
 
         $organisation = Mockery::mock(Organisation::class);
         $organisationLookup = Mockery::mock(OrganisationLookup::class);
@@ -136,23 +126,21 @@ class UploadMainDocumentProcessorTest extends UnitTestCase
             ->with($dossierRepository, $organisation, $dossierExternalId)
             ->andReturn($dossier);
 
-        $documentUploadGuard = Mockery::mock(DocumentUploadGuard::class);
-        $documentUploadGuard->expects('assertDocumentUploadIsAllowed')->with($dossier);
-
         $dossier->expects('getMainDocument')->andReturnNull();
 
         $uploadMainDocumentHandler = Mockery::mock(UploadMainDocumentHandler::class);
 
-        $processor = new UploadMainDocumentProcessor(
+        $uploadMainDocumentProcessor = new CovenantUploadMainDocumentProcessor(
             $dossierLookup,
             $organisationLookup,
-            $documentUploadGuard,
             $uploadMainDocumentHandler,
+            $dossierRepository,
+            AbstractMainDocument::class,
         );
 
         $this->expectException(ValidationException::class);
 
-        $processor->process($request, $dossierRepository, AbstractMainDocument::class);
+        $uploadMainDocumentProcessor->process($uploadMainDocumentRequestDto, new Put());
     }
 
     public function testProcessThrowsWhenMainDocumentIsWrongType(): void
@@ -160,9 +148,7 @@ class UploadMainDocumentProcessorTest extends UnitTestCase
         $organisationId = Uuid::v6();
         $dossierExternalId = Mockery::mock(ExternalId::class);
 
-        $request = Mockery::mock(UploadMainDocumentRequestInterface::class);
-        $request->expects('getOrganisationId')->andReturn($organisationId);
-        $request->expects('getDossierExternalId')->andReturn($dossierExternalId);
+        $uploadMainDocumentRequestDto = new UploadMainDocumentRequestDto(Mockery::mock(StreamInterface::class), $organisationId, $dossierExternalId);
 
         $organisation = Mockery::mock(Organisation::class);
         $organisationLookup = Mockery::mock(OrganisationLookup::class);
@@ -179,23 +165,36 @@ class UploadMainDocumentProcessorTest extends UnitTestCase
             ->with($dossierRepository, $organisation, $dossierExternalId)
             ->andReturn($dossier);
 
-        $documentUploadGuard = Mockery::mock(DocumentUploadGuard::class);
-        $documentUploadGuard->expects('assertDocumentUploadIsAllowed')->with($dossier);
-
         $mainDocument = Mockery::mock(AbstractMainDocument::class);
         $dossier->expects('getMainDocument')->andReturn($mainDocument);
 
         $uploadMainDocumentHandler = Mockery::mock(UploadMainDocumentHandler::class);
 
-        $processor = new UploadMainDocumentProcessor(
+        $uploadMainDocumentProcessor = new CovenantUploadMainDocumentProcessor(
             $dossierLookup,
             $organisationLookup,
-            $documentUploadGuard,
             $uploadMainDocumentHandler,
+            $dossierRepository,
+            CovenantMainDocument::class,
         );
 
         $this->expectException(ValidationException::class);
 
-        $processor->process($request, $dossierRepository, CovenantMainDocument::class);
+        $uploadMainDocumentProcessor->process($uploadMainDocumentRequestDto, new Put());
+    }
+
+    public function testProcessThrowsOnInvalidData(): void
+    {
+        $uploadMainDocumentProcessor = new CovenantUploadMainDocumentProcessor(
+            Mockery::mock(DossierLookup::class),
+            Mockery::mock(OrganisationLookup::class),
+            Mockery::mock(UploadMainDocumentHandler::class),
+            Mockery::mock(DossierRepositoryWithExternalId::class),
+            AbstractMainDocument::class,
+        );
+
+        $this->expectException(ValidationException::class);
+
+        $uploadMainDocumentProcessor->process(new stdClass(), new Put());
     }
 }

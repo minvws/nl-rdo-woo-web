@@ -6,12 +6,14 @@ namespace Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Handle
 
 use Generator;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileUploadCommand;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileService;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileSet;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpdate;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository\DocumentFileUpdateRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository\DocumentFileUploadRepository;
+use Shared\Domain\Upload\FileType\FileExtension;
 use Shared\Domain\Upload\FileType\MimeTypeHelper;
 use Shared\Domain\Upload\Preprocessor\FilePreprocessor;
 use Shared\Domain\Upload\Process\DocumentNumberExtractor;
@@ -20,6 +22,8 @@ use Shared\Service\Storage\EntityStorageService;
 use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Webmozart\Assert\Assert;
+
+use function strtolower;
 
 #[AsMessageHandler]
 readonly class ProcessDocumentFileUploadHandler
@@ -88,40 +92,44 @@ readonly class ProcessDocumentFileUploadHandler
     private function handleFiles(Generator $fileIterator, DocumentFileSet $documentFileSet): void
     {
         $dossier = $documentFileSet->getDossier();
+        $dossierId = $dossier->getId();
+
         foreach ($fileIterator as $file) {
             Assert::isInstanceOf($file, UploadedFile::class);
 
-            $originalFileExtension = $file->getOriginalFileExtension();
+            $fileExtension = FileExtension::tryFrom(strtolower($file->getOriginalFileExtension()));
             $mimeType = $this->mimeTypeHelper->detectMimeTypeFromPath($file);
 
-            if ($this->mimeTypeHelper->isValidForUploadGroup($originalFileExtension, $mimeType, UploadGroupId::WOO_DECISION_DOCUMENTS)->isInvalid()) {
-                $this->logger->info('Unsupported mimetype, skipping file', [
-                    'filename' => $file->getOriginalFilename(),
-                    'dossierId' => $dossier->getId(),
-                ]);
+            $logContext = [
+                'filename' => $file->getOriginalFilename(),
+                'dossierId' => $dossierId,
+            ];
+
+            if ($fileExtension === null) {
+                $this->logger->info('Unknown file-extension, skipping file', $logContext);
+
+                continue;
+            }
+
+            if ($this->mimeTypeHelper->isValidForUploadGroup($fileExtension, $mimeType, UploadGroupId::WOO_DECISION_DOCUMENTS)->isInvalid()) {
+                $this->logger->info('Unsupported mimetype, skipping file', $logContext);
 
                 continue;
             }
 
             $document = $this->documentNumberExtractor->matchDocumentForFile($file, $dossier);
-            if ($document === null) {
+            if (! $document instanceof Document) {
                 continue;
             }
 
             if ($this->documentFileUpdateRepository->hasUpdateForFileSetAndDocument($documentFileSet, $document)) {
-                $this->logger->info('Document already being updated, skipping file', [
-                    'filename' => $file->getOriginalFilename(),
-                    'dossierId' => $dossier->getId(),
-                ]);
+                $this->logger->info('Document already being updated, skipping file', $logContext);
 
                 continue;
             }
 
             if (! $document->shouldBeUploaded($dossier->getStatus()->isPublished())) {
-                $this->logger->info('Document should not be uploaded, skipping file', [
-                    'filename' => $file->getOriginalFilename(),
-                    'dossierId' => $dossier->getId(),
-                ]);
+                $this->logger->info('Document should not be uploaded, skipping file', $logContext);
 
                 continue;
             }
@@ -130,7 +138,7 @@ readonly class ProcessDocumentFileUploadHandler
             $this->entityStorageService->storeEntity($file, $documentFileUpdate, false);
 
             $documentFileUpdate->getFileInfo()->setName($file->getOriginalFilename());
-            $documentFileUpdate->getFileInfo()->setType($originalFileExtension);
+            $documentFileUpdate->getFileInfo()->setType($file->getOriginalFileExtension());
             $this->documentFileUpdateRepository->save($documentFileUpdate, true);
         }
     }

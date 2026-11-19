@@ -24,14 +24,14 @@ use function count;
 #[ORM\Index(columns: ['status', 'started_at'])]
 class ProductionReportProcessRun implements EntityWithFileInfo
 {
-    public const STATUS_PENDING = 'pending';
-    public const STATUS_COMPARING = 'comparing';
-    public const STATUS_NEEDS_CONFIRMATION = 'needs_confirmation';
-    public const STATUS_CONFIRMED = 'confirmed';
-    public const STATUS_REJECTED = 'rejected';
-    public const STATUS_UPDATING = 'updating';
-    public const STATUS_FAILED = 'failed';
-    public const STATUS_FINISHED = 'finished';
+    public const string STATUS_PENDING = 'pending';
+    public const string STATUS_COMPARING = 'comparing';
+    public const string STATUS_NEEDS_CONFIRMATION = 'needs_confirmation';
+    public const string STATUS_CONFIRMED = 'confirmed';
+    public const string STATUS_REJECTED = 'rejected';
+    public const string STATUS_UPDATING = 'updating';
+    public const string STATUS_FAILED = 'failed';
+    public const string STATUS_FINISHED = 'finished';
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: false)]
     private DateTimeImmutable $createdAt;
@@ -65,8 +65,6 @@ class ProductionReportProcessRun implements EntityWithFileInfo
 
     #[Embedded(class: FileInfo::class, columnPrefix: 'file_')]
     private FileInfo $file;
-
-    private ?string $tmpFilename = null;
 
     public function __construct(
         #[ORM\OneToOne(inversedBy: 'processRun', targetEntity: WooDecision::class)]
@@ -281,9 +279,6 @@ class ProductionReportProcessRun implements EntityWithFileInfo
         return $this;
     }
 
-    /**
-     * @codeCoverageIgnore
-     */
     public function getFileCacheKey(): string
     {
         return 'inventory-process-run-' . $this->id->toBase58();
@@ -304,18 +299,6 @@ class ProductionReportProcessRun implements EntityWithFileInfo
         return ! $this->hasErrors();
     }
 
-    public function getTmpFilename(): ?string
-    {
-        return $this->tmpFilename;
-    }
-
-    public function setTmpFilename(?string $tmpFilename): self
-    {
-        $this->tmpFilename = $tmpFilename;
-
-        return $this;
-    }
-
     public function getChangeset(): ?InventoryChangeset
     {
         return $this->changeset ? new InventoryChangeset($this->changeset) : null;
@@ -326,7 +309,7 @@ class ProductionReportProcessRun implements EntityWithFileInfo
         $this->changeset = $changeset->getAll();
 
         // If there is no existing ProductionReport it is an initial import, so we can skip confirmation
-        $this->status = $this->dossier->getProductionReport() === null
+        $this->status = ! $this->dossier->getProductionReport() instanceof ProductionReport
             ? self::STATUS_CONFIRMED
             : self::STATUS_NEEDS_CONFIRMATION;
     }

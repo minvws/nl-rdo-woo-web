@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\ComplaintJudgement;
 
+use PublicationApi\Api\Dossier\DossierMainDocumentOrNoticeSynchronizer;
+use PublicationApi\Api\Dossier\DossierPersister;
 use PublicationApi\Api\Dossier\DossierRequestDtoInterface;
 use PublicationApi\Api\Dossier\DossierStrategy;
-use PublicationApi\Api\Dossier\NoticeNotPublicSynchronizer;
-use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicRequestDto;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
@@ -22,10 +22,10 @@ use Webmozart\Assert\Assert;
 readonly class ComplaintJudgementStrategy implements DossierStrategy
 {
     public function __construct(
-        private ComplaintJudgementPersister $complaintJudgementPersister,
+        private DossierPersister $dossierPersister,
         private ComplaintJudgementRequestMapper $complaintJudgementRequestMapper,
-        private ComplaintJudgementMainDocumentSynchronizer $complaintJudgementMainDocumentSynchronizer,
-        private NoticeNotPublicSynchronizer $noticeNotPublicSynchronizer,
+        private ComplaintJudgementMainDocumentRequestMapper $complaintJudgementMainDocumentRequestMapper,
+        private DossierMainDocumentOrNoticeSynchronizer $dossierMainDocumentOrNoticeSynchronizer,
     ) {
     }
 
@@ -58,13 +58,14 @@ readonly class ComplaintJudgementStrategy implements DossierStrategy
             $documentPrefix,
         );
 
-        if ($dossierRequestDto->mainDocument !== null) {
-            $this->complaintJudgementMainDocumentSynchronizer->create($complaintJudgement, $dossierRequestDto->mainDocument);
-        } else {
-            $this->noticeNotPublicSynchronizer->create($complaintJudgement, self::noticeNotPublic($dossierRequestDto));
-        }
+        $this->dossierMainDocumentOrNoticeSynchronizer->create(
+            $complaintJudgement,
+            $dossierRequestDto->mainDocument,
+            $dossierRequestDto->noticeNotPublic,
+            $this->complaintJudgementMainDocumentRequestMapper,
+        );
 
-        $this->complaintJudgementPersister->persist($complaintJudgement, null);
+        $this->dossierPersister->persist($complaintJudgement, null, []);
 
         return $complaintJudgement;
     }
@@ -81,24 +82,15 @@ readonly class ComplaintJudgementStrategy implements DossierStrategy
 
         $this->complaintJudgementRequestMapper->update($dossier, $dossierRequestDto, $organisation, $department, $subject);
 
-        $complaintJudgementSnapshot = $this->complaintJudgementPersister->snapshot($dossier);
+        $mainDocumentSnapshot = $this->dossierPersister->snapshot($dossier);
 
-        if ($dossierRequestDto->mainDocument !== null) {
-            $this->noticeNotPublicSynchronizer->delete($dossier);
-            $this->complaintJudgementMainDocumentSynchronizer->update($dossier, $dossierRequestDto->mainDocument);
-        } else {
-            $this->complaintJudgementMainDocumentSynchronizer->delete($dossier);
-            $this->noticeNotPublicSynchronizer->update($dossier, self::noticeNotPublic($dossierRequestDto));
-        }
+        $this->dossierMainDocumentOrNoticeSynchronizer->update(
+            $dossier,
+            $dossierRequestDto->mainDocument,
+            $dossierRequestDto->noticeNotPublic,
+            $this->complaintJudgementMainDocumentRequestMapper,
+        );
 
-        $this->complaintJudgementPersister->persist($dossier, $complaintJudgementSnapshot);
-    }
-
-    private static function noticeNotPublic(ComplaintJudgementRequestDto $complaintJudgementRequestDto): NoticeNotPublicRequestDto
-    {
-        $noticeNotPublic = $complaintJudgementRequestDto->noticeNotPublic;
-        Assert::notNull($noticeNotPublic);
-
-        return $noticeNotPublic;
+        $this->dossierPersister->persist($dossier, $mainDocumentSnapshot, []);
     }
 }

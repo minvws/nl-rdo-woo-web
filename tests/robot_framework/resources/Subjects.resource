@@ -103,6 +103,16 @@ Fill Subject Landingpage
   Fill Text  id=subject_landing_page_landing_page_description  ${description}
   RETURN  ${slug}  ${title}  ${description}
 
+Create Subject With Landingpage
+  [Documentation]  Creates a subject and saves its landingpage. Returns the subject name and landingpage slug.
+  [Arguments]  ${status}=published  ${title}=EMPTY  ${description}=EMPTY
+  Click Subjects
+  ${name} =  Create New Subject
+  Click Edit Subject Landingpage  ${name}
+  ${slug}  ${_}  ${_} =  Fill Subject Landingpage  status=${status}  title=${title}  description=${description}
+  Click Submit Subject Landingpage
+  RETURN  ${name}  ${slug}
+
 Set Subject Landingpage Content Tree Status
   [Arguments]  ${status}=published
   Select Options By  id=subject_landing_page_landing_page_content_tree_status  value  ${status}

@@ -7,7 +7,7 @@
   
 :::{admonition} Note
 :class: note
-Deze pagina is alleen beschikbaar voor Super Beheerders.
+Deze pagina is alleen beschikbaar voor Superbeheerders.
 :::
 
 Tijdens het publiceren kan meegegeven worden welk bestuursorgaan verantwoordelijk is voor de betreffende publicatie.

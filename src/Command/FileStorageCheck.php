@@ -45,6 +45,15 @@ class FileStorageCheck extends Command
         return self::SUCCESS;
     }
 
+    private function calculateFormattedPercentage(int $size, int $totalSize): string
+    {
+        if ($totalSize === 0) {
+            return '0%';
+        }
+
+        return round($size / $totalSize * 100, 2) . '%';
+    }
+
     private function listTotals(OutputInterface $output, FileStorageCheckResult $result): void
     {
         $output->writeln("\n");
@@ -63,7 +72,7 @@ class FileStorageCheck extends Command
                 $pathSet->name,
                 Utils::number($pathSet->totalCount),
                 Utils::size($pathSet->totalSize),
-                round($pathSet->totalSize / $totalSize * 100, 2) . '%',
+                $this->calculateFormattedPercentage($pathSet->totalSize, $totalSize),
                 count($pathSet->getRemainingPaths()),
             ]);
         }
@@ -73,7 +82,7 @@ class FileStorageCheck extends Command
             'ORPHANED FILES',
             Utils::number($result->orphanedPaths->totalCount),
             Utils::size($result->orphanedPaths->totalSize),
-            round($result->orphanedPaths->totalSize / $totalSize * 100, 2) . '%',
+            $this->calculateFormattedPercentage($result->orphanedPaths->totalSize, $totalSize),
             '',
         ]);
 

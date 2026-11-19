@@ -84,7 +84,7 @@ readonly class DocumentComparator
         foreach ($metadata->getRefersTo() as $referral) {
             $documentNumber = DocumentNumber::fromUnnormalizedString($referral);
             $referredDocument = $this->documentRepository->findByDocumentNumber($documentNumber);
-            if (! $referredDocument) {
+            if (! $referredDocument instanceof Document) {
                 continue;
             }
 

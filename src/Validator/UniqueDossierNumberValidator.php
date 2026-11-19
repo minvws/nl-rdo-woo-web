@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Validator;
 
 use Shared\Domain\Publication\Dossier\DossierRepository;
+use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Webmozart\Assert\Assert;
@@ -35,7 +36,7 @@ class UniqueDossierNumberValidator extends ConstraintValidator
             return;
         }
 
-        if ($constraint->excludeId !== null && $existing->getId()->equals($constraint->excludeId)) {
+        if ($constraint->excludeId instanceof Uuid && $existing->getId()->equals($constraint->excludeId)) {
             return;
         }
 

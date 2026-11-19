@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Utils\Rector\AddArrayKeyToGenericArrayTypeRector;
 use Rector\Config\RectorConfig;
+use Rector\CodeQuality\Rector\If_\ExplicitNullableObjectInstanceRector;
 use Rector\Php55\Rector\String_\StringClassNameToClassConstantRector;
 use Rector\Php74\Rector\Closure\ClosureToArrowFunctionRector;
 use Rector\Php74\Rector\Property\RestoreDefaultNullToNullableTypePropertyRector;
@@ -29,12 +30,14 @@ return RectorConfig::configure()
         __DIR__ . '/tests',
         __DIR__ . '/utils',
     ])
+    ->withTreatClassesAsFinal()
     ->withPreparedSets(doctrineCodeQuality: true)
     ->withComposerBased(twig: true, doctrine: true, phpunit: true, symfony: true)
     ->withAttributesSets()
     ->withPhpSets()
     ->withrules([
         AddArrayKeyToGenericArrayTypeRector::class,
+        ExplicitNullableObjectInstanceRector::class,
     ])
     ->withSkip([
         RemoveReflectionSetAccessibleCallsRector::class,

@@ -6,6 +6,7 @@ namespace Shared\Service\Search\Query\Condition;
 
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
 use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Subject\SubjectLandingPageStatus;
 use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Index\Schema\ElasticField;
 use Shared\Domain\Search\Index\Schema\ElasticNestedField;
@@ -177,10 +178,33 @@ class ContentAccessConditionBuilder implements QueryConditionBuilderInterface
         $inquiryDocumentFacetInput = $searchParameters->facetInputs->getByFacetKey(FacetKey::INQUIRY_DOCUMENTS);
         Assert::isInstanceOf($inquiryDocumentFacetInput, StringValuesFacetInput::class);
 
-        return [
+        $filters = [
             $this->createTypesQuery($inquiryDossierFacetInput, ElasticDocumentType::getMainTypes()),
             $this->createSubTypesQuery($inquiryDossierFacetInput, $inquiryDocumentFacetInput, ElasticDocumentType::getSubTypes()),
         ];
+
+        // Subjects are not related to inquiries, so they should not match once an inquiry filter is active
+        if ($inquiryDossierFacetInput->isNotActive() && $inquiryDocumentFacetInput->isNotActive()) {
+            $filters[] = $this->createSubjectQuery();
+        }
+
+        return $filters;
+    }
+
+    private function createSubjectQuery(): BoolQuery
+    {
+        return Query::bool(
+            filter: [
+                Query::terms(
+                    field: ElasticField::TYPE->value,
+                    values: ElasticDocumentType::getStandaloneTypeValues(),
+                ),
+                Query::term(
+                    field: ElasticField::STATUS->value,
+                    value: SubjectLandingPageStatus::PUBLISHED->value,
+                ),
+            ],
+        );
     }
 
     /**

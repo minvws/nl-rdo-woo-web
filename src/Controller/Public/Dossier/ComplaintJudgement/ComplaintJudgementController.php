@@ -7,12 +7,14 @@ namespace Shared\Controller\Public\Dossier\ComplaintJudgement;
 use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use InvalidArgumentException;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\ViewModel\NoticeNotPublicViewFactory;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ViewModel\ComplaintJudgementViewFactory;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -56,11 +58,11 @@ class ComplaintJudgementController extends AbstractController
         );
         $noticeNotPublic = $complaintJudgement->getNoticeNotPublic();
 
-        if ($document === null && $noticeNotPublic === null) {
+        if (! $document instanceof AbstractMainDocument && ! $noticeNotPublic instanceof NoticeNotPublic) {
             throw new InvalidArgumentException('either mainDocument or NoticeNotPublic must be set');
         }
 
-        if ($document !== null) {
+        if ($document instanceof AbstractMainDocument) {
             $parameters['document'] = $this->mainDocumentViewFactory->make($complaintJudgement, $document);
             $parameters['noticeNotPublic'] = null;
         } else {

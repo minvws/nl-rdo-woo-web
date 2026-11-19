@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier;
 
+use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 
 readonly class DossierBreadcrumbFactory
@@ -15,7 +16,7 @@ readonly class DossierBreadcrumbFactory
     {
         if ($dossier instanceof WooDecision) {
             $publicationReason = $dossier->getPublicationReason();
-            if ($publicationReason !== null) {
+            if ($publicationReason instanceof PublicationReason) {
                 return $publicationReason->getTranslationKey();
             }
         }

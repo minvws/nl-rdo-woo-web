@@ -5,17 +5,16 @@ declare(strict_types=1);
 namespace Shared\Exception\Import;
 
 use function sprintf;
-use function strval;
 
-final class InvalidRefersToException extends ImportException
+final class InvalidRefersToException extends RowImportException
 {
     public const string MESSAGE_KEY = 'publication.dossier.error.invalid_refers_to';
 
     public function __construct(
+        int $rowIndex,
         public readonly string $refersTo,
-        public readonly int $rowIndex,
     ) {
-        parent::__construct(sprintf("Invalid refers to value '%s' in inventory row #%d", $refersTo, $rowIndex));
+        parent::__construct($rowIndex, sprintf("Invalid refers to value '%s'", $refersTo));
     }
 
     public function getMessageKey(): string
@@ -29,7 +28,6 @@ final class InvalidRefersToException extends ImportException
     public function getMessageData(): array
     {
         return [
-            '{rownumber}' => strval($this->rowIndex),
             '{refersTo}' => $this->refersTo,
         ];
     }

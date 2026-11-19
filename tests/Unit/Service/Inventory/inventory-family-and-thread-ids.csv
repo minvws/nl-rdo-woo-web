@@ -1,0 +1,7 @@
+document,grond,id,beoordeling,publicatiecontext,family,thread id
+document-a.pdf,5.1.1a,1001,openbaar,PUBLICATIECONTEXT-1,12,34
+document-b.pdf,5.1.1a,1002,openbaar,PUBLICATIECONTEXT-1,,
+document-c.pdf,5.1.1a,1003,openbaar,PUBLICATIECONTEXT-1,2147483648,
+document-d.pdf,5.1.1a,1004,openbaar,PUBLICATIECONTEXT-1,12abc,
+document-e.pdf,5.1.1a,1005,openbaar,PUBLICATIECONTEXT-1,,99999999999
+document-f.pdf,5.1.1a,1006,openbaar,PUBLICATIECONTEXT-1,,1.5

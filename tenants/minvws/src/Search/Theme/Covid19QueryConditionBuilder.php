@@ -31,11 +31,11 @@ readonly class Covid19QueryConditionBuilder implements QueryConditionBuilderInte
 
     public function applyToQuery(FacetList $facetList, SearchParameters $searchParameters, BoolQuery $query): void
     {
-        $this->addFilterForWooDecisionWithSubtypes($query);
+        $this->addFilterForWooDecisionWithSubtypesOrSubjects($query);
         $this->addFilterForSubjects($query);
     }
 
-    private function addFilterForWooDecisionWithSubtypes(BoolQuery $query): void
+    private function addFilterForWooDecisionWithSubtypesOrSubjects(BoolQuery $query): void
     {
         $query->addFilter(
             Query::bool(
@@ -56,6 +56,14 @@ readonly class Covid19QueryConditionBuilder implements QueryConditionBuilderInte
                             Query::term(
                                 field: ElasticField::TYPE->value,
                                 value: ElasticDocumentType::WOO_DECISION->value,
+                            ),
+                        ],
+                    ),
+                    Query::bool(
+                        filter: [
+                            Query::terms(
+                                field: ElasticField::TYPE->value,
+                                values: ElasticDocumentType::getStandaloneTypeValues(),
                             ),
                         ],
                     ),

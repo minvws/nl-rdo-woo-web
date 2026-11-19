@@ -10,7 +10,6 @@ use Mockery\MockInterface;
 use Shared\ApplicationId;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceRepository;
 use Shared\Domain\Search\Index\ElasticDocumentType;
-use Shared\Domain\Search\Index\Schema\ElasticField;
 use Shared\Domain\Search\Result\Dossier\DossierSearchResultBaseMapper;
 use Shared\Domain\Search\Result\Dossier\RequestForAdvice\RequestForAdviceSearchResultMapper;
 use Shared\Domain\Search\Result\ResultEntryInterface;
@@ -51,7 +50,6 @@ class RequestForAdviceSearchResultMapperTest extends UnitTestCase
                 $hit,
                 $this->repository,
                 ElasticDocumentType::REQUEST_FOR_ADVICE,
-                [ElasticField::TITLE->value, ElasticField::SUMMARY->value],
                 ApplicationId::ADMIN,
             )
             ->andReturn($expectedResult);

@@ -10,6 +10,7 @@ class Roles
     public const string ROLE_ORGANISATION_ADMIN = 'ROLE_ORGANISATION_ADMIN';
     public const string ROLE_DOSSIER_ADMIN = 'ROLE_DOSSIER_ADMIN';
     public const string ROLE_VIEW_ACCESS = 'ROLE_VIEW_ACCESS';
+    public const string ROLE_CONTENT_ADMIN = 'ROLE_CONTENT_ADMIN';
 
     // This is the role hierarchy. It is used to determine which roles a user can assign to other users.
     /** @var array<string, array<array-key, string>> */
@@ -19,6 +20,7 @@ class Roles
             self::ROLE_ORGANISATION_ADMIN,
             self::ROLE_DOSSIER_ADMIN,
             self::ROLE_VIEW_ACCESS,
+            self::ROLE_CONTENT_ADMIN,
         ],
         self::ROLE_ORGANISATION_ADMIN => [
             self::ROLE_ORGANISATION_ADMIN,
@@ -48,6 +50,11 @@ class Roles
             'role' => self::ROLE_VIEW_ACCESS,
             'description' => 'admin.user.role.read_only',
             'help' => 'admin.user.role.read_only.desc',
+        ],
+        [
+            'role' => self::ROLE_CONTENT_ADMIN,
+            'description' => 'admin.user.role.content_admin',
+            'help' => 'admin.user.role.content_admin.desc',
         ],
     ];
 

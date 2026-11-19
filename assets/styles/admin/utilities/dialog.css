@@ -16,5 +16,6 @@
 
 @utility bhr-dialog__close-btn {
   @apply bhr-btn-ghost-primary;
+  @apply text-gray-600 hover-focus:text-gray-800;
   @apply absolute top-0 right-0 p-6;
 }

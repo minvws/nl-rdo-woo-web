@@ -192,7 +192,7 @@ See ``WooDecisionIngestStrategy`` for an example.
 ## Publication API
 
 The publication API is a separate application in `apps/publication_api` (namespace `PublicationApi\`), built with API Platform.
-It allows external parties to manage publications, it is enabled with the `HAS_FEATURE_PUBLICATION_V1_API` feature flag.
+It allows external parties to manage publications.
 To add support for a new dossier type:
 
 - Create a new namespace `PublicationApi\Api\Dossier\FooBar` containing:

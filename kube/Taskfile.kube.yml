@@ -1,0 +1,81 @@
+# https://taskfile.dev
+version: '3.50.0'
+
+env:
+  KUBECONFIG: '{{ .TASKFILE_DIR }}/kubeconfig'
+  K3D_CLUSTER_NAME: woo-cluster
+  K3D_CONFIG: '{{ .TASKFILE_DIR }}/k3d-woo.yml'
+
+tasks:
+  install:
+    desc: Install local k3d cluster
+    summary: |
+      k3d is k3s in Docker. K3s in turns is a lightweight Kubernetes.
+
+      For more info on k3d see https://k3d.io/stable
+      For more info on k3s see https://k3s.io
+    status:
+      - command -v k3d
+    cmds:
+      - cmd: brew install k3d
+        if: command -v brew
+      - cmd: |
+          for tool in curl bash; do
+            command -v "$tool" >/dev/null 2>&1 || {
+              echo "$tool is required to install k3d" >&2
+              exit 1
+            }
+          done
+          curl -fsSL https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+        if: '! command -v brew'
+        platforms: [darwin, linux]
+
+  up:
+    desc: Start the local k3d cluster
+    env:
+      GHCR_USERNAME:
+        sh: '"{{ .TASKFILE_DIR }}/scripts/ghcr-credential.sh" username GHCR_USERNAME'
+      GHCR_TOKEN:
+        sh: '"{{ .TASKFILE_DIR }}/scripts/ghcr-credential.sh" token GHCR_TOKEN'
+    preconditions: &k3d_precon
+      - sh: command -v k3d
+        msg: Make sure you install k3d first. See task kube:install
+    cmds:
+      - cmd: k3d cluster create $K3D_CLUSTER_NAME
+        if: '! k3d cluster get $K3D_CLUSTER_NAME'
+
+  ps:
+    desc: List the local k3d clusters
+    preconditions: *k3d_precon
+    cmds:
+      - k3d cluster list
+      - printf "\n\n"
+      - k3d node list
+
+  reset:
+    desc: Reset the local k3d cluster
+    preconditions: *k3d_precon
+    cmds:
+      - task: down
+      - task: up
+
+  start:
+    desc: Start the local k3d cluster
+    preconditions: *k3d_precon
+    cmds:
+      - cmd: k3d cluster start $K3D_CLUSTER_NAME
+
+  stop:
+    desc: Stop the local k3d cluster
+    preconditions: *k3d_precon
+    cmds:
+      - cmd: k3d cluster stop $K3D_CLUSTER_NAME
+        if: 'k3d cluster get $K3D_CLUSTER_NAME'
+
+  down:
+    desc: Down the local k3d cluster
+    preconditions: *k3d_precon
+    cmds:
+      - cmd: k3d cluster delete $K3D_CLUSTER_NAME
+        if: 'k3d cluster get $K3D_CLUSTER_NAME'
+      - rm -f '{{ .TASKFILE_DIR }}/kubeconfig'

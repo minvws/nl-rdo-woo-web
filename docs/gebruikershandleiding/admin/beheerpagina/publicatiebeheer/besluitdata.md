@@ -5,7 +5,7 @@ Over elk besluit kan de volgende data worden ingezien.
 ![In de figuur zie je een overzicht van de besluit data.](../img/admin_4.png)
 
 | Data                       | Toelichting                                                                                                                                                                       |
-| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Status                     | Houdt de status van de publicatie bij. Mogelijke statussen: concept, published, scheduled en preview                                                                              |
 | Organisatie                | De organisatie die de publicatie heeft uitgevoerd                                                                                                                                 |
 | Documenten compleet        | Is de publicatie afgerond of niet. Boolean variabel.                                                                                                                              |

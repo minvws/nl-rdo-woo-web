@@ -38,6 +38,7 @@ final class IndexControllerTest extends AdminWebTestCase
             Roles::ROLE_ORGANISATION_ADMIN => ['role' => Roles::ROLE_ORGANISATION_ADMIN, 'expectedLocation' => '/balie/gebruikers'],
             Roles::ROLE_DOSSIER_ADMIN => ['role' => Roles::ROLE_DOSSIER_ADMIN, 'expectedLocation' => '/balie/dossiers'],
             Roles::ROLE_VIEW_ACCESS => ['role' => Roles::ROLE_VIEW_ACCESS, 'expectedLocation' => '/balie/dossiers'],
+            Roles::ROLE_CONTENT_ADMIN => ['role' => Roles::ROLE_CONTENT_ADMIN, 'expectedLocation' => '/balie/content-pages'],
         ];
     }
 
@@ -67,6 +68,7 @@ final class IndexControllerTest extends AdminWebTestCase
             Roles::ROLE_ORGANISATION_ADMIN => ['role' => Roles::ROLE_ORGANISATION_ADMIN, 'expectedResponseCode' => 403],
             Roles::ROLE_DOSSIER_ADMIN => ['role' => Roles::ROLE_DOSSIER_ADMIN, 'expectedResponseCode' => 403],
             Roles::ROLE_VIEW_ACCESS => ['role' => Roles::ROLE_VIEW_ACCESS, 'expectedResponseCode' => 403],
+            Roles::ROLE_CONTENT_ADMIN => ['role' => Roles::ROLE_CONTENT_ADMIN, 'expectedResponseCode' => 403],
         ];
     }
 

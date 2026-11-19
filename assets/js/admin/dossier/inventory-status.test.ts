@@ -13,6 +13,7 @@ describe('The functionality regarding the dossier inventory status', () => {
   }
 
   const createMockedResponse = (inventoryStatus: InventoryStatus) => ({
+    ok: true,
     json: () =>
       Promise.resolve({
         content: '<p>mocked-content-from-response</p>',
@@ -134,7 +135,31 @@ describe('The functionality regarding the dossier inventory status', () => {
     );
   });
 
-  describe('when the inventory status says an update is needed', () => {
+  test('should not make a request when the inventory status element does not exist', () => {
+    document.body.innerHTML = '';
+
+    initialize();
+
+    expect(window.fetch).not.toHaveBeenCalled();
+  });
+
+  test('should not redirect when there is no done URL', async () => {
+    getInventoryStatusElement()?.removeAttribute('data-done-url');
+    window.fetch = vi.fn().mockResolvedValue(
+      createMockedResponse({
+        hasErrors: false,
+        needsConfirmation: false,
+        needsUpdate: false,
+      }),
+    );
+
+    initialize();
+    await waitForNextResponse();
+
+    expect(window.location.assign).not.toHaveBeenCalled();
+  });
+
+  describe('when the inventory status says there are errors', () => {
     beforeEach(() => {
       window.fetch = vi.fn().mockResolvedValue(
         createMockedResponse({
@@ -153,6 +178,109 @@ describe('The functionality regarding the dossier inventory status', () => {
       await waitForNextResponse();
 
       expect(isElementHidden(getContinueLaterElement())).toBe(true);
+    });
+
+    test('should stop making requests', async () => {
+      initialize();
+      await waitForNextResponse();
+      await waitForNextResponse();
+
+      expect(window.fetch).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('when the inventory status says a confirmation is needed', () => {
+    beforeEach(() => {
+      window.fetch = vi.fn().mockResolvedValue(
+        createMockedResponse({
+          hasErrors: false,
+          needsConfirmation: true,
+          needsUpdate: true,
+        }),
+      );
+    });
+
+    test('should hide the continue later button and stop making requests', async () => {
+      initialize();
+      await waitForNextResponse();
+      await waitForNextResponse();
+
+      expect(isElementHidden(getContinueLaterElement())).toBe(true);
+      expect(window.fetch).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('when a request fails', () => {
+    test('should try again after the wait time when the request fails', async () => {
+      window.fetch = vi
+        .fn()
+        .mockRejectedValueOnce(new TypeError('Failed to fetch'))
+        .mockResolvedValue(
+          createMockedResponse({
+            hasErrors: false,
+            needsConfirmation: false,
+            needsUpdate: false,
+          }),
+        );
+
+      initialize();
+      await vi.advanceTimersByTimeAsync(0);
+      expect(window.fetch).toHaveBeenCalledTimes(1);
+
+      await vi.advanceTimersByTimeAsync(3000);
+
+      expect(window.fetch).toHaveBeenCalledTimes(2);
+      expect(window.location.assign).toHaveBeenCalledWith(
+        'https://mocked-done-url.com',
+      );
+    });
+
+    test('should stop trying after five consecutive failures', async () => {
+      window.fetch = vi
+        .fn()
+        .mockRejectedValue(new TypeError('Failed to fetch'));
+
+      initialize();
+      await vi.advanceTimersByTimeAsync(3000 * 10);
+
+      expect(window.fetch).toHaveBeenCalledTimes(5);
+    });
+
+    test('should treat a response that is not ok as a failure', async () => {
+      window.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 500,
+        json: () => Promise.resolve({}),
+      });
+
+      initialize();
+      await vi.advanceTimersByTimeAsync(3000 * 10);
+
+      expect(window.fetch).toHaveBeenCalledTimes(5);
+      expect(getInventoryStatusElement()?.innerHTML).toBe('');
+    });
+
+    test('should stop trying when the response is not valid JSON', async () => {
+      window.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.reject(new SyntaxError('Unexpected token <')),
+      });
+
+      initialize();
+      await vi.advanceTimersByTimeAsync(3000 * 10);
+
+      expect(window.fetch).toHaveBeenCalledTimes(5);
+    });
+
+    test('should not try again when the request was aborted', async () => {
+      window.fetch = vi
+        .fn()
+        .mockRejectedValue(new DOMException('Aborted', 'AbortError'));
+
+      initialize();
+      await vi.advanceTimersByTimeAsync(3000 * 3);
+
+      expect(window.fetch).toHaveBeenCalledTimes(1);
     });
   });
 });

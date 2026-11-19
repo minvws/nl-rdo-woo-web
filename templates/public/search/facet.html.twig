@@ -60,7 +60,7 @@
                 {% for entry in entries %}
                     <div class="pb-2 js-search-filter-checkbox-group">
                         {{ macro.facet_entry(entry, facetInput) }}
-                        <div class="text-base text-woo-gray-600 leading-snug">
+                        <div class="text-base text-woo-gray-600 leading-[1.15]">
                             {{ ('public.search.type_description.' ~ entry.key) | trans }}
                         </div>
 
@@ -69,27 +69,7 @@
                                 <fieldset>
                                     <legend class="sr-only">Subcategorieën van "{{ entry.displayValue | trans }}"</legend>
                                     {% for subentry in entry.subEntries %}
-                                        {% set inputKey = 'subtype_' ~ subentry.key %}
-                                        {% set inputValue = subentry.key %}
-                                        <div class="woo-choice-row py-1">
-                                            <span>
-                                                <input
-                                                    class="woo-choice-input js-search-filter-checkbox"
-                                                    id="input_{{ subentry.key|url_encode }}"
-                                                    name="{{ facet.requestParameter }}[]"
-                                                    type="checkbox"
-                                                    value="{{ inputValue }}"
-                                                    {% if facetInput.contains(inputValue) %}checked{% endif %}
-                                                    data-e2e-name="input_{{ subentry.key|url_encode }}"
-                                                >
-                                            </span>
-                                            <label class="grow cursor-pointer" for="input_{{ subentry.key|url_encode }}">
-                                                <span class="flex">
-                                                    <span class="grow mr-2 text-base leading-tight">{{ subentry.displayValue | trans }}</span>
-                                                    <span class="woo-muted text-sm" data-e2e-name="{{ subentry.key|url_encode }}_count">({{ subentry.count }})</span>
-                                                </span>
-                                            </label>
-                                        </div>
+                                        {{ macro.facet_entry(subentry, facetInput) }}
                                     {% endfor %}
                                 </fieldset>
                             </div>

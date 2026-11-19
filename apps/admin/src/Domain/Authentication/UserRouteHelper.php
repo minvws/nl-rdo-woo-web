@@ -19,6 +19,10 @@ readonly class UserRouteHelper
             return 'app_admin_dossiers';
         }
 
+        if ($this->authorizationMatrix->isAuthorized('content_page', 'read')) {
+            return 'app_admin_content_pages';
+        }
+
         return 'app_admin_users';
     }
 }

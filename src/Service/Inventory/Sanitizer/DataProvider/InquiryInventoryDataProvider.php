@@ -81,7 +81,7 @@ readonly class InquiryInventoryDataProvider implements InventoryDataProviderInte
     public function getInventoryEntity(): InquiryInventory
     {
         $inventory = $this->inquiry->getInventory();
-        if (! $inventory) {
+        if (! $inventory instanceof InquiryInventory) {
             $inventory = new InquiryInventory();
             $inventory->setInquiry($this->inquiry);
         }

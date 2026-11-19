@@ -6,7 +6,6 @@ namespace Shared\Command\Index;
 
 use Shared\Domain\Search\Index\ElasticConfig;
 use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
-use Shared\Domain\Search\Index\Rollover\MappingService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -22,7 +21,6 @@ class Create extends Command
 
     public function __construct(
         protected ElasticIndexManager $indexService,
-        protected MappingService $mappingService,
         private readonly ElasticConfig $elasticConfig,
     ) {
         parent::__construct();
@@ -33,7 +31,6 @@ class Create extends Command
         $this
             ->setDefinition([
                 new InputArgument('name', InputArgument::REQUIRED, 'Name of the index'),
-                new InputArgument('version', InputArgument::REQUIRED, 'Mapping version to use or "latest" for the latest version'),
                 new InputOption('read', 'r', InputOption::VALUE_NONE, 'Set read alias'),
                 new InputOption('write', 'w', InputOption::VALUE_NONE, 'Set write alias'),
             ]);
@@ -50,18 +47,8 @@ class Create extends Command
             return self::FAILURE;
         }
 
-        $version = $input->getArgument('version');
-        Assert::string($version);
-
-        if ($version === 'latest') {
-            $version = $this->mappingService->getLatestMappingVersion();
-        } else {
-            $version = (int) $version;
-        }
-        Assert::integer($version);
-
-        $output->writeln("Creating index {$name} on version {$version}.");
-        $this->indexService->create($name, $version);
+        $output->writeln("Creating index {$name} with the current mapping.");
+        $this->indexService->create($name);
 
         if ($input->getOption('read')) {
             $this->indexService->switch($this->elasticConfig->readIndex, '*', $name);

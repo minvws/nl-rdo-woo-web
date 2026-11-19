@@ -257,7 +257,7 @@
         {% endif %}
     </section>
 
-    {% set canWithdrawDocuments = not workflowStatus.isConcept %}
+    {% set canWithdrawDocuments = not workflowStatus.isConcept and uploadStatus.actualUploadCount > 0 %}
     {% set canDeleteDossier = matrix_has_permission('dossier.delete') %}
 
     {% if not dossier.canProvideInventory %}

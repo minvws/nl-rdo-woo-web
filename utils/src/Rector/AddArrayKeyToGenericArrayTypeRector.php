@@ -17,6 +17,7 @@ use PHPStan\PhpDocParser\Ast\Type\IntersectionTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\NullableTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
 use PHPStan\PhpDocParser\Ast\Type\UnionTypeNode;
+use Rector\BetterPhpDocParser\PhpDocInfo\PhpDocInfo;
 use Rector\BetterPhpDocParser\PhpDocInfo\PhpDocInfoFactory;
 use Rector\Comments\NodeDocBlock\DocBlockUpdater;
 use Rector\Rector\AbstractRector;
@@ -87,7 +88,7 @@ final class AddArrayKeyToGenericArrayTypeRector extends AbstractRector
     public function refactor(Node $node): ?Node
     {
         $phpDocInfo = $this->phpDocInfoFactory->createFromNode($node);
-        if ($phpDocInfo === null) {
+        if (! $phpDocInfo instanceof PhpDocInfo) {
             return null;
         }
 
@@ -132,7 +133,8 @@ final class AddArrayKeyToGenericArrayTypeRector extends AbstractRector
         if ($typeNode instanceof GenericTypeNode) {
             // Fix single-arg array<T> at this level first.
             if (
-                strtolower($typeNode->type->name) === 'array'
+                $typeNode->type instanceof IdentifierTypeNode
+                && strtolower($typeNode->type->name) === 'array'
                 && count($typeNode->genericTypes) === 1
             ) {
                 array_unshift($typeNode->genericTypes, new IdentifierTypeNode('array-key'));

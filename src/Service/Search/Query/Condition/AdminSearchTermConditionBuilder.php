@@ -16,6 +16,18 @@ use Shared\Service\Search\Query\Dsl\QueryParameter;
 
 class AdminSearchTermConditionBuilder extends SearchTermConditionBuilder
 {
+    /**
+     * @return list<BoolQuery>
+     */
+    #[Override]
+    protected function createTypeQueries(SearchParameters $searchParameters): array
+    {
+        return [
+            $this->createDocumentQuery($searchParameters),
+            $this->createMainTypesQuery($searchParameters),
+        ];
+    }
+
     #[Override]
     public function createDocumentQuery(SearchParameters $searchParameters): BoolQuery
     {

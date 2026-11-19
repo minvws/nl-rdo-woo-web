@@ -7,6 +7,7 @@ namespace Shared\Domain\Upload\Preprocessor\Strategy;
 use Generator;
 use Shared\Domain\Upload\AntiVirus\ClamAvFileScanner;
 use Shared\Domain\Upload\Extractor\Extractor;
+use Shared\Domain\Upload\FileType\FileExtension;
 use Shared\Domain\Upload\Preprocessor\FilePreprocessorStrategyInterface;
 use Shared\Domain\Upload\UploadedFile;
 use Shared\Service\Storage\LocalFilesystem;
@@ -17,8 +18,8 @@ use function in_array;
 readonly class SevenZipFileStrategy implements FilePreprocessorStrategyInterface
 {
     private const array SUPPORTED_EXTENSIONS = [
-        '7z',
-        'zip',
+        FileExtension::SEVEN_ZIP,
+        FileExtension::ZIP,
     ];
 
     private const array SUPPORTED_MIME_TYPES = [
@@ -55,14 +56,14 @@ readonly class SevenZipFileStrategy implements FilePreprocessorStrategyInterface
     public function canProcess(UploadedFile $file): bool
     {
         return $this->supports(
-            $file->getOriginalFileExtension(),
+            FileExtension::tryFrom($file->getOriginalFileExtension()),
             $this->mimeTypes->guessMimeType($file->getPathname()) ?? '',
         );
     }
 
-    public function supports(string $extension, string $mimetype): bool
+    public function supports(?FileExtension $fileExtension, string $mimetype): bool
     {
-        return in_array($extension, self::SUPPORTED_EXTENSIONS, true)
+        return in_array($fileExtension, self::SUPPORTED_EXTENSIONS, true)
             || in_array($mimetype, self::SUPPORTED_MIME_TYPES, true);
     }
 }

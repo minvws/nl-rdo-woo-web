@@ -7,6 +7,9 @@ monolog:
         - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
 
 when@dev:
+    parameters:
+        env(LOG_STDERR_LEVEL): notice
+
     monolog:
         handlers:
             main:
@@ -14,6 +17,11 @@ when@dev:
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
                 level: '%log_level%'
                 channels: ["!event", "!deprecation"]
+            stderr:
+                type: stream
+                path: php://stderr
+                level: '%env(string:LOG_STDERR_LEVEL)%'
+                channels: ["!event", "!doctrine", "!deprecation"]
             deprecation:
                 type: stream
                 path: "%kernel.logs_dir%/deprecations.log"
@@ -54,14 +62,40 @@ when@test:
                 level: debug
 
 when@prod:
+    parameters:
+        env(LOG_OUTPUT): syslog
+
+    services:
+        app.monolog.main_handler_locator:
+            class: Symfony\Component\DependencyInjection\ServiceLocator
+            arguments:
+                - syslog: '@monolog.handler.syslog'
+                  stderr: '@monolog.handler.stderr'
+            tags: ['container.service_locator']
+
+        app.monolog.main_handler:
+            class: Monolog\Handler\HandlerInterface
+            factory: ['@app.monolog.main_handler_locator', 'get']
+            arguments: ['%env(LOG_OUTPUT)%']
+
     monolog:
         handlers:
             main:
+                type: service
+                id: app.monolog.main_handler
+                channels: ["!doctrine", "!event", "!deprecation"]
+            syslog:
                 type: syslog
                 ident: woopie
                 formatter: monolog.formatter.json
                 level: notice
-                channels: ["!doctrine", "!event", "!deprecation"]
+                nested: true
+            stderr:
+                type: stream
+                path: php://stderr
+                formatter: monolog.formatter.json
+                level: notice
+                nested: true
             console:
                 type: console
                 process_psr_3_messages: false

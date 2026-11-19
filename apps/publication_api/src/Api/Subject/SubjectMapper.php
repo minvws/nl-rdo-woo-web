@@ -38,7 +38,7 @@ class SubjectMapper
 
     public static function fromNullableEntity(?Subject $subject): ?SubjectResponseDto
     {
-        return $subject !== null ? self::fromEntity($subject) : null;
+        return $subject instanceof Subject ? self::fromEntity($subject) : null;
     }
 
     /**
@@ -92,7 +92,7 @@ class SubjectMapper
         Subject $subject,
         ?SubjectLandingPageInputDto $landingPage,
     ): void {
-        if ($landingPage === null) {
+        if (! $landingPage instanceof SubjectLandingPageInputDto) {
             return;
         }
 

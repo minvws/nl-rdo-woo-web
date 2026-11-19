@@ -1,0 +1,20 @@
+{% extends 'public/search/entries/base.html.twig' %}
+
+{% set resultUrl = entry.subject.landingPageUrl %}
+{% set resultTitle = entry.subject.title %}
+{% set resultType = 'public.subject.search_result_type' | trans %}
+{% set resultIconName = 'web' %}
+
+{% block resultTypeSpecs %}{% endblock %}
+
+{% block resultSummary %}
+    {% if entry.highlights | length > 0 %}
+        <p class="mt-1">
+            {% for hl in entry.highlights %}
+                ... {{ hl | highlights }} {% if loop.last %}...{% endif %}
+            {% endfor %}
+        </p>
+    {% elseif entry.subject.description %}
+        <p class="mt-1">{{ entry.subject.description | u.truncate(200, '...', false) }}</p>
+    {% endif %}
+{% endblock %}

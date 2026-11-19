@@ -186,7 +186,7 @@ Verify Permissions On Documents
   ...  ${update}
   Login Admin With Role  ${role}
   Select Organisation  organisation=E2E Test Organisation
-  Select First Public Dossier
+  Select First Public Woo Decision
   IF  ${update}
     Click Documents Edit
   ELSE

@@ -6,7 +6,9 @@ namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Handler;
 
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Command\RemoveDocumentCommand;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Shared\Service\DocumentService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -25,7 +27,7 @@ class RemoveDocumentHandler
     public function __invoke(RemoveDocumentCommand $message): void
     {
         $dossier = $this->wooDecisionRepository->find($message->getDossierId());
-        if (! $dossier) {
+        if (! $dossier instanceof WooDecision) {
             $this->logger->warning('No dossier found for this message', [
                 'uuid' => $message->getDossierId(),
             ]);
@@ -34,7 +36,7 @@ class RemoveDocumentHandler
         }
 
         $document = $this->documentRepository->find($message->getDocumentId());
-        if (! $document) {
+        if (! $document instanceof Document) {
             $this->logger->warning('No document found for this message', [
                 'uuid' => $message->getDocumentId(),
             ]);

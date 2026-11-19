@@ -58,7 +58,7 @@ const hasResults = computed(() => props.results.length > 0);
       <SearchResultsTable
         :results="mainDocuments"
         columnResultId="Uuid"
-        hideResultId="true"
+        hideResultId
         title="Hoofddocumenten"
       />
     </div>
@@ -67,7 +67,7 @@ const hasResults = computed(() => props.results.length > 0);
       <SearchResultsTable
         :results="attachments"
         columnResultId="Uuid"
-        hideResultId="true"
+        hideResultId
         title="Bijlagen"
       />
     </div>

@@ -104,8 +104,9 @@ Configured in `config/packages/audit_logger.yaml`, per environment:
 | `file_logger`     | off    | on    | off    |
 
 In development the file sink writes to `AUDITLOG_FILE_PATH`, which defaults to `%kernel.logs_dir%/audit.log`. Because
-the log directory is per tenant and per application, that resolves to something like `var/log/minvws/admin/audit.log`.
-See [environment-settings.md](environment-settings.md) for the encryption and PII settings.
+the log directory is per tenant and per application, that resolves to something like
+`var/log/dev/minvws/admin/audit.log`. See [environment-settings.md](environment-settings.md) for the encryption and PII
+settings.
 
 ## Event details
 
@@ -466,6 +467,17 @@ also live outside `tenants/`, so they apply to every tenant.
   | `publication_api_common_name_not_whitelisted`     | The common name is not in `*_PUBLICATION_API_SSL_USERNAME_WHITELIST` |
 
 ## Application logging
+
+Monolog is configured in `config/packages/monolog.yaml`. Where the `main` handler writes depends on the environment:
+
+| Environment | Output                                                                                                   |
+|-------------|----------------------------------------------------------------------------------------------------------|
+| `prod`      | Syslog (ident `woopie`, JSON), or JSON lines on stderr with `LOG_OUTPUT=stderr`; `notice` and up         |
+| `dev`       | `var/log/dev/<tenant>/<app>/dev.log` at `LOG_LEVEL`, and plain text on stderr at `LOG_STDERR_LEVEL`      |
+| `test`      | `var/log/test/<tenant>/<app>/test.log`, only when a request or command logs an error (`fingers_crossed`) |
+
+In a container, logs go to stderr rather than stdout. Under Apache, PHP's `php://stdout` is the HTTP response body, so
+a log line written there would end up in the page. The container's stdout carries the Apache access log.
 
 Separately from the audit log, `LoginLogger` (in `apps/admin/`) and `TwoFactorLogger` (in `src/`) write sign-in,
 sign-out and two-factor moments to the regular PSR/Monolog logger. Those run for **every** tenant, so seeing a login

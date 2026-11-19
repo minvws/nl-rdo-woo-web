@@ -50,10 +50,13 @@ class FileHashService
     public static function calculatePsrStreamHash(StreamInterface $stream): string
     {
         Assert::true($stream->isReadable(), 'Stream must be readable to calculate hash.');
-        Assert::true($stream->isSeekable(), 'Stream must be seekable to calculate hash.');
 
-        $pos = $stream->tell();
-        $stream->rewind();
+        // Non-seekable streams (e.g. S3 reads with streaming enabled) are hashed from their current position.
+        $pos = null;
+        if ($stream->isSeekable()) {
+            $pos = $stream->tell();
+            $stream->rewind();
+        }
 
         $hashContext = hash_init(self::HASH_ALGORITHM);
 
@@ -67,7 +70,9 @@ class FileHashService
 
         $hash = hash_final($hashContext);
 
-        $stream->seek($pos);
+        if ($pos !== null) {
+            $stream->seek($pos);
+        }
 
         return $hash;
     }

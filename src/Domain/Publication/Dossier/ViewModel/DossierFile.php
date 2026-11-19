@@ -16,6 +16,7 @@ readonly class DossierFile
         public int $size,
         public bool $hasPages,
         public string $downloadUrl,
+        public ?SpreadsheetPreview $spreadsheet,
         Page ...$pages,
     ) {
         $this->pages = $pages;

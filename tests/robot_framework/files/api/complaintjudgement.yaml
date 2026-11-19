@@ -94,3 +94,81 @@ testcases:
     - name: Verify HAL links
       keyword:
         name: Verify HAL Links Are Reachable
+
+- title: Excel main document is shown as table on public
+  steps:
+    - name: Create dossier with Excel main document
+      request:
+        body:
+          mainDocument:
+            fileName: klachtoordelen.xlsx
+        files:
+          mainDocument:
+            file: files/spreadsheetpreview/klachtoordelen.xlsx
+            expected_response_status: 204
+    - name: Verify table on public
+      keyword:
+        name: Main Document Spreadsheet Preview Should Show Column
+        args: [complaint-judgement, Naam]
+    - name: Verify original file is still downloadable
+      keyword:
+        name: Main Document Download Should Match File
+        args: [complaint-judgement, files/spreadsheetpreview/klachtoordelen.xlsx]
+
+- title: Replacing Excel main document regenerates table on public
+  steps:
+    - name: Create dossier with Excel main document
+      request:
+        body:
+          mainDocument:
+            fileName: klachtoordelen.xlsx
+        files:
+          mainDocument:
+            file: files/spreadsheetpreview/klachtoordelen.xlsx
+            expected_response_status: 204
+    - name: Verify table on public
+      keyword:
+        name: Main Document Spreadsheet Preview Should Show Column
+        args: [complaint-judgement, Naam]
+    - name: Replace main document
+      keyword:
+        name: Replace Main Document
+        args: [complaint-judgement, files/spreadsheetpreview/klachtoordelen-gewijzigd.xlsx]
+    - name: Verify regenerated table on public
+      keyword:
+        name: Main Document Spreadsheet Preview Should Show Column
+        args: [complaint-judgement, Kenmerk]
+    - name: Verify replaced file is downloadable
+      keyword:
+        name: Main Document Download Should Match File
+        args: [complaint-judgement, files/spreadsheetpreview/klachtoordelen-gewijzigd.xlsx]
+
+- title: Excel main document with multiple worksheets is rejected
+  steps:
+    - name: Create dossier without uploading main document
+      request:
+        body:
+          mainDocument:
+            fileName: meerdere-werkbladen.xlsx
+        files:
+          mainDocument:
+        expected_publication_status: concept
+    - name: Upload Excel with multiple worksheets
+      keyword:
+        name: Main Document Upload Should Be Rejected
+        args: [complaint-judgement, files/spreadsheetpreview/meerdere-werkbladen.xlsx, spreadsheet contains multiple worksheets]
+
+- title: Excel main document without header row is rejected
+  steps:
+    - name: Create dossier without uploading main document
+      request:
+        body:
+          mainDocument:
+            fileName: zonder-header.xlsx
+        files:
+          mainDocument:
+        expected_publication_status: concept
+    - name: Upload Excel without header row
+      keyword:
+        name: Main Document Upload Should Be Rejected
+        args: [complaint-judgement, files/spreadsheetpreview/zonder-header.xlsx, first worksheet does not contain a header row]

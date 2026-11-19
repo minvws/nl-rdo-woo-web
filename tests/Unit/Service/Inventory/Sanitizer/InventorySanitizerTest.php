@@ -12,6 +12,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\FileInfo;
+use Shared\Domain\Upload\FileType\FileExtension;
 use Shared\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderInterface;
 use Shared\Service\Inventory\Sanitizer\InventoryDocumentMapper;
 use Shared\Service\Inventory\Sanitizer\InventoryDocumentUrlStrategyInterface;
@@ -76,10 +77,14 @@ class InventorySanitizerTest extends UnitTestCase
                 'Gerelateerd document',
                 'Locatie gerelateerd document',
                 'Besluitnaam',
+                'EmailThreadID',
+                'FamilyID',
+                'Source Type',
+                'Document Date',
             );
         $this->writer->expects('addRow')->with(...$documentData);
         $this->writer->expects('close');
-        $this->writer->expects('getFileExtension')->times(2)->andReturn('csv');
+        $this->writer->expects('getFileExtension')->times(2)->andReturn(FileExtension::CSV);
 
         $inventory = Mockery::mock(Inventory::class);
         $inventory->expects('setFileInfo')->with(Mockery::on(

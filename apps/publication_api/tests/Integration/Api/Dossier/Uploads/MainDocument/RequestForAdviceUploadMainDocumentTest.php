@@ -46,7 +46,7 @@ final class RequestForAdviceUploadMainDocumentTest extends ApiPublicationV1Uploa
         );
     }
 
-    public function testUploadOnPublishedDossierReturnsValidationError(): void
+    public function testUploadOnPublishedDossier(): void
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
@@ -56,21 +56,22 @@ final class RequestForAdviceUploadMainDocumentTest extends ApiPublicationV1Uploa
             'departments' => [$department],
             'status' => DossierStatus::PUBLISHED,
         ]);
-
-        $client = self::createPublicationApiClient();
-        $client->request(Request::METHOD_PUT, sprintf(
-            '/api/publication/v1/organisation/%s/dossiers/request-for-advice/external/%s/uploads/main-document',
-            $organisation->getId(),
-            $requestForAdvice->getExternalId(),
-        ), [
-            'headers' => [
-                'Content-Type' => 'application/octet-stream',
-            ],
-            'body' => $this->getTestFileContent('1008.pdf'),
+        $requestForAdviceMainDocument = RequestForAdviceMainDocumentFactory::createOne([
+            'dossier' => $requestForAdvice,
         ]);
 
-        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
-        self::assertJsonContains(['violations' => [['message' => 'document upload is not allowed for a published dossier']]]);
+        $this->assertUpload(
+            url: sprintf(
+                '/api/publication/v1/organisation/%s/dossiers/request-for-advice/external/%s/uploads/main-document',
+                $organisation->getId(),
+                $requestForAdvice->getExternalId(),
+            ),
+            dossierId: $requestForAdvice->getId()->toRfc4122(),
+            entityId: $requestForAdviceMainDocument->getId()->toRfc4122(),
+            entityFileName: $requestForAdviceMainDocument->getFileInfo()->getName(),
+            uploadGroupId: UploadGroupId::MAIN_DOCUMENTS,
+            entityParameterKey: 'mainDocumentId',
+        );
     }
 
     public function testUploadWithoutFile(): void

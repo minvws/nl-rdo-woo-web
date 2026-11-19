@@ -80,7 +80,7 @@ class InventoryDataHelperTest extends TestCase
     #[DataProvider('toDateTimeImmutableProvider')]
     public function testToDateTimeImmutable(string $input, ?DateTimeImmutable $expectedResult): void
     {
-        if ($expectedResult === null) {
+        if (! $expectedResult instanceof DateTimeImmutable) {
             $this->expectException(RuntimeException::class);
         }
 

@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Unit\Service\Storage;
 
+use GuzzleHttp\Psr7\NoSeekStream;
 use GuzzleHttp\Psr7\Utils;
 use RuntimeException;
 use Shared\Service\Storage\FileHashService;
 use Shared\Tests\Unit\UnitTestCase;
 
 use function fopen;
+use function hash;
 
 use const DIRECTORY_SEPARATOR;
 
@@ -49,5 +51,14 @@ class FileHashServiceTest extends UnitTestCase
         $hash = FileHashService::calculatePsrStreamHash($stream);
 
         $this->assertMatchesTextSnapshot($hash);
+    }
+
+    public function testCalculatePsrStreamHashForNonSeekableStream(): void
+    {
+        $testContent = 'This is a test string to calculate the hash of.';
+
+        $stream = new NoSeekStream(Utils::streamFor($testContent));
+
+        self::assertSame(hash('sha256', $testContent), FileHashService::calculatePsrStreamHash($stream));
     }
 }

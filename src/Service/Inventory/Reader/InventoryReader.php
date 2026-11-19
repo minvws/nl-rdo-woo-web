@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Service\Inventory\Reader;
 
+use DateTimeImmutable;
 use Exception;
 use Generator;
 use InvalidArgumentException;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\SourceType;
 use Shared\Exception\Import\FilenameTooLongException;
@@ -15,6 +17,7 @@ use Shared\Exception\Import\InvalidDocumentIdException;
 use Shared\Exception\Import\InvalidDocumentIdLengthException;
 use Shared\Exception\Import\InvalidFamilyIdException;
 use Shared\Exception\Import\InvalidInquiryNumbersException;
+use Shared\Exception\Import\InvalidJudgementException;
 use Shared\Exception\Import\InvalidLinkException;
 use Shared\Exception\Import\InvalidMatterException;
 use Shared\Exception\Import\InvalidPublicationContextException;
@@ -25,7 +28,7 @@ use Shared\Exception\Import\MatterAndPublicationContextCombinationException;
 use Shared\Exception\Import\MissingDocumentIdException;
 use Shared\Exception\Import\MissingMatterAndPublicationContextException;
 use Shared\Exception\Import\RemarkTooLongException;
-use Shared\Exception\Import\RowProcessingException;
+use Shared\Exception\Import\UnexpectedRowException;
 use Shared\Service\FileReader\ColumnMapping;
 use Shared\Service\FileReader\FileReaderInterface;
 use Shared\Service\FileReader\ReaderFactoryInterface;
@@ -53,12 +56,18 @@ use function strlen;
 use function substr;
 use function trim;
 
+use const FILTER_NULL_ON_FAILURE;
+use const FILTER_VALIDATE_INT;
 use const FILTER_VALIDATE_URL;
 
 class InventoryReader implements InventoryReaderInterface
 {
     private const int MAX_FILENAME_LENGTH = 500;
     private const int MAX_REMARK_LENGTH = 1000;
+    private const int MAX_LINK_LENGTH = 2048;
+
+    // Family and thread ids are stored in a (signed 32-bit) integer database column
+    private const int MAX_INTEGER_VALUE = 2_147_483_647;
 
     /**
      * @var array<array-key, ColumnMapping>
@@ -74,11 +83,13 @@ class InventoryReader implements InventoryReaderInterface
     }
 
     /**
+     * @param resource $stream
+     *
      * @throws Exception
      */
-    public function open(string $filepath): void
+    public function open($stream): void
     {
-        $this->reader = $this->readerFactory->createReader($filepath, ...$this->mappings);
+        $this->reader = $this->readerFactory->createReader($stream, ...$this->mappings);
     }
 
     /**
@@ -101,7 +112,7 @@ class InventoryReader implements InventoryReaderInterface
                 // Exception occurred, but we still continue with the next row to discover and report any other errors
                 // To not break the generator yield instead of throwing the exception
                 if (! $exception instanceof ImportException) {
-                    $exception = new RowProcessingException($rowIdx, $exception);
+                    $exception = new UnexpectedRowException($exception);
                 }
             }
 
@@ -129,7 +140,7 @@ class InventoryReader implements InventoryReaderInterface
         }
 
         $documentDate = $this->reader->getOptionalDateTime($rowIdx, MetadataField::DATE->value);
-        if ($documentDate !== null) {
+        if ($documentDate instanceof DateTimeImmutable) {
             $documentDate = PlainDate::createFromFormat('Y-m-d', $documentDate->format('Y-m-d'));
         }
 
@@ -140,7 +151,7 @@ class InventoryReader implements InventoryReaderInterface
             sourceType: SourceType::create($this->reader->getOptionalString($rowIdx, MetadataField::SOURCETYPE->value)),
             grounds: InventoryDataHelper::getGrounds($this->reader->getString($rowIdx, MetadataField::GROUND->value)),
             id: $this->getDocumentId($rowIdx),
-            judgement: InventoryDataHelper::judgement($this->reader->getString($rowIdx, MetadataField::JUDGEMENT->value)),
+            judgement: $this->getJudgement($rowIdx),
             period: null,
             threadId: $this->getThreadId($rowIdx),
             inquiryNumbers: $this->getInquiryNumbers($rowIdx),
@@ -184,24 +195,46 @@ class InventoryReader implements InventoryReaderInterface
         return $remark;
     }
 
-    private function getFamilyId(int $rowIdx): ?int
+    private function getJudgement(int $rowIdx): Judgement
     {
-        $familyId = $this->reader->getOptionalInt($rowIdx, MetadataField::FAMILY->value);
-        if ($familyId !== null && $familyId < 1) {
-            throw new InvalidFamilyIdException($rowIdx);
+        $judgement = $this->reader->getString($rowIdx, MetadataField::JUDGEMENT->value);
+        if (trim($judgement) === '') {
+            return Judgement::NOT_PUBLIC;
         }
 
-        return $familyId;
+        try {
+            return Judgement::fromString($judgement);
+        } catch (InvalidArgumentException) {
+            throw new InvalidJudgementException($rowIdx, $judgement);
+        }
+    }
+
+    private function getFamilyId(int $rowIdx): ?int
+    {
+        $familyId = $this->reader->getOptionalString($rowIdx, MetadataField::FAMILY->value);
+        if ($familyId === null || trim($familyId) === '') {
+            return null;
+        }
+
+        return $this->toPositiveInteger($familyId) ?? throw new InvalidFamilyIdException($rowIdx);
     }
 
     private function getThreadId(int $rowIdx): ?int
     {
-        $threadId = $this->reader->getOptionalInt($rowIdx, MetadataField::THREADID->value);
-        if ($threadId !== null && $threadId < 1) {
-            throw new InvalidThreadIdException($rowIdx);
+        $threadId = $this->reader->getOptionalString($rowIdx, MetadataField::THREADID->value);
+        if ($threadId === null || trim($threadId) === '') {
+            return null;
         }
 
-        return $threadId;
+        return $this->toPositiveInteger($threadId) ?? throw new InvalidThreadIdException($rowIdx);
+    }
+
+    private function toPositiveInteger(string $value): ?int
+    {
+        return filter_var($value, FILTER_VALIDATE_INT, [
+            'options' => ['min_range' => 1, 'max_range' => self::MAX_INTEGER_VALUE],
+            'flags' => FILTER_NULL_ON_FAILURE,
+        ]);
     }
 
     private function getDocumentId(int $rowIdx): DocumentId
@@ -225,7 +258,7 @@ class InventoryReader implements InventoryReaderInterface
     {
         $filename = $this->reader->getString($rowIdx, MetadataField::DOCUMENT->value);
         if (strlen($filename) > self::MAX_FILENAME_LENGTH) {
-            throw new FilenameTooLongException($filename, $rowIdx, self::MAX_FILENAME_LENGTH);
+            throw new FilenameTooLongException($rowIdx, $filename, self::MAX_FILENAME_LENGTH);
         }
 
         return $filename;
@@ -237,7 +270,7 @@ class InventoryReader implements InventoryReaderInterface
         try {
             $inquiryNumbers = InquiryNumbers::fromCommaSeparatedString($inquiryNumbersInput);
         } catch (InvalidArgumentException) {
-            throw new InvalidInquiryNumbersException($inquiryNumbersInput ?? '', $rowIdx);
+            throw new InvalidInquiryNumbersException($rowIdx, $inquiryNumbersInput ?? '');
         }
 
         return $inquiryNumbers;
@@ -269,7 +302,7 @@ class InventoryReader implements InventoryReaderInterface
             }
         }
 
-        if ($this->getMatter($rowIdx) !== null) {
+        if ($this->getMatter($rowIdx) instanceof DocumentMatter) {
             // this is a fallback to construct a publicationContext from prefix and matter
             try {
                 return PublicationContext::fromUnnormalizedString($prefix . '-' . $this->getMatter($rowIdx)->toString());
@@ -291,7 +324,7 @@ class InventoryReader implements InventoryReaderInterface
         );
 
         $matter = $this->getMatter($rowIdx);
-        if ($matter === null) {
+        if (! $matter instanceof DocumentMatter) {
             return $referrals;
         }
 
@@ -300,7 +333,7 @@ class InventoryReader implements InventoryReaderInterface
                 try {
                     return $this->getLegacyReferral($documentPrefix, $matter, $referral)->toString();
                 } catch (InvalidArgumentException) {
-                    throw new InvalidRefersToException($referral, $rowIdx);
+                    throw new InvalidRefersToException($rowIdx, $referral);
                 }
             },
             $referrals,
@@ -354,12 +387,12 @@ class InventoryReader implements InventoryReaderInterface
     private function validateLinks(array $links, int $rowIdx): void
     {
         foreach ($links as $link) {
-            if (mb_strlen($link) > 2048) {
-                throw new LinkTooLongException($link, $rowIdx);
+            if (mb_strlen($link) > self::MAX_LINK_LENGTH) {
+                throw new LinkTooLongException($rowIdx, $link, self::MAX_LINK_LENGTH);
             }
 
             if (! filter_var($link, FILTER_VALIDATE_URL)) {
-                throw new InvalidLinkException($link, $rowIdx);
+                throw new InvalidLinkException($rowIdx, $link);
             }
         }
     }

@@ -6,14 +6,14 @@ namespace PublicationApi\Tests\Unit\Api\Dossier\AnnualReport;
 
 use Mockery;
 use PublicationApi\Api\Dossier\AnnualReport\AnnualReportMainDocumentRequestDto;
-use PublicationApi\Api\Dossier\AnnualReport\AnnualReportMainDocumentSynchronizer;
-use PublicationApi\Api\Dossier\AnnualReport\AnnualReportPersister;
+use PublicationApi\Api\Dossier\AnnualReport\AnnualReportMainDocumentRequestMapper;
 use PublicationApi\Api\Dossier\AnnualReport\AnnualReportRequestDto;
 use PublicationApi\Api\Dossier\AnnualReport\AnnualReportRequestMapper;
-use PublicationApi\Api\Dossier\AnnualReport\AnnualReportSnapshot;
 use PublicationApi\Api\Dossier\AnnualReport\AnnualReportStrategy;
 use PublicationApi\Api\Dossier\DossierAttachmentSynchronizer;
-use PublicationApi\Api\Dossier\NoticeNotPublicSynchronizer;
+use PublicationApi\Api\Dossier\DossierMainDocumentOrNoticeSynchronizer;
+use PublicationApi\Api\Dossier\DossierPersister;
+use PublicationApi\Api\Dossier\MainDocumentSnapshot;
 use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicRequestDto;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
@@ -32,11 +32,11 @@ final class AnnualReportStrategyTest extends UnitTestCase
     public function testDossierType(): void
     {
         $annualReportStrategy = new AnnualReportStrategy(
-            Mockery::mock(AnnualReportPersister::class),
+            Mockery::mock(DossierPersister::class),
             Mockery::mock(AnnualReportRequestMapper::class),
             Mockery::mock(DossierAttachmentSynchronizer::class),
-            Mockery::mock(AnnualReportMainDocumentSynchronizer::class),
-            Mockery::mock(NoticeNotPublicSynchronizer::class),
+            Mockery::mock(AnnualReportMainDocumentRequestMapper::class),
+            Mockery::mock(DossierMainDocumentOrNoticeSynchronizer::class),
         );
 
         self::assertSame(AnnualReport::class, $annualReportStrategy->dossierType());
@@ -81,23 +81,26 @@ final class AnnualReportStrategyTest extends UnitTestCase
             $documentPrefix,
         )->andReturn($annualReport);
 
-        $annualReportMainDocumentSynchronizer = Mockery::mock(AnnualReportMainDocumentSynchronizer::class);
-        $annualReportMainDocumentSynchronizer->expects('create')->with($annualReport, $mainDocumentRequestDto);
+        $annualReportMainDocumentRequestMapper = Mockery::mock(AnnualReportMainDocumentRequestMapper::class);
+
+        $dossierMainDocumentOrNoticeSynchronizer = Mockery::mock(DossierMainDocumentOrNoticeSynchronizer::class);
+        $dossierMainDocumentOrNoticeSynchronizer->expects('create')
+            ->with($annualReport, $mainDocumentRequestDto, null, $annualReportMainDocumentRequestMapper);
 
         $dossierAttachmentSynchronizer = Mockery::mock(DossierAttachmentSynchronizer::class);
         $dossierAttachmentSynchronizer->expects('create')
             ->with($annualReport, $annualReportRequestDto->attachments)
             ->andReturn($attachmentEvents);
 
-        $annualReportPersister = Mockery::mock(AnnualReportPersister::class);
-        $annualReportPersister->expects('persist')->with($annualReport, null, $attachmentEvents);
+        $dossierPersister = Mockery::mock(DossierPersister::class);
+        $dossierPersister->expects('persist')->with($annualReport, null, $attachmentEvents);
 
         $annualReportStrategy = new AnnualReportStrategy(
-            $annualReportPersister,
+            $dossierPersister,
             $annualReportRequestMapper,
             $dossierAttachmentSynchronizer,
-            $annualReportMainDocumentSynchronizer,
-            Mockery::mock(NoticeNotPublicSynchronizer::class),
+            $annualReportMainDocumentRequestMapper,
+            $dossierMainDocumentOrNoticeSynchronizer,
         );
 
         self::assertSame($annualReport, $annualReportStrategy->create(
@@ -141,21 +144,24 @@ final class AnnualReportStrategyTest extends UnitTestCase
         $annualReportRequestMapper = Mockery::mock(AnnualReportRequestMapper::class);
         $annualReportRequestMapper->expects('create')->andReturn($annualReport);
 
-        $noticeNotPublicSynchronizer = Mockery::mock(NoticeNotPublicSynchronizer::class);
-        $noticeNotPublicSynchronizer->expects('create')->with($annualReport, $noticeNotPublicRequestDto);
+        $annualReportMainDocumentRequestMapper = Mockery::mock(AnnualReportMainDocumentRequestMapper::class);
+
+        $dossierMainDocumentOrNoticeSynchronizer = Mockery::mock(DossierMainDocumentOrNoticeSynchronizer::class);
+        $dossierMainDocumentOrNoticeSynchronizer->expects('create')
+            ->with($annualReport, null, $noticeNotPublicRequestDto, $annualReportMainDocumentRequestMapper);
 
         $dossierAttachmentSynchronizer = Mockery::mock(DossierAttachmentSynchronizer::class);
         $dossierAttachmentSynchronizer->expects('create')->andReturn($attachmentEvents);
 
-        $annualReportPersister = Mockery::mock(AnnualReportPersister::class);
-        $annualReportPersister->expects('persist')->with($annualReport, null, $attachmentEvents);
+        $dossierPersister = Mockery::mock(DossierPersister::class);
+        $dossierPersister->expects('persist')->with($annualReport, null, $attachmentEvents);
 
         $annualReportStrategy = new AnnualReportStrategy(
-            $annualReportPersister,
+            $dossierPersister,
             $annualReportRequestMapper,
             $dossierAttachmentSynchronizer,
-            Mockery::mock(AnnualReportMainDocumentSynchronizer::class),
-            $noticeNotPublicSynchronizer,
+            $annualReportMainDocumentRequestMapper,
+            $dossierMainDocumentOrNoticeSynchronizer,
         );
 
         self::assertSame($annualReport, $annualReportStrategy->create(
@@ -193,33 +199,33 @@ final class AnnualReportStrategyTest extends UnitTestCase
         );
 
         $annualReport = new AnnualReport();
-        $annualReportSnapshot = AnnualReportSnapshot::of($annualReport);
+        $mainDocumentSnapshot = MainDocumentSnapshot::of($annualReport);
         $attachmentEvents = [];
 
         $annualReportRequestMapper = Mockery::mock(AnnualReportRequestMapper::class);
         $annualReportRequestMapper->expects('update')->with($annualReport, $annualReportRequestDto, $organisation, $department, $subject);
 
-        $noticeNotPublicSynchronizer = Mockery::mock(NoticeNotPublicSynchronizer::class);
-        $noticeNotPublicSynchronizer->expects('delete')->with($annualReport);
+        $annualReportMainDocumentRequestMapper = Mockery::mock(AnnualReportMainDocumentRequestMapper::class);
 
-        $annualReportMainDocumentSynchronizer = Mockery::mock(AnnualReportMainDocumentSynchronizer::class);
-        $annualReportMainDocumentSynchronizer->expects('update')->with($annualReport, $mainDocumentRequestDto);
+        $dossierMainDocumentOrNoticeSynchronizer = Mockery::mock(DossierMainDocumentOrNoticeSynchronizer::class);
+        $dossierMainDocumentOrNoticeSynchronizer->expects('update')
+            ->with($annualReport, $mainDocumentRequestDto, null, $annualReportMainDocumentRequestMapper);
 
         $dossierAttachmentSynchronizer = Mockery::mock(DossierAttachmentSynchronizer::class);
         $dossierAttachmentSynchronizer->expects('update')
             ->with($annualReport, $annualReportRequestDto->attachments)
             ->andReturn($attachmentEvents);
 
-        $annualReportPersister = Mockery::mock(AnnualReportPersister::class);
-        $annualReportPersister->expects('snapshot')->with($annualReport)->andReturn($annualReportSnapshot);
-        $annualReportPersister->expects('persist')->with($annualReport, $annualReportSnapshot, $attachmentEvents);
+        $dossierPersister = Mockery::mock(DossierPersister::class);
+        $dossierPersister->expects('snapshot')->with($annualReport)->andReturn($mainDocumentSnapshot);
+        $dossierPersister->expects('persist')->with($annualReport, $mainDocumentSnapshot, $attachmentEvents);
 
         $annualReportStrategy = new AnnualReportStrategy(
-            $annualReportPersister,
+            $dossierPersister,
             $annualReportRequestMapper,
             $dossierAttachmentSynchronizer,
-            $annualReportMainDocumentSynchronizer,
-            $noticeNotPublicSynchronizer,
+            $annualReportMainDocumentRequestMapper,
+            $dossierMainDocumentOrNoticeSynchronizer,
         );
 
         $annualReportStrategy->update($annualReport, $annualReportRequestDto, $organisation, $department, $subject);
@@ -249,31 +255,31 @@ final class AnnualReportStrategyTest extends UnitTestCase
         );
 
         $annualReport = new AnnualReport();
-        $annualReportSnapshot = AnnualReportSnapshot::of($annualReport);
+        $mainDocumentSnapshot = MainDocumentSnapshot::of($annualReport);
         $attachmentEvents = [];
 
         $annualReportRequestMapper = Mockery::mock(AnnualReportRequestMapper::class);
         $annualReportRequestMapper->expects('update')->with($annualReport, $annualReportRequestDto, $organisation, $department, null);
 
-        $annualReportMainDocumentSynchronizer = Mockery::mock(AnnualReportMainDocumentSynchronizer::class);
-        $annualReportMainDocumentSynchronizer->expects('delete')->with($annualReport);
+        $annualReportMainDocumentRequestMapper = Mockery::mock(AnnualReportMainDocumentRequestMapper::class);
 
-        $noticeNotPublicSynchronizer = Mockery::mock(NoticeNotPublicSynchronizer::class);
-        $noticeNotPublicSynchronizer->expects('update')->with($annualReport, $noticeNotPublicRequestDto);
+        $dossierMainDocumentOrNoticeSynchronizer = Mockery::mock(DossierMainDocumentOrNoticeSynchronizer::class);
+        $dossierMainDocumentOrNoticeSynchronizer->expects('update')
+            ->with($annualReport, null, $noticeNotPublicRequestDto, $annualReportMainDocumentRequestMapper);
 
         $dossierAttachmentSynchronizer = Mockery::mock(DossierAttachmentSynchronizer::class);
         $dossierAttachmentSynchronizer->expects('update')->andReturn($attachmentEvents);
 
-        $annualReportPersister = Mockery::mock(AnnualReportPersister::class);
-        $annualReportPersister->expects('snapshot')->with($annualReport)->andReturn($annualReportSnapshot);
-        $annualReportPersister->expects('persist')->with($annualReport, $annualReportSnapshot, $attachmentEvents);
+        $dossierPersister = Mockery::mock(DossierPersister::class);
+        $dossierPersister->expects('snapshot')->with($annualReport)->andReturn($mainDocumentSnapshot);
+        $dossierPersister->expects('persist')->with($annualReport, $mainDocumentSnapshot, $attachmentEvents);
 
         $annualReportStrategy = new AnnualReportStrategy(
-            $annualReportPersister,
+            $dossierPersister,
             $annualReportRequestMapper,
             $dossierAttachmentSynchronizer,
-            $annualReportMainDocumentSynchronizer,
-            $noticeNotPublicSynchronizer,
+            $annualReportMainDocumentRequestMapper,
+            $dossierMainDocumentOrNoticeSynchronizer,
         );
 
         $annualReportStrategy->update($annualReport, $annualReportRequestDto, $organisation, $department, null);

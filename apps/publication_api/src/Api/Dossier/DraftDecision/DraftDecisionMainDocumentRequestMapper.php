@@ -4,18 +4,27 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\DraftDecision;
 
+use PublicationApi\Api\Dossier\MainDocumentRequestMapperInterface;
+use PublicationApi\Api\MainDocument\MainDocumentRequestDtoInterface;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecision;
 use Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecisionMainDocument;
 use Webmozart\Assert\Assert;
 
-class DraftDecisionMainDocumentRequestMapper
+/**
+ * @implements MainDocumentRequestMapperInterface<DraftDecision,DraftDecisionMainDocumentRequestDto>
+ */
+class DraftDecisionMainDocumentRequestMapper implements MainDocumentRequestMapperInterface
 {
-    public static function create(
-        DraftDecision $draftDecision,
-        DraftDecisionMainDocumentRequestDto $mainDocumentRequestDto,
+    public function create(
+        AbstractDossier $dossier,
+        MainDocumentRequestDtoInterface $mainDocumentRequestDto,
     ): DraftDecisionMainDocument {
+        Assert::isInstanceOf($dossier, DraftDecision::class);
+        Assert::isInstanceOf($mainDocumentRequestDto, DraftDecisionMainDocumentRequestDto::class);
+
         $mainDocument = new DraftDecisionMainDocument(
-            $draftDecision,
+            $dossier,
             $mainDocumentRequestDto->formalDate,
             $mainDocumentRequestDto->type,
             $mainDocumentRequestDto->language,
@@ -26,11 +35,14 @@ class DraftDecisionMainDocumentRequestMapper
         return $mainDocument;
     }
 
-    public static function update(
-        DraftDecision $draftDecision,
-        DraftDecisionMainDocumentRequestDto $mainDocumentRequestDto,
+    public function update(
+        AbstractDossier $dossier,
+        MainDocumentRequestDtoInterface $mainDocumentRequestDto,
     ): DraftDecisionMainDocument {
-        $mainDocument = $draftDecision->getMainDocument();
+        Assert::isInstanceOf($dossier, DraftDecision::class);
+        Assert::isInstanceOf($mainDocumentRequestDto, DraftDecisionMainDocumentRequestDto::class);
+
+        $mainDocument = $dossier->getMainDocument();
         Assert::notNull($mainDocument);
 
         $mainDocument->getFileInfo()->setName($mainDocumentRequestDto->fileName->toString());

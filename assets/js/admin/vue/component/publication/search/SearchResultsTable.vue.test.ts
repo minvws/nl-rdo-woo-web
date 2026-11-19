@@ -1,11 +1,24 @@
 import { mount, VueWrapper } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import type { PublicationSearchResult } from './interface';
 import SearchResultsTable from './SearchResultsTable.vue';
 
 describe('The "SearchResultsTable" component', () => {
-  const mockedResults = [
-    { link: 'mocked_link_1', id: 'mocked_id_1', title: 'mocked_title_1' },
-    { link: 'mocked_link_2', id: 'mocked_id_2', title: 'mocked_title_2' },
+  const mockedResults: PublicationSearchResult[] = [
+    {
+      link: 'mocked_link_1',
+      id: 'mocked_id_1',
+      number: null,
+      title: 'mocked_title_1',
+      type: 'document',
+    },
+    {
+      link: 'mocked_link_2',
+      id: 'mocked_id_2',
+      number: null,
+      title: 'mocked_title_2',
+      type: 'document',
+    },
   ];
 
   interface Options {
@@ -66,7 +79,7 @@ describe('The "SearchResultsTable" component', () => {
   test('should display all provided results', () => {
     const rows = getRows(createComponent());
 
-    expect(rows.length).toBe(mockedResults.length);
+    expect(rows).toHaveLength(mockedResults.length);
     expect(rows[0].text()).toContain('mocked_title_1');
     expect(rows[0].text()).toContain('mocked_id_1');
 

@@ -23,7 +23,7 @@ class AuthorizationEntryRequestStore
     public function getEntries(): array
     {
         $request = $this->requestStack->getCurrentRequest();
-        if ($request === null) {
+        if (! $request instanceof Request) {
             throw new RuntimeException('No request available.');
         }
 

@@ -352,7 +352,7 @@ final class Result
 
     public function isPaginationEnabled(): bool
     {
-        return $this->paginator !== null;
+        return $this->paginator instanceof PaginationInterface;
     }
 
     /**

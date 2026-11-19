@@ -64,7 +64,7 @@ readonly class ResultTransformer
         string $routeName,
         array $routeParameters,
     ): Result {
-        if (! $response) {
+        if (! $response instanceof Elasticsearch) {
             $this->logger->error('ElasticSearch did not return a response', [
                 'query' => $query,
             ]);

@@ -1,0 +1,54 @@
+parameters:
+    app_secret: '%env(MINIENW_APP_SECRET)%'
+    public_base_url: '%env(MINIENW_PUBLIC_BASE_URL)%'
+    site_name: '%env(MINIENW_SITE_NAME)%'
+    cookie_name: '%env(MINIENW_COOKIE_NAME)%'
+    totp_issuer: '%env(MINIENW_TOTP_ISSUER)%'
+    trusted_hosts: '%env(MINIENW_TRUSTED_HOSTS)%'
+    database_encryption_key: '%env(MINIENW_DATABASE_ENCRYPTION_KEY)%'
+
+    # Elasticsearch
+    elasticsearch.host: '%env(MINIENW_ELASTICSEARCH_HOST)%'
+    elasticsearch.user: '%env(MINIENW_ELASTICSEARCH_USER)%'
+    elasticsearch.pass: '%env(MINIENW_ELASTICSEARCH_PASS)%'
+    elasticsearch.mtls.cert_path: '%env(MINIENW_ELASTICSEARCH_MTLS_CERT_PATH)%'
+    elasticsearch.mtls.key_path: '%env(MINIENW_ELASTICSEARCH_MTLS_KEY_PATH)%'
+    elasticsearch.mtls.ca_path: '%env(MINIENW_ELASTICSEARCH_MTLS_CA_PATH)%'
+
+    # ElasticSearch indexes
+    elasticsearch.index.prefix.default: 'minienw-'
+    elasticsearch.index.prefix: '%env(default:elasticsearch.index.prefix.default:MINIENW_ELASTICSEARCH_INDEX_PREFIX)%'
+    elasticsearch.index.read: '%elasticsearch.index.prefix%read'
+    elasticsearch.index.write: '%elasticsearch.index.prefix%write'
+
+    # RabbitMQ
+    rabbitmq_url: '%env(MINIENW_RABBITMQ_URL)%'
+    rabbitmq_stats_url: '%env(MINIENW_RABBITMQ_STATS_URL)%'
+
+    high_transport_dsn: '%env(MINIENW_HIGH_TRANSPORT_DSN)%'
+    ingestor_transport_dsn: '%env(MINIENW_INGESTOR_TRANSPORT_DSN)%'
+    esupdater_transport_dsn: '%env(MINIENW_ESUPDATER_TRANSPORT_DSN)%'
+    global_transport_dsn: '%env(MINIENW_GLOBAL_TRANSPORT_DSN)%'
+    api_documents_transport_dsn: '%env(MINIENW_API_DOCUMENTS_TRANSPORT_DSN)%'
+
+    # S3
+    storage.s3.region: '%env(MINIENW_STORAGE_S3_REGION)%'
+    storage.s3.endpoint: '%env(MINIENW_STORAGE_S3_ENDPOINT)%'
+    storage.s3.access_key: '%env(MINIENW_STORAGE_S3_ACCESS_KEY)%'
+    storage.s3.secret_key: '%env(MINIENW_STORAGE_S3_SECRET_KEY)%'
+
+    storage.s3.bucket.upload: '%env(MINIENW_STORAGE_S3_UPLOAD_BUCKET)%'
+    storage.s3.bucket.document: '%env(MINIENW_STORAGE_S3_DOCUMENT_BUCKET)%'
+    storage.s3.bucket.batch: '%env(MINIENW_STORAGE_S3_BATCH_BUCKET)%'
+    storage.s3.bucket.woo_index: '%env(MINIENW_STORAGE_S3_WOO_INDEX_BUCKET)%'
+    storage.s3.bucket.assets: '%env(MINIENW_STORAGE_S3_ASSETS_BUCKET)%'
+
+    # Redis
+    redis.url: '%env(MINIENW_REDIS_URL)%'
+    redis.tls.cafile: '%env(MINIENW_REDIS_TLS_CAFILE)%'
+    redis.tls.local_cert: '%env(MINIENW_REDIS_TLS_LOCAL_CERT)%'
+    redis.tls.local_pk: '%env(MINIENW_REDIS_TLS_LOCAL_PK)%'
+
+    # Application publication_api specific configs:
+    publication_api_ssl_username_whitelist: '%env(string:MINIENW_PUBLICATION_API_SSL_USERNAME_WHITELIST)%'
+    publication_api_ssl_organization_identifier: '%env(string:MINIENW_PUBLICATION_API_SSL_ORGANIZATION_IDENTIFIER)%'

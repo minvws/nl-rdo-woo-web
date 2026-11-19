@@ -510,6 +510,25 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         self::assertDatabaseCount(WooDecision::class, 1);
     }
 
+    public function testCreateWooDecisionWithNullDates(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+
+        $data = $this->createValidWooDecisionDataPayload($department);
+        $data['dateFrom'] = null;
+        $data['dateTo'] = null;
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
+        self::assertResponseIsSuccessful();
+
+        self::assertDatabaseHas(WooDecision::class, [
+            'dossierNumber' => $data['dossierNumber'],
+            'dateFrom' => null,
+            'dateTo' => null,
+        ]);
+    }
+
     public function testCreateWooDecisionWithPrefixShouldIgnorePostData(): void
     {
         $organisation = OrganisationFactory::createOne([
@@ -1777,6 +1796,32 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                 'title' => $data['title'],
             ],
         );
+    }
+
+    public function testUpdateWooDecisionWithNullDates(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $wooDecision = WooDecisionFactory::createOne([
+            'departments' => [$department],
+            'externalId' => $this->getFaker()->externalId(),
+            'organisation' => $organisation,
+            'status' => DossierStatus::CONCEPT,
+        ]);
+        WooDecisionMainDocumentFactory::createOne(['dossier' => $wooDecision]);
+
+        $data = $this->createValidWooDecisionDataPayload($department);
+        $data['dateFrom'] = null;
+        $data['dateTo'] = null;
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $wooDecision), ['json' => $data]);
+        self::assertResponseIsSuccessful();
+
+        self::assertDatabaseHas(WooDecision::class, [
+            'id' => $wooDecision->getId(),
+            'dateFrom' => null,
+            'dateTo' => null,
+        ]);
     }
 
     public function testUpdateWooDecisionWithGetResponse(): void

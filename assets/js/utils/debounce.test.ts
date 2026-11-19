@@ -14,17 +14,19 @@ describe('The "debounce" function', () => {
     const mockedFunction = vi.fn();
     const debouncedFunction = debounce(mockedFunction, 100);
 
-    debouncedFunction();
-    debouncedFunction();
-    debouncedFunction();
+    void debouncedFunction();
+    void debouncedFunction();
+    const lastFirstCall = debouncedFunction();
 
     vi.advanceTimersByTime(101);
+    await lastFirstCall;
 
     expect(mockedFunction).toHaveBeenCalledTimes(1);
 
-    debouncedFunction();
-    debouncedFunction();
+    void debouncedFunction();
+    const lastSecondCall = debouncedFunction();
     vi.advanceTimersByTime(101);
+    await lastSecondCall;
 
     expect(mockedFunction).toHaveBeenCalledTimes(2);
   });

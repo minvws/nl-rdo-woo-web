@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace PublicationApi\Api\Dossier\InvestigationReport;
 
 use PublicationApi\Api\Dossier\DossierAttachmentSynchronizer;
+use PublicationApi\Api\Dossier\DossierMainDocumentOrNoticeSynchronizer;
+use PublicationApi\Api\Dossier\DossierPersister;
 use PublicationApi\Api\Dossier\DossierRequestDtoInterface;
 use PublicationApi\Api\Dossier\DossierStrategy;
-use PublicationApi\Api\Dossier\NoticeNotPublicSynchronizer;
-use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicRequestDto;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
@@ -23,11 +23,11 @@ use Webmozart\Assert\Assert;
 readonly class InvestigationReportStrategy implements DossierStrategy
 {
     public function __construct(
-        private InvestigationReportPersister $investigationReportPersister,
+        private DossierPersister $dossierPersister,
         private InvestigationReportRequestMapper $investigationReportRequestMapper,
         private DossierAttachmentSynchronizer $dossierAttachmentSynchronizer,
-        private InvestigationReportMainDocumentSynchronizer $investigationReportMainDocumentSynchronizer,
-        private NoticeNotPublicSynchronizer $noticeNotPublicSynchronizer,
+        private InvestigationReportMainDocumentRequestMapper $investigationReportMainDocumentRequestMapper,
+        private DossierMainDocumentOrNoticeSynchronizer $dossierMainDocumentOrNoticeSynchronizer,
     ) {
     }
 
@@ -60,15 +60,16 @@ readonly class InvestigationReportStrategy implements DossierStrategy
             $documentPrefix,
         );
 
-        if ($dossierRequestDto->mainDocument !== null) {
-            $this->investigationReportMainDocumentSynchronizer->create($investigationReport, $dossierRequestDto->mainDocument);
-        } else {
-            $this->noticeNotPublicSynchronizer->create($investigationReport, self::noticeNotPublic($dossierRequestDto));
-        }
+        $this->dossierMainDocumentOrNoticeSynchronizer->create(
+            $investigationReport,
+            $dossierRequestDto->mainDocument,
+            $dossierRequestDto->noticeNotPublic,
+            $this->investigationReportMainDocumentRequestMapper,
+        );
 
         $attachmentEvents = $this->dossierAttachmentSynchronizer->create($investigationReport, $dossierRequestDto->attachments);
 
-        $this->investigationReportPersister->persist($investigationReport, null, $attachmentEvents);
+        $this->dossierPersister->persist($investigationReport, null, $attachmentEvents);
 
         return $investigationReport;
     }
@@ -85,26 +86,17 @@ readonly class InvestigationReportStrategy implements DossierStrategy
 
         $this->investigationReportRequestMapper->update($dossier, $dossierRequestDto, $organisation, $department, $subject);
 
-        $investigationReportSnapshot = $this->investigationReportPersister->snapshot($dossier);
+        $mainDocumentSnapshot = $this->dossierPersister->snapshot($dossier);
 
-        if ($dossierRequestDto->mainDocument !== null) {
-            $this->noticeNotPublicSynchronizer->delete($dossier);
-            $this->investigationReportMainDocumentSynchronizer->update($dossier, $dossierRequestDto->mainDocument);
-        } else {
-            $this->investigationReportMainDocumentSynchronizer->delete($dossier);
-            $this->noticeNotPublicSynchronizer->update($dossier, self::noticeNotPublic($dossierRequestDto));
-        }
+        $this->dossierMainDocumentOrNoticeSynchronizer->update(
+            $dossier,
+            $dossierRequestDto->mainDocument,
+            $dossierRequestDto->noticeNotPublic,
+            $this->investigationReportMainDocumentRequestMapper,
+        );
 
         $attachmentEvents = $this->dossierAttachmentSynchronizer->update($dossier, $dossierRequestDto->attachments);
 
-        $this->investigationReportPersister->persist($dossier, $investigationReportSnapshot, $attachmentEvents);
-    }
-
-    private static function noticeNotPublic(InvestigationReportRequestDto $investigationReportRequestDto): NoticeNotPublicRequestDto
-    {
-        $noticeNotPublic = $investigationReportRequestDto->noticeNotPublic;
-        Assert::notNull($noticeNotPublic);
-
-        return $noticeNotPublic;
+        $this->dossierPersister->persist($dossier, $mainDocumentSnapshot, $attachmentEvents);
     }
 }

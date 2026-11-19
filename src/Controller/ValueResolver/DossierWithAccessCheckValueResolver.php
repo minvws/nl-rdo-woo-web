@@ -31,7 +31,7 @@ readonly class DossierWithAccessCheckValueResolver implements ValueResolverInter
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
         $dossier = $this->resolveDossier($request, $argument);
-        if ($dossier === null) {
+        if (! $dossier instanceof AbstractDossier) {
             throw ViewingNotAllowedException::forDossier();
         }
 

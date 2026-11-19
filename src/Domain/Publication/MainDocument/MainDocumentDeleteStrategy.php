@@ -23,7 +23,7 @@ readonly class MainDocumentDeleteStrategy extends AbstractEntityWithFileInfoDele
 
     public function delete(AbstractDossier $dossier): void
     {
-        if (! $dossier instanceof EntityWithMainDocument || $dossier->getMainDocument() === null) {
+        if (! $dossier instanceof EntityWithMainDocument || ! $dossier->getMainDocument() instanceof AbstractMainDocument) {
             return;
         }
 

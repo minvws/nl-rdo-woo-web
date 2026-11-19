@@ -14,7 +14,7 @@ use Symfony\Component\Form\FormBuilderInterface;
  */
 class AdministrationActionsType extends AbstractType
 {
-    public const ACTION_REGENERATE_INVENTORY = 'regenerate_inventory';
+    public const string ACTION_REGENERATE_INVENTORY = 'regenerate_inventory';
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {

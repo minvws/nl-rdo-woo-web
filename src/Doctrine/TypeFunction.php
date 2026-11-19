@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Doctrine;
 
+use Doctrine\ORM\Mapping\DiscriminatorColumnMapping;
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\QueryException;
@@ -30,7 +31,7 @@ class TypeFunction extends FunctionNode
         $meta = $sqlWalker->getMetadataForDqlAlias($this->dqlAlias);
         $tableAlias = $sqlWalker->getSQLTableAlias($meta->getTableName(), $this->dqlAlias);
 
-        if ($meta->discriminatorColumn === null) {
+        if (! $meta->discriminatorColumn instanceof DiscriminatorColumnMapping) {
             throw QueryException::semanticalError('TYPE() only supports entities with a discriminator column.');
         }
 

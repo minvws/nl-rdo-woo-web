@@ -24,7 +24,7 @@
 
         {% block inline_style %}{% endblock %}
 
-        {% include "shared/piwik-script.html.twig" %}
+        {% if PIWIK_ANALYTICS_ID %}{% include "shared/piwik-script.html.twig" %}{% endif %}
     </head>
 
     <body class="antialiased bg-bhr-gray-100 text-bhr-gray-900 flex min-h-screen flex-col text-base">
@@ -115,6 +115,10 @@
                                 {{ _self.nav_item('app_admin_organisation', 'admin.global.label.organisations', '/^app_admin_organisation/', 'nav-organisations') }}
                             {% endif %}
 
+                            {% if matrix_has_permission('content_page.read') %}
+                                {{ _self.nav_item('app_admin_content_pages', 'admin.content_pages.manage', '/^app_admin_content_page/', 'nav-content-pages') }}
+                            {% endif %}
+
                             {% if matrix_has_permission('user.read') %}
                                 {{ _self.nav_item('app_admin_users', 'admin.global.label.users', '/^app_admin_user/', 'nav-access-control') }}
                             {% endif %}
@@ -159,6 +163,6 @@
             </ul>
         </footer>
 
-        {% include "shared/piwik-noscript.html.twig" %}
+        {% if PIWIK_ANALYTICS_ID %}{% include "shared/piwik-noscript.html.twig" %}{% endif %}
     </body>
 </html>

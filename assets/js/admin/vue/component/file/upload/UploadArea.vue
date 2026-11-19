@@ -5,6 +5,7 @@ import {
   collectFileLimitMimeTypes,
   filterDataTransferFiles,
   hasFileUploadLimits,
+  UploadValidationErrorReason,
   validateFiles,
 } from '@js/admin/utils';
 import { uniqueId } from '@utils';
@@ -21,6 +22,9 @@ import {
 import DangerousFiles from './DangerousFiles.vue';
 import FileLimits from './FileLimits.vue';
 import InvalidFiles from './InvalidFiles.vue';
+import MismatchedFiles from './MismatchedFiles.vue';
+import MissingHeaderRowFiles from './MissingHeaderRowFiles.vue';
+import MultipleWorksheetsFiles from './MultipleWorksheetsFiles.vue';
 import SelectedFiles from './SelectedFiles.vue';
 import UploadVisual from './UploadVisual.vue';
 import { UPLOAD_AREA_ENDPOINT } from './static';
@@ -98,6 +102,9 @@ const formattedFileOrFiles = props.allowMultiple ? 'Bestanden' : 'Bestand';
 const invalidSizeFiles = ref([]);
 const invalidTypeFiles = ref([]);
 const dangerousFiles = ref([]);
+const mismatchedFiles = ref([]);
+const missingHeaderRowFiles = ref([]);
+const multipleWorksheetsFiles = ref([]);
 const selectedFiles = ref(new Map());
 const uploadedFile = ref(createUploadedFileInfo());
 const uploadedFiles = ref([]);
@@ -265,6 +272,9 @@ const onUploaded = (
 
   if (!props.allowMultiple) {
     dangerousFiles.value = [];
+    mismatchedFiles.value = [];
+    missingHeaderRowFiles.value = [];
+    multipleWorksheetsFiles.value = [];
   }
 };
 
@@ -272,8 +282,40 @@ const onUploadError = (fileId, file, error) => {
   selectedFiles.value.delete(fileId);
   updateInputValue();
 
-  if (error.isUnsafeError) {
+  if (error.validationErrorReason === UploadValidationErrorReason.UnsafeFile) {
     dangerousFiles.value.push(file);
+    emit('uploadError', fileId, file);
+    return;
+  }
+
+  if (
+    error.validationErrorReason ===
+    UploadValidationErrorReason.ExtensionMimeTypeMismatch
+  ) {
+    mismatchedFiles.value = props.allowMultiple
+      ? [...mismatchedFiles.value, file]
+      : [file];
+    emit('uploadError', fileId, file);
+    return;
+  }
+
+  if (
+    error.validationErrorReason === UploadValidationErrorReason.MissingHeaderRow
+  ) {
+    missingHeaderRowFiles.value = props.allowMultiple
+      ? [...missingHeaderRowFiles.value, file]
+      : [file];
+    emit('uploadError', fileId, file);
+    return;
+  }
+
+  if (
+    error.validationErrorReason ===
+    UploadValidationErrorReason.MultipleWorksheets
+  ) {
+    multipleWorksheetsFiles.value = props.allowMultiple
+      ? [...multipleWorksheetsFiles.value, file]
+      : [file];
     emit('uploadError', fileId, file);
     return;
   }
@@ -409,6 +451,21 @@ watch(isUploading, (value) => emit('isUploading', value));
           :allow-multiple="props.allowMultiple"
           :files="dangerousFiles"
           class="mb-4"
+        />
+
+        <MismatchedFiles
+          :allow-multiple="props.allowMultiple"
+          :files="mismatchedFiles"
+        />
+
+        <MissingHeaderRowFiles
+          :allow-multiple="props.allowMultiple"
+          :files="missingHeaderRowFiles"
+        />
+
+        <MultipleWorksheetsFiles
+          :allow-multiple="props.allowMultiple"
+          :files="multipleWorksheetsFiles"
         />
       </output>
 

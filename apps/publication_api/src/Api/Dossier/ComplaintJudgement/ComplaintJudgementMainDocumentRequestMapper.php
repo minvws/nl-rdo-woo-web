@@ -4,19 +4,28 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\ComplaintJudgement;
 
+use PublicationApi\Api\Dossier\MainDocumentRequestMapperInterface;
+use PublicationApi\Api\MainDocument\MainDocumentRequestDtoInterface;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
 use Shared\Service\EnumHelper;
 use Webmozart\Assert\Assert;
 
-class ComplaintJudgementMainDocumentRequestMapper
+/**
+ * @implements MainDocumentRequestMapperInterface<ComplaintJudgement,ComplaintJudgementMainDocumentRequestDto>
+ */
+class ComplaintJudgementMainDocumentRequestMapper implements MainDocumentRequestMapperInterface
 {
-    public static function create(
-        ComplaintJudgement $complaintJudgement,
-        ComplaintJudgementMainDocumentRequestDto $mainDocumentRequestDto,
+    public function create(
+        AbstractDossier $dossier,
+        MainDocumentRequestDtoInterface $mainDocumentRequestDto,
     ): ComplaintJudgementMainDocument {
+        Assert::isInstanceOf($dossier, ComplaintJudgement::class);
+        Assert::isInstanceOf($mainDocumentRequestDto, ComplaintJudgementMainDocumentRequestDto::class);
+
         $mainDocument = new ComplaintJudgementMainDocument(
-            $complaintJudgement,
+            $dossier,
             $mainDocumentRequestDto->formalDate,
             $mainDocumentRequestDto->type,
             $mainDocumentRequestDto->language,
@@ -28,11 +37,14 @@ class ComplaintJudgementMainDocumentRequestMapper
         return $mainDocument;
     }
 
-    public static function update(
-        ComplaintJudgement $complaintJudgement,
-        ComplaintJudgementMainDocumentRequestDto $mainDocumentRequestDto,
+    public function update(
+        AbstractDossier $dossier,
+        MainDocumentRequestDtoInterface $mainDocumentRequestDto,
     ): ComplaintJudgementMainDocument {
-        $mainDocument = $complaintJudgement->getMainDocument();
+        Assert::isInstanceOf($dossier, ComplaintJudgement::class);
+        Assert::isInstanceOf($mainDocumentRequestDto, ComplaintJudgementMainDocumentRequestDto::class);
+
+        $mainDocument = $dossier->getMainDocument();
         Assert::notNull($mainDocument);
 
         $mainDocument->getFileInfo()->setName($mainDocumentRequestDto->fileName->toString());

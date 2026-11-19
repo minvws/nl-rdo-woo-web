@@ -10,7 +10,6 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\Proc
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileService;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUpdateStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository\DocumentFileUpdateRepository;
-use Shared\Domain\Upload\UploadedFile;
 use Shared\Service\Storage\EntityStorageService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -41,24 +40,14 @@ readonly class ProcessDocumentFileUpdateHandler
             return;
         }
 
-        $localFile = $this->entityStorageService->downloadEntity($documentFileUpdate);
-        if ($localFile === false) {
-            $this->logger->warning('No file could be downloaded for DocumentFileUpdate', [
-                'id' => $command->id,
-            ]);
-
-            return;
-        }
-
         $this->fileProcessor->process(
-            new UploadedFile($localFile, $documentFileUpdate->getFileInfo()->getName()),
+            $documentFileUpdate,
             $documentFileUpdate->getDocumentFileSet()->getDossier(),
             $documentFileUpdate->getDocument()->getDocumentId(),
         );
 
         // Remove the upload file as this has now been 'forwarded' to the Document entity
         $this->entityStorageService->deleteAllFilesForEntity($documentFileUpdate);
-        $this->entityStorageService->removeDownload($localFile, true);
         $documentFileUpdate->getFileInfo()->removeFileProperties();
         $documentFileUpdate->setStatus(DocumentFileUpdateStatus::COMPLETED);
         $this->documentFileUpdateRepository->save($documentFileUpdate, true);

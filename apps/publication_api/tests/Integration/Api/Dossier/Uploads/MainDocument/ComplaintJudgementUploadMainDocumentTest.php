@@ -46,7 +46,7 @@ final class ComplaintJudgementUploadMainDocumentTest extends ApiPublicationV1Upl
         );
     }
 
-    public function testUploadOnPublishedDossierReturnsValidationError(): void
+    public function testUploadOnPublishedDossier(): void
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
@@ -56,21 +56,22 @@ final class ComplaintJudgementUploadMainDocumentTest extends ApiPublicationV1Upl
             'departments' => [$department],
             'status' => DossierStatus::PUBLISHED,
         ]);
-
-        $client = self::createPublicationApiClient();
-        $client->request(Request::METHOD_PUT, sprintf(
-            '/api/publication/v1/organisation/%s/dossiers/complaint-judgement/external/%s/uploads/main-document',
-            $organisation->getId(),
-            $complaintJudgement->getExternalId(),
-        ), [
-            'headers' => [
-                'Content-Type' => 'application/octet-stream',
-            ],
-            'body' => $this->getTestFileContent('1008.pdf'),
+        $complaintJudgementMainDocument = ComplaintJudgementMainDocumentFactory::createOne([
+            'dossier' => $complaintJudgement,
         ]);
 
-        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
-        self::assertJsonContains(['violations' => [['message' => 'document upload is not allowed for a published dossier']]]);
+        $this->assertUpload(
+            url: sprintf(
+                '/api/publication/v1/organisation/%s/dossiers/complaint-judgement/external/%s/uploads/main-document',
+                $organisation->getId(),
+                $complaintJudgement->getExternalId(),
+            ),
+            dossierId: $complaintJudgement->getId()->toRfc4122(),
+            entityId: $complaintJudgementMainDocument->getId()->toRfc4122(),
+            entityFileName: $complaintJudgementMainDocument->getFileInfo()->getName(),
+            uploadGroupId: UploadGroupId::MAIN_DOCUMENTS,
+            entityParameterKey: 'mainDocumentId',
+        );
     }
 
     public function testUploadWithoutFile(): void

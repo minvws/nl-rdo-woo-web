@@ -36,7 +36,7 @@ onBeforeUnmount(() => {
 
 const { focused } = useFocusWithin(formElement);
 
-let checkFocusTimeout: globalThis.Timeout;
+let checkFocusTimeout: ReturnType<typeof setTimeout>;
 
 watch(focused, (value) => {
   clearTimeout(checkFocusTimeout);

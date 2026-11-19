@@ -7,6 +7,7 @@ namespace PublicationApi\Domain\OpenApi\Metadata;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\Property\Factory\PropertyMetadataFactoryInterface;
 use ReflectionClass;
+use ReflectionMethod;
 use ReflectionParameter;
 use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
 use Webmozart\Assert\Assert;
@@ -28,12 +29,12 @@ final readonly class RequestRequiredPropertyMetadataFactory implements PropertyM
         $propertyMetadata = $this->decorated->create($resourceClass, $property, $options);
 
         $constructor = new ReflectionClass($resourceClass)->getConstructor();
-        if ($constructor === null) {
+        if (! $constructor instanceof ReflectionMethod) {
             return $propertyMetadata;
         }
 
         $parameter = $this->findConstructorParameter($constructor->getParameters(), $property);
-        if ($parameter === null) {
+        if (! $parameter instanceof ReflectionParameter) {
             return $propertyMetadata;
         }
 

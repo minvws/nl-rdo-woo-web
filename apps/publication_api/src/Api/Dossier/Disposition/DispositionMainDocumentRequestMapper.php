@@ -4,19 +4,28 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\Disposition;
 
+use PublicationApi\Api\Dossier\MainDocumentRequestMapperInterface;
+use PublicationApi\Api\MainDocument\MainDocumentRequestDtoInterface;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
 use Shared\Service\EnumHelper;
 use Webmozart\Assert\Assert;
 
-class DispositionMainDocumentRequestMapper
+/**
+ * @implements MainDocumentRequestMapperInterface<Disposition,DispositionMainDocumentRequestDto>
+ */
+class DispositionMainDocumentRequestMapper implements MainDocumentRequestMapperInterface
 {
-    public static function create(
-        Disposition $disposition,
-        DispositionMainDocumentRequestDto $mainDocumentRequestDto,
+    public function create(
+        AbstractDossier $dossier,
+        MainDocumentRequestDtoInterface $mainDocumentRequestDto,
     ): DispositionMainDocument {
+        Assert::isInstanceOf($dossier, Disposition::class);
+        Assert::isInstanceOf($mainDocumentRequestDto, DispositionMainDocumentRequestDto::class);
+
         $mainDocument = new DispositionMainDocument(
-            $disposition,
+            $dossier,
             $mainDocumentRequestDto->formalDate,
             $mainDocumentRequestDto->type,
             $mainDocumentRequestDto->language,
@@ -28,11 +37,14 @@ class DispositionMainDocumentRequestMapper
         return $mainDocument;
     }
 
-    public static function update(
-        Disposition $disposition,
-        DispositionMainDocumentRequestDto $mainDocumentRequestDto,
+    public function update(
+        AbstractDossier $dossier,
+        MainDocumentRequestDtoInterface $mainDocumentRequestDto,
     ): DispositionMainDocument {
-        $mainDocument = $disposition->getMainDocument();
+        Assert::isInstanceOf($dossier, Disposition::class);
+        Assert::isInstanceOf($mainDocumentRequestDto, DispositionMainDocumentRequestDto::class);
+
+        $mainDocument = $dossier->getMainDocument();
         Assert::notNull($mainDocument);
 
         $mainDocument->getFileInfo()->setName($mainDocumentRequestDto->fileName->toString());

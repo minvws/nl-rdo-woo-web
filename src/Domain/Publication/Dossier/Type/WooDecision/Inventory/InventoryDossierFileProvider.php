@@ -28,7 +28,7 @@ readonly class InventoryDossierFileProvider implements DossierFileProviderInterf
         }
 
         $inventory = $dossier->getInventory();
-        if ($inventory === null) {
+        if (! $inventory instanceof Inventory) {
             throw DossierFileNotFoundException::forEntity($this->getType(), $dossier, $id);
         }
 

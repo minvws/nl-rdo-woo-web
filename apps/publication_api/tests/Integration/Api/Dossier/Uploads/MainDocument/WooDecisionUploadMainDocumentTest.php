@@ -48,7 +48,7 @@ final class WooDecisionUploadMainDocumentTest extends ApiPublicationV1UploadTest
         );
     }
 
-    public function testUploadOnPublishedDossierReturnsValidationError(): void
+    public function testUploadOnPublishedDossier(): void
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
@@ -59,21 +59,22 @@ final class WooDecisionUploadMainDocumentTest extends ApiPublicationV1UploadTest
             'departments' => [$department],
             'status' => DossierStatus::PUBLISHED,
         ]);
-
-        $client = self::createPublicationApiClient();
-        $client->request(Request::METHOD_PUT, sprintf(
-            '/api/publication/v1/organisation/%s/dossiers/woo-decision/external/%s/uploads/main-document',
-            $organisation->getId(),
-            $wooDecision->getExternalId(),
-        ), [
-            'headers' => [
-                'Content-Type' => 'application/octet-stream',
-            ],
-            'body' => $this->getTestFileContent('1008.pdf'),
+        $wooDecisionMainDocument = WooDecisionMainDocumentFactory::createOne([
+            'dossier' => $wooDecision,
         ]);
 
-        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
-        self::assertJsonContains(['violations' => [['message' => 'document upload is not allowed for a published dossier']]]);
+        $this->assertUpload(
+            url: sprintf(
+                '/api/publication/v1/organisation/%s/dossiers/woo-decision/external/%s/uploads/main-document',
+                $organisation->getId(),
+                $wooDecision->getExternalId(),
+            ),
+            dossierId: $wooDecision->getId()->toRfc4122(),
+            entityId: $wooDecisionMainDocument->getId()->toRfc4122(),
+            entityFileName: $wooDecisionMainDocument->getFileInfo()->getName(),
+            uploadGroupId: UploadGroupId::MAIN_DOCUMENTS,
+            entityParameterKey: 'mainDocumentId',
+        );
     }
 
     public function testUploadWithoutFile(): void

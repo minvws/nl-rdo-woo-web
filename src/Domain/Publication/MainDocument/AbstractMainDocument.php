@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\MainDocument;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Shared\Domain\Publication\AttachmentAndMainDocumentEntityTrait;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
@@ -18,6 +19,7 @@ use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationMain
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceMainDocument;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
 use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\MainDocument\SpreadsheetTable\SpreadsheetTable;
 use Shared\Service\Uploader\UploadGroupId;
 use Webmozart\Assert\Assert;
 
@@ -51,11 +53,38 @@ abstract class AbstractMainDocument implements EntityWithFileInfo
     #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
     protected AbstractDossier $dossier;
 
+    /** @var array{columns: list<string>, rows: list<list<string>>}|null */
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $spreadsheetTable = null;
+
+    #[ORM\Column(options: ['default' => false])]
+    private bool $spreadsheetTableTruncated = false;
+
     public function getDossier(): AbstractDossier&EntityWithMainDocument
     {
         Assert::isInstanceOf($this->dossier, EntityWithMainDocument::class);
 
         return $this->dossier;
+    }
+
+    public function getSpreadsheetTable(): ?SpreadsheetTable
+    {
+        return $this->spreadsheetTable === null ? null : SpreadsheetTable::fromArray($this->spreadsheetTable);
+    }
+
+    public function setSpreadsheetTable(?SpreadsheetTable $spreadsheetTable): void
+    {
+        $this->spreadsheetTable = $spreadsheetTable?->toArray();
+    }
+
+    public function isSpreadsheetTableTruncated(): bool
+    {
+        return $this->spreadsheetTableTruncated;
+    }
+
+    public function setSpreadsheetTableTruncated(bool $spreadsheetTableTruncated): void
+    {
+        $this->spreadsheetTableTruncated = $spreadsheetTableTruncated;
     }
 
     /**

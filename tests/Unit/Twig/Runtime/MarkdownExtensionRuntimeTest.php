@@ -4,49 +4,30 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Twig\Runtime;
 
-use League\CommonMark\Output\RenderedContentInterface;
 use Mockery;
-use Mockery\MockInterface;
-use Override;
-use Shared\Domain\Content\Markdown\MarkdownConverter;
+use Shared\Domain\Content\Markdown\MarkdownFormatter;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\Twig\Runtime\MarkdownExtensionRuntime;
 
 class MarkdownExtensionRuntimeTest extends UnitTestCase
 {
-    private MarkdownConverter&MockInterface $converter;
-    private MarkdownExtensionRuntime $runtime;
-
-    #[Override]
-    protected function setUp(): void
-    {
-        $this->converter = Mockery::mock(MarkdownConverter::class);
-
-        $this->runtime = new MarkdownExtensionRuntime(
-            $this->converter,
-        );
-    }
-
     public function testRenderMarkdown(): void
     {
-        $input = 'foo';
-        $renderedContent = Mockery::mock(RenderedContentInterface::class);
-        $renderedContent->expects('getContent')->andReturn($expectedOutput = 'bar');
-        $this->converter->expects('convert')->with($input)->andReturn($renderedContent);
+        $markdown = $this->getFaker()->sentence();
+        $html = $this->getFaker()->sentence();
 
-        $this->assertSame(
-            $expectedOutput,
-            $this->runtime->renderMarkdown($input),
-        );
+        $markdownFormatter = Mockery::mock(MarkdownFormatter::class);
+        $markdownFormatter->expects('toHtml')->with($markdown)->andReturn($html);
+
+        $markdownExtensionRuntime = new MarkdownExtensionRuntime($markdownFormatter);
+
+        self::assertSame($html, $markdownExtensionRuntime->renderMarkdown($markdown));
     }
 
-    public function testRenderMarkdownWithNullInput(): void
+    public function testRenderMarkdownWithNull(): void
     {
-        $input = null;
-        $renderedContent = Mockery::mock(RenderedContentInterface::class);
-        $renderedContent->expects('getContent')->never();
-        $this->converter->expects('convert')->never();
+        $markdownExtensionRuntime = new MarkdownExtensionRuntime(Mockery::mock(MarkdownFormatter::class));
 
-        $this->assertNull($this->runtime->renderMarkdown($input));
+        self::assertNull($markdownExtensionRuntime->renderMarkdown(null));
     }
 }

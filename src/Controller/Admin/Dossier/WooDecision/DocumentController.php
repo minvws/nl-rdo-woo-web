@@ -6,6 +6,7 @@ namespace Shared\Controller\Admin\Dossier\WooDecision;
 
 use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Shared\Domain\Publication\Dossier\Step\StepActionHelper;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Service\DocumentWorkflow\DocumentWorkflowStatus;
@@ -43,7 +44,7 @@ class DocumentController extends AbstractController
             $documentNumber,
         );
 
-        if ($document === null) {
+        if (! $document instanceof Document) {
             throw $this->createNotFoundException();
         }
 

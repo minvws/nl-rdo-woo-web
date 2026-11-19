@@ -1,0 +1,128 @@
+name: Build image
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        description: "The name of the image, pushed as ghcr.io/<owner>/<repository>/<image>"
+        type: string
+        required: true
+      context:
+        description: "The build context, relative to the repository root"
+        type: string
+        default: "."
+      dockerfile:
+        description: "The path of the Dockerfile, relative to the repository root"
+        type: string
+        required: true
+      image-tag:
+        description: "The tag of the image to build"
+        type: string
+        required: true
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.platform }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux/amd64
+            arch: amd64
+            runner: ubuntu-26.04
+          - platform: linux/arm64
+            arch: arm64
+            runner: ubuntu-26.04-arm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Image name
+        id: image
+        env:
+          IMAGE: ghcr.io/${{ github.repository }}/${{ inputs.image }}
+        run: echo "name=${IMAGE,,}" >> "$GITHUB_OUTPUT"
+      - name: Log in to the Container registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ steps.image.outputs.name }}
+          tags: type=raw,value=${{ inputs.image-tag }}
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v7
+        with:
+          push: true
+          context: ${{ inputs.context }}
+          file: ${{ inputs.dockerfile }}
+          platforms: ${{ matrix.platform }}
+          labels: ${{ steps.meta.outputs.labels }}
+          provenance: false
+          outputs: type=image,name=${{ steps.image.outputs.name }},push-by-digest=true,name-canonical=true
+          cache-from: type=gha,scope=${{ inputs.image }}-${{ matrix.arch }}
+          cache-to: type=gha,scope=${{ inputs.image }}-${{ matrix.arch }},mode=max
+      - name: Export digest
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          mkdir -p /tmp/digests
+          touch "/tmp/digests/${DIGEST#sha256:}"
+      - name: Upload digest
+        uses: actions/upload-artifact@v7
+        with:
+          name: digests-${{ matrix.arch }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  merge:
+    needs: build
+    name: Merge Images
+    runs-on: ubuntu-26.04
+    timeout-minutes: 10
+    steps:
+      - name: Image name
+        id: image
+        env:
+          IMAGE: ghcr.io/${{ github.repository }}/${{ inputs.image }}
+        run: echo "name=${IMAGE,,}" >> "$GITHUB_OUTPUT"
+      - name: Log in to the Container registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+      - name: Download digests
+        uses: actions/download-artifact@v8
+        with:
+          path: /tmp/digests
+          pattern: digests-*
+          merge-multiple: true
+      - name: Create manifest list and push
+        working-directory: /tmp/digests
+        env:
+          IMAGE: ${{ steps.image.outputs.name }}
+          TAG: ${{ inputs.image-tag }}
+        run: |
+          digests=(*)
+          docker buildx imagetools create --tag "$IMAGE:$TAG" "${digests[@]/#/$IMAGE@sha256:}"
+      - name: Inspect image
+        env:
+          IMAGE: ${{ steps.image.outputs.name }}
+          TAG: ${{ inputs.image-tag }}
+        run: docker buildx imagetools inspect "$IMAGE:$TAG"

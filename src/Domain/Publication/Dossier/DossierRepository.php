@@ -95,7 +95,7 @@ class DossierRepository extends ServiceEntityRepository
             ->orderBy('dos.publicationDate', SortDirection::Descending)
             ->setMaxResults($limit);
 
-        if ($department !== null) {
+        if ($department instanceof Department) {
             $qb->innerJoin('dos.departments', 'dep')
                 ->andWhere('dep = :department')
                 ->setParameter('department', $department);

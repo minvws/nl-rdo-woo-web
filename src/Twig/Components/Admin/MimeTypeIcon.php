@@ -24,7 +24,7 @@ class MimeTypeIcon
         }
 
         $fileType = FileType::fromMimeType($this->mimeType);
-        if ($fileType === null) {
+        if (! $fileType instanceof FileType) {
             return self::FILE_UNKNOWN;
         }
 

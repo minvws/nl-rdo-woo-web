@@ -1,14 +1,19 @@
 # This repository adheres to the publiccode.yml standard by including this
 # metadata file that makes public software easily discoverable.
-# More info at https://github.com/italia/publiccode.yml
+# More info at https://github.com/publiccodeyml/publiccode.yml
 
-publiccodeYmlVersion: '0.2'
+publiccodeYmlVersion: '0.8'
 
 name: OpenMinVWS publicatie platform
+organisation:
+  uri: 'https://identifier.overheid.nl/tooi/id/ministerie/mnre1025'
+  name: Ministerie van Volksgezondheid, Welzijn en Sport
+fundedBy:
+  - name: Ministerie van Volksgezondheid, Welzijn en Sport
+    uri: 'https://identifier.overheid.nl/tooi/id/ministerie/mnre1025'
 url: 'https://github.com/minvws/nl-rdo-woo-web'
 landingURL: 'https://open.minvws.nl/'
 softwareType: standalone/web
-releaseDate: '1970-01-01'
 platforms:
   - linux
 
@@ -16,17 +21,23 @@ categories:
   - content-management
   - document-management
 
-developmentStatus: development
+developmentStatus: stable
 
 description:
   en:
     shortDescription: |-
       This repository contains the source code and the technical documentation
-      of the website https://open.minvws.nl/.
+      of the websites https://open.minvws.nl/ and https://open.minfin.nl/.
     features:
-      - Publication of dossiers
-      - Searching through dossiers
-    genericName: Publication platform
+      - Publication of dossiers in multiple dossier types (Woo decisions,
+        covenants, annual reports, investigation reports, dispositions,
+        complaint judgements, advice, draft decisions and other publications)
+      - Searching through dossiers with filters
+      - Publication to open.overheid.nl via DiWoo sitemaps
+      - Publication API (OpenAPI) for connecting source systems
+      - Multi-tenant, with multiple organisations per tenant
+      - Two-factor authentication, roles and audit logging
+      - Virus scanning of uploaded documents
     longDescription: |
       [Open.minvws.nl](https://open.minvws.nl/) is the Open Government Act
       (Woo; Wet open overheid) publication platform of the Ministry of Health,
@@ -39,20 +50,21 @@ description:
 
       The Woo consists of [17
       categories](https://open.overheid.nl/documenten/fd3aaf98-ad83-4a15-a526-b0511f283bad/file)
-      of documents that need to be made public. At the moment the OpenMinVWS
-      platform only supports the publication of category 14 (Woo-verzoeken,
-      -besluiten en verstrekte informatie). Future  development will consist of
-      adding more categories such as covenants and  year plans.
+      of documents that need to be made public. The platform supports
+      publication of Woo decisions (category 14) and several other dossier
+      types, such as covenants, annual reports, investigation reports,
+      dispositions, complaint judgements and advice. Support for the remaining
+      categories is added over time.
+
+      The platform runs multi-tenant: each ministry has its own tenant, and
+      within a tenant multiple organisations can publish.
 
 legal:
   license: EUPL-1.2
-  repoOwner: iRealisatie Department
 
 intendedAudience:
   countries:
-    - nl
-  scope:
-    - government
+    - NL
 
 localisation:
   availableLanguages:
@@ -65,6 +77,3 @@ maintenance:
       email: aj.brouwer@minvws.nl
       name: Anne Jan Brouwer
   type: internal
-
-usedBy:
-  - Ministry of Health, Welfare, and Sport in the  Netherlands

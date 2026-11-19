@@ -277,12 +277,6 @@ final class ProductionReportProcessRunTest extends UnitTestCase
         self::assertFalse($this->productionReportProcessRun->isFinished());
     }
 
-    public function testSetAndGetTmpFilename(): void
-    {
-        $this->productionReportProcessRun->setTmpFilename($name = 'foo.bar');
-        self::assertEquals($name, $this->productionReportProcessRun->getTmpFilename());
-    }
-
     public function testAddGenericError(): void
     {
         self::assertFalse($this->productionReportProcessRun->hasErrors());

@@ -10,6 +10,7 @@ use ParagonIE\Halite\Symmetric\EncryptionKey;
 use ParagonIE\HiddenString\HiddenString;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use SensitiveParameter;
 use Throwable;
 
 /**
@@ -19,8 +20,10 @@ class EncryptionService implements EncryptionServiceInterface
 {
     protected ?EncryptionKey $encryptionKey = null;
 
-    public function __construct(string $encryptionKey, protected LoggerInterface $logger)
-    {
+    public function __construct(
+        #[SensitiveParameter] string $encryptionKey,
+        protected LoggerInterface $logger,
+    ) {
         if ($encryptionKey === '') {
             $this->logger->warning('Encryption key input empty');
             $this->encryptionKey = null;
@@ -42,7 +45,7 @@ class EncryptionService implements EncryptionServiceInterface
     /**
      * Encrypts data with a symmetric key. Data is mac'd and salted.
      */
-    public function encrypt(string $data): string
+    public function encrypt(#[SensitiveParameter] string $data): string
     {
         $encryptionKey = $this->getEncryptionKey();
 
@@ -60,7 +63,7 @@ class EncryptionService implements EncryptionServiceInterface
     /**
      * Decrypts $data with the current symmetric key.
      */
-    public function decrypt(string $data): string
+    public function decrypt(#[SensitiveParameter] string $data): string
     {
         $encryptionKey = $this->getEncryptionKey();
 
@@ -77,7 +80,7 @@ class EncryptionService implements EncryptionServiceInterface
 
     private function getEncryptionKey(): EncryptionKey
     {
-        if ($this->encryptionKey === null) {
+        if (! $this->encryptionKey instanceof EncryptionKey) {
             $this->logger->error('Encryption key not set');
 
             throw new RuntimeException('Encryption key not set');

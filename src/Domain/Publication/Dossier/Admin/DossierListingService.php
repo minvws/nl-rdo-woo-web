@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Admin;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\QueryBuilder;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\DossierRepository;
@@ -41,7 +42,7 @@ readonly class DossierListingService
             types: $this->getAvailableTypes(),
         );
 
-        if ($filterParameters === null) {
+        if (! $filterParameters instanceof DossierFilterParameters) {
             return $queryBuilder;
         }
 
@@ -59,7 +60,7 @@ readonly class DossierListingService
             );
         }
 
-        if ($filterParameters->departments !== null && ! $filterParameters->departments->isEmpty()) {
+        if ($filterParameters->departments instanceof ArrayCollection && ! $filterParameters->departments->isEmpty()) {
             $departments = $filterParameters->departments->toArray();
             Assert::allIsInstanceOf($departments, Department::class);
 

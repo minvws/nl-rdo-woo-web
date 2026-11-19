@@ -28,13 +28,9 @@ class SearchTermConditionBuilder implements QueryConditionBuilderInterface
             return;
         }
 
-        $query->addShould(
-            $this->createDocumentQuery($searchParameters),
-        );
-
-        $query->addShould(
-            $this->createMainTypesQuery($searchParameters),
-        );
+        foreach ($this->createTypeQueries($searchParameters) as $typeQuery) {
+            $query->addShould($typeQuery);
+        }
 
         $query->setParams([QueryParameter::MINIMUM_SHOULD_MATCH => 1]);
     }
@@ -59,18 +55,8 @@ class SearchTermConditionBuilder implements QueryConditionBuilderInterface
     {
         return Query::bool(
             should: [
-                Query::simpleQueryString(
-                    fields: [ElasticField::TITLE->value],
-                    query: $searchParameters->query,
-                )
-                    ->setDefaultOperator($searchParameters->operator->value)
-                    ->setBoost(5),
-                Query::simpleQueryString(
-                    fields: [ElasticField::SUMMARY->value],
-                    query: $searchParameters->query,
-                )
-                    ->setDefaultOperator($searchParameters->operator->value)
-                    ->setBoost(4),
+                $this->getTitleQuery($searchParameters),
+                $this->getSummaryQuery($searchParameters),
                 Query::term(
                     field: ElasticField::PREFIXED_DOSSIER_NUMBER->value,
                     value: $searchParameters->query,
@@ -91,6 +77,35 @@ class SearchTermConditionBuilder implements QueryConditionBuilderInterface
                 ),
             ],
         )->setParams([QueryParameter::MINIMUM_SHOULD_MATCH => 1]);
+    }
+
+    public function createSubjectQuery(SearchParameters $searchParameters): BoolQuery
+    {
+        return Query::bool(
+            should: [
+                $this->getTitleQuery($searchParameters),
+                $this->getSummaryQuery($searchParameters),
+                $this->getVisibleContentTreeQuery($searchParameters),
+            ],
+            filter: [
+                Query::terms(
+                    field: ElasticField::TYPE->value,
+                    values: ElasticDocumentType::getStandaloneTypeValues(),
+                ),
+            ],
+        )->setParams([QueryParameter::MINIMUM_SHOULD_MATCH => 1]);
+    }
+
+    /**
+     * @return list<BoolQuery>
+     */
+    protected function createTypeQueries(SearchParameters $searchParameters): array
+    {
+        return [
+            $this->createDocumentQuery($searchParameters),
+            $this->createMainTypesQuery($searchParameters),
+            $this->createSubjectQuery($searchParameters),
+        ];
     }
 
     protected function getNestedDossiersTitleAndSummaryQuery(SearchParameters $searchParameters): NestedQuery
@@ -117,21 +132,6 @@ class SearchTermConditionBuilder implements QueryConditionBuilderInterface
                         ->setBoost(2),
                 ],
             )->setParams([QueryParameter::MINIMUM_SHOULD_MATCH => 1]),
-        );
-    }
-
-    protected function getNestedPagesContentQuery(SearchParameters $searchParameters): NestedQuery
-    {
-        return Query::nested(
-            path: ElasticNestedField::PAGES->value,
-            query: Query::simpleQueryString(
-                fields: [
-                    ElasticPath::pagesContent()->value,
-                ],
-                query: $searchParameters->query,
-            )
-                ->setDefaultOperator($searchParameters->operator->value)
-                ->setBoost(1),
         );
     }
 
@@ -171,5 +171,73 @@ class SearchTermConditionBuilder implements QueryConditionBuilderInterface
             field: ElasticField::TYPE->value,
             values: ElasticDocumentType::getSubTypeValues(),
         );
+    }
+
+    private function getNestedPagesContentQuery(SearchParameters $searchParameters): NestedQuery
+    {
+        return Query::nested(
+            path: ElasticNestedField::PAGES->value,
+            query: Query::simpleQueryString(
+                fields: [
+                    ElasticPath::pagesContent()->value,
+                ],
+                query: $searchParameters->query,
+            )
+                ->setDefaultOperator($searchParameters->operator->value)
+                ->setBoost(1),
+        );
+    }
+
+    private function getTitleQuery(SearchParameters $searchParameters): SimpleQueryStringQuery
+    {
+        return Query::simpleQueryString(
+            fields: [ElasticField::TITLE->value],
+            query: $searchParameters->query,
+        )
+            ->setDefaultOperator($searchParameters->operator->value)
+            ->setBoost(5);
+    }
+
+    private function getSummaryQuery(SearchParameters $searchParameters): SimpleQueryStringQuery
+    {
+        return Query::simpleQueryString(
+            fields: [ElasticField::SUMMARY->value],
+            query: $searchParameters->query,
+        )
+            ->setDefaultOperator($searchParameters->operator->value)
+            ->setBoost(4);
+    }
+
+    private function getVisibleContentTreeQuery(SearchParameters $searchParameters): BoolQuery
+    {
+        return Query::bool(
+            should: [
+                Query::nested(
+                    path: ElasticNestedField::CONTENT_TREE->value,
+                    query: Query::bool(
+                        should: [
+                            Query::simpleQueryString(
+                                fields: [ElasticPath::contentTreeTitle()->value],
+                                query: $searchParameters->query,
+                            )
+                                ->setDefaultOperator($searchParameters->operator->value)
+                                ->setBoost(3),
+                            Query::simpleQueryString(
+                                fields: [ElasticPath::contentTreeBody()->value],
+                                query: $searchParameters->query,
+                            )
+                                ->setDefaultOperator($searchParameters->operator->value)
+                                ->setBoost(2),
+                        ],
+                    )->setParams([QueryParameter::MINIMUM_SHOULD_MATCH => 1]),
+                ),
+            ],
+            filter: [
+                Query::term(
+                    field: ElasticField::HAS_VISIBLE_CONTENT_TREE->value,
+                    value: true,
+                ),
+            ],
+        )->setParams([QueryParameter::MINIMUM_SHOULD_MATCH => 1]);
     }
 }

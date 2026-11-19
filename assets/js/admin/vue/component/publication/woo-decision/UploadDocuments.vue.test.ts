@@ -23,7 +23,6 @@ describe('The "<UploadDocuments />" component', () => {
     const { isComplete = false, mode = 'add' } = options;
     return mount(UploadDocuments, {
       props: {
-        dossierId: 'mocked-dossier-id',
         fileLimits: [
           { size: 1024 * 2, mimeTypes: ['application/pdf'], label: 'PDF' },
         ],
@@ -177,10 +176,6 @@ describe('The "<UploadDocuments />" component', () => {
           { size: 1024 * 2, mimeTypes: ['application/pdf'], label: 'PDF' },
         ],
         id: 'upload-area-dossier-files',
-        payload: {
-          dossierId: 'mocked-dossier-id',
-          groupId: 'woo-decision-documents',
-        },
       });
     });
 

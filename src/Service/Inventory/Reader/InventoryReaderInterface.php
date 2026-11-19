@@ -11,9 +11,11 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 interface InventoryReaderInterface
 {
     /**
+     * @param resource $stream
+     *
      * @throws Exception
      */
-    public function open(string $filepath): void;
+    public function open($stream): void;
 
     /**
      * @return Generator<InventoryReadItem>

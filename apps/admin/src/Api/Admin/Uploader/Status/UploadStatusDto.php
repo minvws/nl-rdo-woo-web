@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use Shared\Domain\Upload\Exception\UploadNotFoundException;
+use Shared\Domain\Upload\Exception\UploadValidationErrorReason;
 use Shared\Domain\Upload\UploadEntity;
 use Shared\Domain\Upload\UploadEntityStatus;
 use Symfony\Component\Uid\Uuid;
@@ -31,6 +32,7 @@ readonly class UploadStatusDto
     public function __construct(
         public string $uploadId,
         public UploadEntityStatus $status,
+        public ?UploadValidationErrorReason $errorReason,
         #[ApiProperty(readable: false)]
         public ?Uuid $userId,
     ) {
@@ -41,6 +43,7 @@ readonly class UploadStatusDto
         return new self(
             $entity->getUploadId(),
             $entity->getStatus(),
+            $entity->getErrorReason(),
             $entity->getUser()?->getId(),
         );
     }

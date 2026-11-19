@@ -8,12 +8,14 @@ use League\Flysystem\FilesystemOperator;
 use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\NullLogger;
+use Shared\Domain\Publication\MainDocument\SpreadsheetTable\SpreadsheetTableException;
 use Shared\Domain\Upload\AntiVirus\ClamAvFileScanner;
 use Shared\Domain\Upload\AntiVirus\FileScanResult;
 use Shared\Domain\Upload\Command\ValidateUploadCommand;
 use Shared\Domain\Upload\Command\ValidateUploadCommandHandler;
 use Shared\Domain\Upload\Exception\UploadException;
 use Shared\Domain\Upload\Exception\UploadValidationException;
+use Shared\Domain\Upload\FileType\FileExtension;
 use Shared\Domain\Upload\FileType\FileType;
 use Shared\Domain\Upload\FileType\MimeTypeHelper;
 use Shared\Domain\Upload\FileType\MimeTypeHelperResult;
@@ -22,6 +24,7 @@ use Shared\Domain\Upload\UploadEntity;
 use Shared\Domain\Upload\UploadEntityRepository;
 use Shared\Domain\Upload\UploadEntityStatus;
 use Shared\Domain\Upload\UploadService;
+use Shared\Domain\Upload\Validation\SpreadsheetUploadValidator;
 use Shared\Service\Uploader\UploadGroupId;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
@@ -34,6 +37,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
     private ClamAvFileScanner&MockInterface $clamAvFileScanner;
     private MimeTypeHelper&MockInterface $mimeTypeHelper;
     private SevenZipFileStrategy&MockInterface $sevenZipFileStrategy;
+    private SpreadsheetUploadValidator&MockInterface $spreadsheetUploadValidator;
     private ValidateUploadCommandHandler $handler;
 
     protected function setUp(): void
@@ -44,6 +48,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
         $this->clamAvFileScanner = Mockery::mock(ClamAvFileScanner::class);
         $this->mimeTypeHelper = Mockery::mock(MimeTypeHelper::class);
         $this->sevenZipFileStrategy = Mockery::mock(SevenZipFileStrategy::class);
+        $this->spreadsheetUploadValidator = Mockery::mock(SpreadsheetUploadValidator::class);
 
         $this->handler = new ValidateUploadCommandHandler(
             $this->uploadEntityRepository,
@@ -52,6 +57,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
             $this->clamAvFileScanner,
             $this->mimeTypeHelper,
             $this->sevenZipFileStrategy,
+            $this->spreadsheetUploadValidator,
             new NullLogger(),
         );
     }
@@ -137,7 +143,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
 
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
-            ->with('pdf', $mimeType, $groupId)
+            ->with(FileExtension::PDF, $mimeType, $groupId)
             ->andReturn(MimeTypeHelperResult::VALID);
 
         $expectedExceptionMessage = UploadValidationException::forFilesizeExceeded($uploadEntity, FileType::PDF)
@@ -182,9 +188,11 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
             ->with($filename, $contents)
             ->andReturn($mimeType = 'application/pdf');
 
-        $this->mimeTypeHelper->expects('isValidForUploadGroup')->with('pdf', $mimeType, $groupId)->andReturn(MimeTypeHelperResult::VALID);
+        $this->mimeTypeHelper->expects('isValidForUploadGroup')
+            ->with(FileExtension::PDF, $mimeType, $groupId)
+            ->andReturn(MimeTypeHelperResult::VALID);
 
-        $this->sevenZipFileStrategy->expects('supports')->with('pdf', $mimeType)->andReturnfalse();
+        $this->sevenZipFileStrategy->expects('supports')->with(FileExtension::PDF, $mimeType)->andReturnfalse();
 
         $this->clamAvFileScanner->expects('scanResource')->with($uploadId, $data)->andReturn(FileScanResult::MAX_SIZE_EXCEEDED);
 
@@ -224,7 +232,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
 
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
-            ->with('zip', $mimeType = 'application/zip', $groupId)
+            ->with(FileExtension::ZIP, $mimeType = 'application/zip', $groupId)
             ->andReturn(MimeTypeHelperResult::VALID);
 
         $this->mimeTypeHelper
@@ -232,7 +240,11 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
             ->with($filename, $contents)
             ->andReturn($mimeType);
 
-        $this->sevenZipFileStrategy->expects('supports')->with('zip', $mimeType)->andReturnTrue();
+        $this->sevenZipFileStrategy->expects('supports')->with(FileExtension::ZIP, $mimeType)->andReturnTrue();
+
+        $this->spreadsheetUploadValidator->expects('supports')
+            ->with($uploadEntity)
+            ->andReturnFalse();
 
         $this->uploadService->expects('passValidation')->with($uploadEntity, $mimeType);
 
@@ -269,7 +281,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
 
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
-            ->with('pdf', $mimeType, $groupId)
+            ->with(FileExtension::PDF, $mimeType, $groupId)
             ->andReturn(MimeTypeHelperResult::INVALID_MIME_TYPE);
 
         $this->uploadService
@@ -290,7 +302,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
         $uploadEntity->expects('getUploadId')->times(2)->andReturn($uploadId);
         $uploadEntity->expects('getFilename')->times(3)->andReturn($filename = 'foo.exe');
         $uploadEntity->expects('getStatus')->andReturn(UploadEntityStatus::UPLOADED);
-        $uploadEntity->expects('getUploadGroupId')->times(2)->andReturn($groupId = UploadGroupId::WOO_DECISION_DOCUMENTS);
+        $uploadEntity->expects('getUploadGroupId')->andReturn(UploadGroupId::WOO_DECISION_DOCUMENTS);
 
         $this->clamAvFileScanner->expects('getFileSizeLimit')->andReturn(1024);
 
@@ -305,12 +317,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
         $this->mimeTypeHelper
             ->expects('detectMimeType')
             ->with($filename, $contents)
-            ->andReturn($mimeType = 'application/vnd.ms-excel');
-
-        $this->mimeTypeHelper
-            ->expects('isValidForUploadGroup')
-            ->with('exe', $mimeType, $groupId)
-            ->andReturn(MimeTypeHelperResult::INVALID_EXTENSION);
+            ->andReturn('application/vnd.ms-excel');
 
         $this->uploadService
             ->expects('failValidation')
@@ -349,7 +356,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
 
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
-            ->with('pdf', $mimeType, $groupId)
+            ->with(FileExtension::PDF, $mimeType, $groupId)
             ->andReturn(MimeTypeHelperResult::MISMATCH_BETWEEN_EXTENSION_AND_MIME_TYPE);
 
         $this->uploadService
@@ -390,7 +397,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
 
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
-            ->with('pdf', $mimeType, $groupId)
+            ->with(FileExtension::PDF, $mimeType, $groupId)
             ->andReturn(MimeTypeHelperResult::VALID);
 
         $this->clamAvFileScanner->expects('scanResource')->with($uploadId, $data)->andReturn(FileScanResult::UNSAFE);
@@ -433,15 +440,76 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
 
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
-            ->with('pdf', $mimeType, $groupId)
+            ->with(FileExtension::PDF, $mimeType, $groupId)
             ->andReturn(MimeTypeHelperResult::VALID);
 
         $this->clamAvFileScanner->expects('scanResource')->with($uploadId, $data)->andReturn(FileScanResult::SAFE);
+
+        $this->spreadsheetUploadValidator->expects('supports')
+            ->with($uploadEntity)
+            ->andReturnFalse();
 
         $this->uploadService->expects('passValidation')->with($uploadEntity, $mimeType);
 
         $command = new ValidateUploadCommand($uuid);
 
+        $this->handler->__invoke($command);
+    }
+
+    public function testInvalidSpreadsheetFailsValidation(): void
+    {
+        $uuid = Uuid::v6();
+        $uploadId = 'foo-123';
+
+        $uploadEntity = Mockery::mock(UploadEntity::class);
+        $uploadEntity->expects('getSize')->times(2)->andReturn(124);
+        $uploadEntity->expects('getUploadId')->times(4)->andReturn($uploadId);
+        $uploadEntity->expects('getFilename')->times(3)->andReturn($filename = 'foo.xlsx');
+        $uploadEntity->expects('getStatus')->andReturn(UploadEntityStatus::UPLOADED);
+        $uploadEntity->expects('getUploadGroupId')->andReturn($groupId = UploadGroupId::MAIN_DOCUMENTS);
+
+        $this->clamAvFileScanner->expects('getFileSizeLimit')->andReturn(1024);
+
+        $this->uploadEntityRepository->expects('find')
+            ->with($uuid)
+            ->andReturn($uploadEntity);
+
+        $this->uploadService
+            ->expects('copyUploadToFilesystem')
+            ->with($uploadEntity, $this->workingCopyStorage, $uploadId, null);
+
+        $this->workingCopyStorage->expects('read')
+            ->with($uploadId)
+            ->andReturn($contents = 'file data content');
+        $this->workingCopyStorage->expects('readStream')
+            ->with($uploadId)
+            ->andReturn($data = 'file data stream');
+
+        $this->mimeTypeHelper
+            ->expects('detectMimeType')
+            ->with($filename, $contents)
+            ->andReturn($mimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+        $this->mimeTypeHelper
+            ->expects('isValidForUploadGroup')
+            ->with(FileExtension::XLSX, $mimeType, $groupId)
+            ->andReturn(MimeTypeHelperResult::VALID);
+
+        $this->clamAvFileScanner->expects('scanResource')
+            ->with($uploadId, $data)
+            ->andReturn(FileScanResult::SAFE);
+
+        $exception = UploadValidationException::forInvalidSpreadsheet(SpreadsheetTableException::forMultipleWorksheets());
+        $this->spreadsheetUploadValidator->expects('supports')
+            ->with($uploadEntity)
+            ->andReturnTrue();
+        $this->spreadsheetUploadValidator->expects('validate')
+            ->with($uploadEntity)
+            ->andThrow($exception);
+
+        $this->uploadService->expects('failValidation')->with($uploadEntity, $exception);
+
+        $command = new ValidateUploadCommand($uuid);
         $this->handler->__invoke($command);
     }
 }

@@ -7,6 +7,7 @@ namespace Admin\Api\Admin\NoticeNotPublic;
 use Admin\Api\Admin\ApiDossierAccessChecker;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublicRepository;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
@@ -29,6 +30,6 @@ final readonly class NoticeNotPublicProvider implements ProviderInterface
 
         $notice = $this->noticeNotPublicRepository->findOneByDossierId($dossierId);
 
-        return $notice ? NoticeNotPublicDto::fromEntity($notice) : null;
+        return $notice instanceof NoticeNotPublic ? NoticeNotPublicDto::fromEntity($notice) : null;
     }
 }

@@ -19,6 +19,14 @@ tasks:
           SUB_CMD: 'pnpm {{ .PNPM_CMD }} {{ .SUB_CMD }}'
           CLI_ARGS: '{{ .CLI_ARGS }}'
 
+  checkall:
+    desc: Run all front-end checks
+    cmds:
+      - task: script:eslint
+      - task: script:vue-tsc
+      - task: script:test
+      - task: cmd:audit
+
   script:*:
     desc: Run a pnpm script
     vars:

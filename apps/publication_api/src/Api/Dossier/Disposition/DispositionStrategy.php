@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace PublicationApi\Api\Dossier\Disposition;
 
 use PublicationApi\Api\Dossier\DossierAttachmentSynchronizer;
+use PublicationApi\Api\Dossier\DossierMainDocumentOrNoticeSynchronizer;
+use PublicationApi\Api\Dossier\DossierPersister;
 use PublicationApi\Api\Dossier\DossierRequestDtoInterface;
 use PublicationApi\Api\Dossier\DossierStrategy;
-use PublicationApi\Api\Dossier\NoticeNotPublicSynchronizer;
-use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicRequestDto;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
@@ -23,11 +23,11 @@ use Webmozart\Assert\Assert;
 readonly class DispositionStrategy implements DossierStrategy
 {
     public function __construct(
-        private DispositionPersister $dispositionPersister,
+        private DossierPersister $dossierPersister,
         private DispositionRequestMapper $dispositionRequestMapper,
         private DossierAttachmentSynchronizer $dossierAttachmentSynchronizer,
-        private DispositionMainDocumentSynchronizer $dispositionMainDocumentSynchronizer,
-        private NoticeNotPublicSynchronizer $noticeNotPublicSynchronizer,
+        private DispositionMainDocumentRequestMapper $dispositionMainDocumentRequestMapper,
+        private DossierMainDocumentOrNoticeSynchronizer $dossierMainDocumentOrNoticeSynchronizer,
     ) {
     }
 
@@ -60,15 +60,16 @@ readonly class DispositionStrategy implements DossierStrategy
             $documentPrefix,
         );
 
-        if ($dossierRequestDto->mainDocument !== null) {
-            $this->dispositionMainDocumentSynchronizer->create($disposition, $dossierRequestDto->mainDocument);
-        } else {
-            $this->noticeNotPublicSynchronizer->create($disposition, self::noticeNotPublic($dossierRequestDto));
-        }
+        $this->dossierMainDocumentOrNoticeSynchronizer->create(
+            $disposition,
+            $dossierRequestDto->mainDocument,
+            $dossierRequestDto->noticeNotPublic,
+            $this->dispositionMainDocumentRequestMapper,
+        );
 
         $attachmentEvents = $this->dossierAttachmentSynchronizer->create($disposition, $dossierRequestDto->attachments);
 
-        $this->dispositionPersister->persist($disposition, null, $attachmentEvents);
+        $this->dossierPersister->persist($disposition, null, $attachmentEvents);
 
         return $disposition;
     }
@@ -85,26 +86,17 @@ readonly class DispositionStrategy implements DossierStrategy
 
         $this->dispositionRequestMapper->update($dossier, $dossierRequestDto, $organisation, $department, $subject);
 
-        $dispositionSnapshot = $this->dispositionPersister->snapshot($dossier);
+        $mainDocumentSnapshot = $this->dossierPersister->snapshot($dossier);
 
-        if ($dossierRequestDto->mainDocument !== null) {
-            $this->noticeNotPublicSynchronizer->delete($dossier);
-            $this->dispositionMainDocumentSynchronizer->update($dossier, $dossierRequestDto->mainDocument);
-        } else {
-            $this->dispositionMainDocumentSynchronizer->delete($dossier);
-            $this->noticeNotPublicSynchronizer->update($dossier, self::noticeNotPublic($dossierRequestDto));
-        }
+        $this->dossierMainDocumentOrNoticeSynchronizer->update(
+            $dossier,
+            $dossierRequestDto->mainDocument,
+            $dossierRequestDto->noticeNotPublic,
+            $this->dispositionMainDocumentRequestMapper,
+        );
 
         $attachmentEvents = $this->dossierAttachmentSynchronizer->update($dossier, $dossierRequestDto->attachments);
 
-        $this->dispositionPersister->persist($dossier, $dispositionSnapshot, $attachmentEvents);
-    }
-
-    private static function noticeNotPublic(DispositionRequestDto $dispositionRequestDto): NoticeNotPublicRequestDto
-    {
-        $noticeNotPublic = $dispositionRequestDto->noticeNotPublic;
-        Assert::notNull($noticeNotPublic);
-
-        return $noticeNotPublic;
+        $this->dossierPersister->persist($dossier, $mainDocumentSnapshot, $attachmentEvents);
     }
 }

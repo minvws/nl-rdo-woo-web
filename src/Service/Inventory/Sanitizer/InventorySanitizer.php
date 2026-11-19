@@ -13,6 +13,7 @@ use Shared\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderInterfa
 use Shared\Service\Storage\EntityStorageService;
 use SplFileInfo;
 
+use function sprintf;
 use function sys_get_temp_dir;
 use function tempnam;
 
@@ -47,6 +48,10 @@ readonly class InventorySanitizer
             'Gerelateerd document',
             'Locatie gerelateerd document',
             'Besluitnaam',
+            'EmailThreadID',
+            'FamilyID',
+            'Source Type',
+            'Document Date',
         );
 
         $urlStrategy = $dataProvider->getDocumentUrlStrategy();
@@ -70,8 +75,8 @@ readonly class InventorySanitizer
     {
         $fileInfo = new FileInfo();
         $fileInfo->setSourceType(SourceType::SPREADSHEET);
-        $fileInfo->setType($this->writer->getFileExtension());
-        $fileInfo->setName($filename . '.' . $this->writer->getFileExtension());
+        $fileInfo->setType($this->writer->getFileExtension()->value);
+        $fileInfo->setName(sprintf('%s.%s', $filename, $this->writer->getFileExtension()->value));
         $inventoryEntity->setFileInfo($fileInfo);
 
         $this->doctrine->persist($inventoryEntity);

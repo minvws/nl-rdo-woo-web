@@ -21,6 +21,20 @@ readonly class ElasticPath
         $this->value = implode('.', $path);
     }
 
+    public static function title(): self
+    {
+        return new self(
+            ElasticField::TITLE,
+        );
+    }
+
+    public static function summary(): self
+    {
+        return new self(
+            ElasticField::SUMMARY,
+        );
+    }
+
     public static function pagesContent(): self
     {
         return new self(

@@ -1,5 +1,5 @@
 name: Setup PHP
-description: Compose action that sets up PHP and Composer
+description: Composite action that sets up PHP and Composer
 
 inputs:
   composer-options:

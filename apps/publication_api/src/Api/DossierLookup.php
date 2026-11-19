@@ -26,11 +26,11 @@ readonly class DossierLookup
     ): AbstractDossier {
         $dossier = $dossierRepositoryWithExternalId->findByOrganisationAndExternalId($organisation, $externalId);
         if (! $dossier instanceof AbstractDossier) {
-            throw EntityNotFoundException::for('Dossier', $externalId);
+            throw EntityNotFoundException::for('Dossier', $externalId->toString());
         }
 
         if (! $organisation->getId()->equals($dossier->getOrganisation()->getId())) {
-            throw EntityNotFoundException::for('Dossier', $externalId);
+            throw EntityNotFoundException::for('Dossier', $externalId->toString());
         }
 
         return $dossier;

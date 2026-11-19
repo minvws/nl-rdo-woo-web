@@ -8,6 +8,7 @@ use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\Command\DeleteNoticeNotPublicCommand;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\EntityWithNoticeNotPublic;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\Event\NoticeNotPublicDeletedEvent;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublicNotFoundException;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublicRepository;
 use Shared\Domain\Search\SearchDispatcher;
@@ -29,7 +30,7 @@ readonly class DeleteNoticeNotPublicHandler
     public function __invoke(DeleteNoticeNotPublicCommand $command): void
     {
         $notice = $this->repository->findOneByDossierId($command->dossierId);
-        if ($notice === null) {
+        if (! $notice instanceof NoticeNotPublic) {
             throw new NoticeNotPublicNotFoundException();
         }
 

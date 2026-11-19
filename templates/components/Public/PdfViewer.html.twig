@@ -13,16 +13,16 @@
         {{ "public.documents.viewer.click_on_page" | trans({ fileInfo: formattedFileType, fileSize: formattedFileSize, pages: 'global.number_of_pages' | trans({ count: numberOfPages }) }) }}
     </p>
 
-    <div class="min-h-[333px]">
+    <div class="min-h-83.25">
         <section class="block woo-carousel" aria-label="{{ 'public.documents.viewer.document_preview' | trans }}">
             <ol class="woo-carousel__list" data-e2e-name="preview-list">
                 {% for page in file.pages[:THUMBNAIL_LIMIT] %}
                     <li>
                         {% if page.hasThumbnail %}
-                            <a class="woo-carousel__a" href="{{ page.viewUrl }}">
+                            <a class="woo-carousel__preview-wrapper" href="{{ page.viewUrl }}">
                                 <img
                                     alt="{{ 'global.page' | trans }} {{ page.pageNr }}"
-                                    class="woo-carousel__img"
+                                    class="woo-carousel__preview woo-carousel__preview--img"
                                     height="285"
                                     loading="lazy"
                                     src="{{ page.thumbnailUrl }}"
@@ -31,14 +31,11 @@
                                 <span class="sr-only">{{ 'global.open' | trans }}: {{ 'global.page' | trans | lower }} {{ page.pageNr }}</span>
                             </a>
                         {% else %}
-                            <div class="woo-carousel__a">
-                                <img
-                                    alt="{{ 'public.documents.viewer.page_not_yet_processed' | trans }}"
-                                    class="woo-carousel__img shadow-none"
-                                    src="{{ page.thumbnailUrl }}"
-                                    width="204"
-                                    height="285"
-                                />
+                            <div class="woo-carousel__preview-wrapper">
+                                <div class="woo-carousel__preview woo-carousel__preview--not-processed">
+                                    <twig:Public:Icon name="info" />
+                                    <div class="mt-4">{{ 'public.documents.viewer.page_not_yet_processed' | trans }}</div>
+                                </div>
                             </div>
                         {% endif %}
                     </li>

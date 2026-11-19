@@ -11,9 +11,7 @@ use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexDetails;
 use Shared\Domain\Search\Index\Rollover\InitiateElasticRolloverCommand;
 use Shared\Domain\Search\Index\Rollover\MainTypeCount;
-use Shared\Domain\Search\Index\Rollover\MappingService;
 use Shared\Domain\Search\Index\Rollover\RolloverCounter;
-use Shared\Domain\Search\Index\Rollover\RolloverParameters;
 use Shared\Domain\Search\Index\Rollover\RolloverService;
 use Shared\Domain\Search\Index\Rollover\SetElasticAliasCommand;
 use Shared\Tests\ElasticConfigFactory;
@@ -27,19 +25,16 @@ class RolloverServiceTest extends UnitTestCase
     private RolloverService $rolloverService;
     private MessageBusInterface&MockInterface $messageBus;
     private RolloverCounter&MockInterface $counter;
-    private MappingService&MockInterface $mappingService;
     private ElasticConfig $elasticConfig;
 
     protected function setUp(): void
     {
         $this->messageBus = Mockery::mock(MessageBusInterface::class);
-        $this->mappingService = Mockery::mock(MappingService::class);
         $this->counter = Mockery::mock(RolloverCounter::class);
         $this->elasticConfig = ElasticConfigFactory::default();
 
         $this->rolloverService = new RolloverService(
             $this->messageBus,
-            $this->mappingService,
             $this->counter,
             $this->elasticConfig,
         );
@@ -151,25 +146,14 @@ class RolloverServiceTest extends UnitTestCase
 
     public function testInitiateRollover(): void
     {
-        $params = new RolloverParameters(13);
-
         $this->messageBus->expects('dispatch')->with(Mockery::on(
-            static function (InitiateElasticRolloverCommand $message) use ($params) {
-                self::assertEquals($params->getMappingVersion(), $message->mappingVersion);
+            static function (InitiateElasticRolloverCommand $message): bool {
+                self::assertStringStartsWith('woopie', $message->indexName);
 
                 return true;
             },
         ))->andReturns(new Envelope(new stdClass()));
 
-        $this->rolloverService->initiateRollover($params);
-    }
-
-    public function testGetDefaultRolloverParameters(): void
-    {
-        $this->mappingService->expects('getLatestMappingVersion')->andReturn(12);
-
-        $params = $this->rolloverService->getDefaultRolloverParameters();
-
-        self::assertEquals(12, $params->getMappingVersion());
+        $this->rolloverService->initiateRollover();
     }
 }

@@ -10,6 +10,7 @@ use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguageFactory;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentTypeFactory;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublicRepository;
 use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
@@ -81,7 +82,7 @@ class DossierViewParamsBuilder
     {
         $noticeNotPublic = $this->noticeNotPublicRepository->findOneByDossierId($dossier->getId());
         $this->params['noticeNotPublic'] = $noticeNotPublic;
-        $this->params['hasNoticeNotPublic'] = $noticeNotPublic !== null;
+        $this->params['hasNoticeNotPublic'] = $noticeNotPublic instanceof NoticeNotPublic;
 
         return $this;
     }

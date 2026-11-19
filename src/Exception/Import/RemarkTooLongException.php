@@ -4,18 +4,17 @@ declare(strict_types=1);
 
 namespace Shared\Exception\Import;
 
-use function sprintf;
 use function strval;
 
-final class RemarkTooLongException extends ImportException
+final class RemarkTooLongException extends RowImportException
 {
     public const string MESSAGE_KEY = 'publication.dossier.error.remark_too_long';
 
     public function __construct(
-        public readonly int $rowIndex,
+        int $rowIndex,
         public readonly int $max,
     ) {
-        parent::__construct(sprintf('Remark in row #%d is too long', $rowIndex));
+        parent::__construct($rowIndex, 'Remark is too long');
     }
 
     public function getMessageKey(): string
@@ -29,7 +28,6 @@ final class RemarkTooLongException extends ImportException
     public function getMessageData(): array
     {
         return [
-            '{rownumber}' => strval($this->rowIndex),
             '{max}' => strval($this->max),
         ];
     }

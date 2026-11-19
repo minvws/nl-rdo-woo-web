@@ -86,7 +86,7 @@ auth_matrix:
       # -- Content page --------------------------------------------------------------
         {
             prefix: "content_page",
-            roles: [ "ROLE_SUPER_ADMIN" ],
+            roles: [ "ROLE_SUPER_ADMIN", "ROLE_CONTENT_ADMIN" ],
             permissions: {
                 read: true,
                 update: true,

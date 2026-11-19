@@ -17,7 +17,7 @@ abstract readonly class AbstractEntityWithFileInfoDeleteStrategy implements Doss
 
     protected function deleteAllFilesForEntity(?EntityWithFileInfo $entity): void
     {
-        if ($entity === null) {
+        if (! $entity instanceof EntityWithFileInfo) {
             return;
         }
 

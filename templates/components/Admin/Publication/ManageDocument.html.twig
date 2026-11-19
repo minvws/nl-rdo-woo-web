@@ -9,7 +9,6 @@
 
         canDelete: canDelete,
         dateLabel: dateLabel | default(null),
-        dossierId: dossierId | default(null),
         endpoint: endpoint,
         e2eName: e2eName | default('main-document'),
         fileLimits: fileLimits | default([]),
@@ -19,8 +18,8 @@
         isMainDocument: true,
         languageOptions: languages,
         readableFileType: documentType,
-        uploadEndpoint: uploadEndpoint | default(null),
-        uploadGroupId: 'main-documents',
+        shouldValidateExcelFiles: shouldValidateExcelFiles | default(false),
+        uploadEndpoint: this.uploadEndpoint,
     }) }}>
         <div class="min-h-14"></div>
     </div>

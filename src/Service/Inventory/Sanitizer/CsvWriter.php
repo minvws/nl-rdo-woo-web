@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Service\Inventory\Sanitizer;
 
+use Shared\Domain\Upload\FileType\FileExtension;
 use Shared\Exception\InventorySanitizerException;
 
 use function fclose;
@@ -63,8 +64,8 @@ class CsvWriter implements InventoryWriterInterface
         fclose($this->filePointer);
     }
 
-    public function getFileExtension(): string
+    public function getFileExtension(): FileExtension
     {
-        return 'csv';
+        return FileExtension::CSV;
     }
 }

@@ -6,6 +6,7 @@ namespace Shared\Domain\Search\Result\SubType\Attachment;
 
 use MinVWS\TypeArray\TypeArray;
 use Shared\ApplicationId;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
 use Shared\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use Shared\Domain\Publication\Dossier\Type\DossierReference;
@@ -41,7 +42,7 @@ readonly class AttachmentSearchResultMapper implements SearchResultMapperInterfa
         }
 
         $attachment = $this->attachmentRepository->find($id);
-        if (! $attachment) {
+        if (! $attachment instanceof AbstractAttachment) {
             return null;
         }
 

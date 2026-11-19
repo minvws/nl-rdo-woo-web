@@ -40,7 +40,7 @@ readonly class WooDecisionInventoryDataProvider implements InventoryDataProvider
     public function getInventoryEntity(): Inventory
     {
         $inventory = $this->dossier->getInventory();
-        if (! $inventory) {
+        if (! $inventory instanceof Inventory) {
             $inventory = new Inventory();
             $inventory->setDossier($this->dossier);
         }

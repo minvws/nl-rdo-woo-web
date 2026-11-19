@@ -18,7 +18,6 @@ describe('The "DepartmentLogoManager" component', () => {
         deleteEndpoint: 'mocked-delete-endpoint',
         logoEndpoint: 'mocked-logo-endpoint',
         uploadEndpoint: 'mocked-upload-endpoint',
-        departmentId: 'department-id',
         hasLogo: hasLogo,
       },
       shallow: true,
@@ -85,7 +84,7 @@ describe('The "DepartmentLogoManager" component', () => {
         ],
         id: 'file',
         name: 'file',
-        payload: { groupId: 'department' },
+        payload: {},
       });
     });
 

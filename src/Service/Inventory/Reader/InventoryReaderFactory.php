@@ -34,7 +34,7 @@ class InventoryReaderFactory
     public function create(string $mimetype): InventoryReaderInterface
     {
         $readerFactory = $this->findFactoryForFile($mimetype);
-        if ($readerFactory === null) {
+        if (! $readerFactory instanceof ReaderFactoryInterface) {
             throw new RuntimeException('No reader factory found for type ' . $mimetype);
         }
 

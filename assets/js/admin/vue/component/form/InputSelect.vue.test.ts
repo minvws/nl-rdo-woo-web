@@ -99,7 +99,7 @@ describe('the <InputSelect /> component', () => {
       ],
     });
     const options = getSelectElement(component).findAll('option');
-    expect(options.length).toBe(3);
+    expect(options).toHaveLength(3);
     expect(options[0].text()).toBe('Kies een optie');
     expect(options[1].text()).toBe('Mocked option 1');
     expect(options[1].attributes('value')).toBe('mocked_value_1');
@@ -122,7 +122,7 @@ describe('the <InputSelect /> component', () => {
     const optGroupOptions = getSelectElement(component)
       .findAll('optgroup')[0]
       .findAll('option');
-    expect(optGroupOptions.length).toBe(2);
+    expect(optGroupOptions).toHaveLength(2);
     expect(optGroupOptions[0].text()).toBe('Mocked option 1');
     expect(optGroupOptions[0].attributes('value')).toBe('mocked_value_1');
     expect(optGroupOptions[1].text()).toBe('Mocked option 2');

@@ -26,7 +26,7 @@ readonly class UpdateNoticeNotPublicHandler
     public function __invoke(UpdateNoticeNotPublicCommand $command): NoticeNotPublic
     {
         $notice = $this->repository->findOneByDossierId($command->dossierId);
-        if ($notice === null) {
+        if (! $notice instanceof NoticeNotPublic) {
             throw new NoticeNotPublicNotFoundException();
         }
 

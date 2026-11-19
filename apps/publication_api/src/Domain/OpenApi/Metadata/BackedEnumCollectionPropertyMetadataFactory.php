@@ -9,13 +9,14 @@ use ApiPlatform\Metadata\Property\Factory\PropertyMetadataFactoryInterface;
 use BackedEnum;
 use Shared\Service\EnumHelper;
 use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
+use Symfony\Component\TypeInfo\Type;
 use Symfony\Component\TypeInfo\Type\BackedEnumType;
 use Symfony\Component\TypeInfo\Type\CollectionType;
 use Symfony\Component\TypeInfo\Type\NullableType;
 use Symfony\Component\TypeInfo\TypeIdentifier;
 use Webmozart\Assert\Assert;
 
-#[AsDecorator(decorates: 'api_platform.metadata.property.metadata_factory')]
+#[AsDecorator(decorates: 'api_platform.metadata.property.metadata_factory', priority: 15)]
 final readonly class BackedEnumCollectionPropertyMetadataFactory implements PropertyMetadataFactoryInterface
 {
     public function __construct(
@@ -28,7 +29,7 @@ final readonly class BackedEnumCollectionPropertyMetadataFactory implements Prop
         $propertyMetadata = $this->decorated->create($resourceClass, $property, $options);
 
         $nativeType = $propertyMetadata->getNativeType();
-        if ($nativeType === null) {
+        if (! $nativeType instanceof Type) {
             return $propertyMetadata;
         }
 

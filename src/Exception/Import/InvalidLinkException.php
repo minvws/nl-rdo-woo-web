@@ -5,17 +5,16 @@ declare(strict_types=1);
 namespace Shared\Exception\Import;
 
 use function sprintf;
-use function strval;
 
-final class InvalidLinkException extends ImportException
+final class InvalidLinkException extends RowImportException
 {
     public const string MESSAGE_KEY = 'publication.dossier.error.invalid_link';
 
     public function __construct(
+        int $rowIndex,
         public readonly string $link,
-        public readonly int $rowIndex,
     ) {
-        parent::__construct(sprintf("Invalid URL '%s' in inventory row #%d", $link, $rowIndex));
+        parent::__construct($rowIndex, sprintf("Invalid URL '%s'", $link));
     }
 
     public function getMessageKey(): string
@@ -29,7 +28,7 @@ final class InvalidLinkException extends ImportException
     public function getMessageData(): array
     {
         return [
-            '{rownumber}' => strval($this->rowIndex),
+            '{link}' => $this->link,
         ];
     }
 }

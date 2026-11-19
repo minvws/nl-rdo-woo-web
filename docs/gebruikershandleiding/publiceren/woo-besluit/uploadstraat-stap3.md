@@ -1,29 +1,51 @@
-# Stap  3: Productierapport uploaden
+# Stap 3: Productierapport uploaden
+
+In deze stap upload je het productierapport en daarna de documenten die je openbaar maakt.
+
+Heb je in stap 2 gekozen voor ‘Geen openbaarmaking’ of ‘Geen documenten aangetroffen’? Dan sla je deze stap over.
 
 ![De figuur laat zien hoe het productierapport en de bestanden worden geüpload.](img/besluit_4.png)
 
-In stap 3 upload je eerst het productierapport. Het productierapport is een Excel-document met daarin de metadata van de te uploaden
-Woo-documenten. Meer informatie over de inhoud van het productierapport lees je in hoofdstuk 5. Tijdens het uploaden wordt het
-productierapport gecontroleerd door het systeem. Het kan voorkomen dat naar aanleiding hiervan een foutmelding verschijnt. Het kan
-bijvoorbeeld zijn dat er een verplichte kolom mist in het productierapport of dat de combinatie van publicatiecontext en ID al voorkomt bij een andere publicatie.
+## Voorbereiding
 
-Nadat het productierapport succesvol is geüpload, verschijnt de zogenaamde dropzone voor het uploaden van de Woo-documenten met
-de beoordeling ‘openbaar’ en ‘deels openbaar’. Het is mogelijk om de betreffende documenten te selecteren en te uploaden of om
-een .zip of .7z bestand te uploaden waarin alle documenten gebundeld zijn, de maximale grootte per bestand is 5 GB.
-Nadat je dit hebt gedaan gaat het systeem op de achtergrond aan de slag.
+Zorg dat je het volgende klaar hebt:
 
-Eerst wordt gecontroleerd of de bestandsnaam van een document matcht met een ID in het productierapport, wordt het document
-gescand op virussen en opgeslagen. Indien de bestandsnaam van een document niet matcht met een ID in het productierapport dan
-wordt dit document niet opgeslagen. Op deze manier kunnen er nooit te veel documenten worden geüpload of per ongeluk een onjuist
-document. Een document wordt ook niet opgeslagen indien het bestandsformaat ongeldig is of er mogelijk een virus is gevonden,
-hiervan wordt een melding getoond.
+- **Het productierapport:** een Excel-bestand met de metadata van alle documenten. Wat erin moet staan, lees je in
+  [Productierapport uitgelegd](productierapport.md).
+- **De documenten met de beoordeling openbaar of deels openbaar.** Geef elk bestand als naam het ID uit het
+  productierapport. Documenten met de beoordeling **niet openbaar** of **reeds openbaar** hoef je niet te uploaden.
+  Daarvoor komt wel een pagina op de website, zonder bestand.
 
-Vervolgens worden de documenten één voor één verwerkt. Tijdens de verwerking wordt het documenten onder andere zo toegankelijk
-mogelijk gemaakt en wordt de inhoud geëxtraheerd zodat dit toegevoegd kan worden aan de zoekmachine. Het verwerken van alle documenten
-kan tijdsintensief zijn. Je kan het scherm verlaten en later terugkeren als het systeem klaar is met het verwerken van de documenten.
+Je kunt bestanden uploaden van het type PDF, Excel, Word, PowerPoint, tekst, audio en video. Een los bestand mag maximaal
+1 GB zijn.
 
-Het is mogelijk om eventueel resterende documenten op een later moment te uploaden. Wanneer alle op basis van het productierapport
-verwachte documenten zijn geüpload kan je verder naar stap 4.
+:::{admonition} Tip
+:class: tip
+Gaat het om veel documenten? Bundel ze dan in één .zip of .7z bestand van maximaal 4 GB. Dat uploadt sneller.
+:::
 
-Woo-documenten met de beoordeling ‘niet openbaar’ en ‘reeds openbaar’, aangegeven in het productierapport, behoeven geen upload.
-Voor deze documenten wordt wel een pagina aangemaakt op de website, zonder dat daarbij een bestand beschikbaar is.
+## Stappen
+
+1. **Upload het productierapport.** Het systeem controleert het bestand direct. Krijg je een foutmelding, pas het
+   productierapport dan aan en upload het opnieuw. Veelvoorkomende oorzaken:
+   - er ontbreekt een verplichte kolom;
+   - de combinatie van **publicatiecontext** en ID komt al voor bij een andere publicatie.
+2. **Upload de documenten.** Na het uploaden van het productierapport verschijnt een uploadvak. Sleep de documenten of het
+   .zip/.7z bestand erin, of selecteer ze via je verkenner.
+3. **Wacht op de verwerking.** Het systeem controleert en verwerkt de documenten op de achtergrond. Bij veel documenten kan
+   dit even duren. Je kunt het scherm verlaten en later terugkomen.
+4. **Controleer of alles is geüpload.** Ontbreken er nog documenten, dan kun je die later alsnog uploaden.
+5. **Ga verder naar [stap 4](uploadstraat-stap4.md)** zodra alle documenten uit het productierapport zijn geüpload.
+
+## Wat er gebeurt tijdens de verwerking
+
+Elk document wordt gescand op virussen. Daarna wordt gecontroleerd of de bestandsnaam overeenkomt met een ID uit het
+productierapport en of het bestandstype geldig is. Vervolgens wordt het document zo toegankelijk mogelijk gemaakt en wordt
+de inhoud toegevoegd aan de zoekmachine.
+
+:::{admonition} Let op!
+:class: warning
+Een document wordt niet opgeslagen als de bestandsnaam niet overeenkomt met een ID uit het productierapport, als het
+bestandstype ongeldig is of als er mogelijk een virus in zit. Je krijgt daarvan een melding. Zo kun je nooit per ongeluk
+een verkeerd of extra document publiceren.
+:::

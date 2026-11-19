@@ -10,7 +10,6 @@ use Mockery\MockInterface;
 use Shared\ApplicationId;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportRepository;
 use Shared\Domain\Search\Index\ElasticDocumentType;
-use Shared\Domain\Search\Index\Schema\ElasticField;
 use Shared\Domain\Search\Result\Dossier\AnnualReport\AnnualReportSearchResultMapper;
 use Shared\Domain\Search\Result\Dossier\DossierSearchResultBaseMapper;
 use Shared\Domain\Search\Result\ResultEntryInterface;
@@ -51,7 +50,6 @@ class AnnualReportSearchResultMapperTest extends UnitTestCase
                 $hit,
                 $this->repository,
                 ElasticDocumentType::ANNUAL_REPORT,
-                [ElasticField::TITLE->value, ElasticField::SUMMARY->value],
                 ApplicationId::ADMIN,
             )
             ->andReturn($expectedResult);

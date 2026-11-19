@@ -72,7 +72,7 @@ readonly class DefaultDossierMapper implements ElasticDossierMapperInterface
      */
     private function mapSubject(?Subject $subject): ?array
     {
-        if ($subject === null) {
+        if (! $subject instanceof Subject) {
             return null;
         }
 

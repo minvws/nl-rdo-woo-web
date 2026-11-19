@@ -44,7 +44,7 @@ class WooDecisionRequestDto implements DossierRequestDtoInterface
             . AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER . ').')]
         public array $attachments,
         #[ApiProperty(description: 'Start date of the period the documents in this decision relate to (format YYYY-MM-DD).')]
-        public PlainDate $dateFrom,
+        public ?PlainDate $dateFrom,
         #[ApiProperty(description: 'End date of the period the documents in this decision relate to (format YYYY-MM-DD).')]
         public ?PlainDate $dateTo,
         #[ApiProperty(description: 'The dossier number this publication is registered under; must be unique within the organisation.')]

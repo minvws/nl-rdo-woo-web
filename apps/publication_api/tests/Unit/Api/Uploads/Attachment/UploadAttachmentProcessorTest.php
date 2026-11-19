@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace PublicationApi\Tests\Unit\Api\Uploads\Attachment;
 
+use ApiPlatform\Metadata\Put;
 use ApiPlatform\Validator\Exception\ValidationException;
 use Mockery;
 use Psr\Http\Message\StreamInterface;
+use PublicationApi\Api\Dossier\Covenant\Uploads\Attachment\CovenantUploadAttachmentProcessor;
 use PublicationApi\Api\DossierLookup;
 use PublicationApi\Api\OrganisationLookup;
 use PublicationApi\Api\Uploads\Attachment\UploadAttachmentHandler;
-use PublicationApi\Api\Uploads\Attachment\UploadAttachmentProcessor;
-use PublicationApi\Api\Uploads\Attachment\UploadAttachmentRequestInterface;
-use PublicationApi\FeatureFlag\DocumentUploadGuard;
+use PublicationApi\Api\Uploads\Attachment\UploadAttachmentRequestDto;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
@@ -21,6 +21,7 @@ use Shared\Domain\Publication\Dossier\Type\Advice\AdviceAttachment;
 use Shared\Domain\Publication\Dossier\Type\DossierRepositoryWithExternalId;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\ExternalId;
+use stdClass;
 use Symfony\Component\Uid\Uuid;
 
 class UploadAttachmentProcessorTest extends UnitTestCase
@@ -32,11 +33,7 @@ class UploadAttachmentProcessorTest extends UnitTestCase
         $attachmentExternalId = Mockery::mock(ExternalId::class);
         $content = Mockery::mock(StreamInterface::class);
 
-        $request = Mockery::mock(UploadAttachmentRequestInterface::class);
-        $request->expects('getOrganisationId')->andReturn($organisationId);
-        $request->expects('getDossierExternalId')->andReturn($dossierExternalId);
-        $request->expects('getAttachmentExternalId')->andReturn($attachmentExternalId);
-        $request->expects('getContent')->andReturn($content);
+        $uploadAttachmentRequestDto = new UploadAttachmentRequestDto($content, $organisationId, $dossierExternalId, $attachmentExternalId);
 
         $organisation = Mockery::mock(Organisation::class);
         $organisationLookup = Mockery::mock(OrganisationLookup::class);
@@ -52,9 +49,6 @@ class UploadAttachmentProcessorTest extends UnitTestCase
             ->expects('find')
             ->with($dossierRepository, $organisation, $dossierExternalId)
             ->andReturn($dossier);
-
-        $documentUploadGuard = Mockery::mock(DocumentUploadGuard::class);
-        $documentUploadGuard->expects('assertDocumentUploadIsAllowed')->with($dossier);
 
         $attachment = Mockery::mock(AbstractAttachment::class);
         $attachmentRepository = Mockery::mock(AttachmentRepository::class);
@@ -66,15 +60,16 @@ class UploadAttachmentProcessorTest extends UnitTestCase
         $uploadAttachmentHandler = Mockery::mock(UploadAttachmentHandler::class);
         $uploadAttachmentHandler->expects('handle')->with($dossier, $attachment, $content);
 
-        $processor = new UploadAttachmentProcessor(
+        $uploadAttachmentProcessor = new CovenantUploadAttachmentProcessor(
             $attachmentRepository,
             $dossierLookup,
             $organisationLookup,
-            $documentUploadGuard,
             $uploadAttachmentHandler,
+            $dossierRepository,
+            AbstractAttachment::class,
         );
 
-        $processor->process($request, $dossierRepository, AbstractAttachment::class);
+        $uploadAttachmentProcessor->process($uploadAttachmentRequestDto, new Put());
     }
 
     public function testProcessThrowsWhenAttachmentNotFound(): void
@@ -83,10 +78,12 @@ class UploadAttachmentProcessorTest extends UnitTestCase
         $dossierExternalId = Mockery::mock(ExternalId::class);
         $attachmentExternalId = Mockery::mock(ExternalId::class);
 
-        $request = Mockery::mock(UploadAttachmentRequestInterface::class);
-        $request->expects('getOrganisationId')->andReturn($organisationId);
-        $request->expects('getDossierExternalId')->andReturn($dossierExternalId);
-        $request->expects('getAttachmentExternalId')->andReturn($attachmentExternalId);
+        $uploadAttachmentRequestDto = new UploadAttachmentRequestDto(
+            Mockery::mock(StreamInterface::class),
+            $organisationId,
+            $dossierExternalId,
+            $attachmentExternalId,
+        );
 
         $organisation = Mockery::mock(Organisation::class);
         $organisationLookup = Mockery::mock(OrganisationLookup::class);
@@ -102,9 +99,6 @@ class UploadAttachmentProcessorTest extends UnitTestCase
             ->expects('find')
             ->with($dossierRepository, $organisation, $dossierExternalId)
             ->andReturn($dossier);
-
-        $documentUploadGuard = Mockery::mock(DocumentUploadGuard::class);
-        $documentUploadGuard->expects('assertDocumentUploadIsAllowed')->with($dossier);
 
         $attachmentRepository = Mockery::mock(AttachmentRepository::class);
         $attachmentRepository
@@ -114,17 +108,18 @@ class UploadAttachmentProcessorTest extends UnitTestCase
 
         $uploadAttachmentHandler = Mockery::mock(UploadAttachmentHandler::class);
 
-        $processor = new UploadAttachmentProcessor(
+        $uploadAttachmentProcessor = new CovenantUploadAttachmentProcessor(
             $attachmentRepository,
             $dossierLookup,
             $organisationLookup,
-            $documentUploadGuard,
             $uploadAttachmentHandler,
+            $dossierRepository,
+            AbstractAttachment::class,
         );
 
         $this->expectException(ValidationException::class);
 
-        $processor->process($request, $dossierRepository, AbstractAttachment::class);
+        $uploadAttachmentProcessor->process($uploadAttachmentRequestDto, new Put());
     }
 
     public function testProcessThrowsWhenAttachmentIsWrongType(): void
@@ -133,10 +128,12 @@ class UploadAttachmentProcessorTest extends UnitTestCase
         $dossierExternalId = Mockery::mock(ExternalId::class);
         $attachmentExternalId = Mockery::mock(ExternalId::class);
 
-        $request = Mockery::mock(UploadAttachmentRequestInterface::class);
-        $request->expects('getOrganisationId')->andReturn($organisationId);
-        $request->expects('getDossierExternalId')->andReturn($dossierExternalId);
-        $request->expects('getAttachmentExternalId')->andReturn($attachmentExternalId);
+        $uploadAttachmentRequestDto = new UploadAttachmentRequestDto(
+            Mockery::mock(StreamInterface::class),
+            $organisationId,
+            $dossierExternalId,
+            $attachmentExternalId,
+        );
 
         $organisation = Mockery::mock(Organisation::class);
         $organisationLookup = Mockery::mock(OrganisationLookup::class);
@@ -152,9 +149,6 @@ class UploadAttachmentProcessorTest extends UnitTestCase
             ->expects('find')
             ->with($dossierRepository, $organisation, $dossierExternalId)
             ->andReturn($dossier);
-
-        $documentUploadGuard = Mockery::mock(DocumentUploadGuard::class);
-        $documentUploadGuard->expects('assertDocumentUploadIsAllowed')->with($dossier);
 
         $attachment = Mockery::mock(AbstractAttachment::class);
         $attachmentRepository = Mockery::mock(AttachmentRepository::class);
@@ -165,16 +159,33 @@ class UploadAttachmentProcessorTest extends UnitTestCase
 
         $uploadAttachmentHandler = Mockery::mock(UploadAttachmentHandler::class);
 
-        $processor = new UploadAttachmentProcessor(
+        $uploadAttachmentProcessor = new CovenantUploadAttachmentProcessor(
             $attachmentRepository,
             $dossierLookup,
             $organisationLookup,
-            $documentUploadGuard,
             $uploadAttachmentHandler,
+            $dossierRepository,
+            AdviceAttachment::class,
         );
 
         $this->expectException(ValidationException::class);
 
-        $processor->process($request, $dossierRepository, AdviceAttachment::class);
+        $uploadAttachmentProcessor->process($uploadAttachmentRequestDto, new Put());
+    }
+
+    public function testProcessThrowsOnInvalidData(): void
+    {
+        $uploadAttachmentProcessor = new CovenantUploadAttachmentProcessor(
+            Mockery::mock(AttachmentRepository::class),
+            Mockery::mock(DossierLookup::class),
+            Mockery::mock(OrganisationLookup::class),
+            Mockery::mock(UploadAttachmentHandler::class),
+            Mockery::mock(DossierRepositoryWithExternalId::class),
+            AbstractAttachment::class,
+        );
+
+        $this->expectException(ValidationException::class);
+
+        $uploadAttachmentProcessor->process(new stdClass(), new Put());
     }
 }

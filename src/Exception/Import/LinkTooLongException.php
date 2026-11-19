@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Shared\Exception\Import;
 
-use function sprintf;
 use function strval;
 
-final class LinkTooLongException extends ImportException
+final class LinkTooLongException extends RowImportException
 {
     public const string MESSAGE_KEY = 'publication.dossier.error.link_too_long';
 
     public function __construct(
+        int $rowIndex,
         public readonly string $link,
-        public readonly int $rowIndex,
+        public readonly int $max,
     ) {
-        parent::__construct(sprintf('Link is too long in inventory row #%d', $rowIndex));
+        parent::__construct($rowIndex, 'Link is too long');
     }
 
     public function getMessageKey(): string
@@ -29,7 +29,7 @@ final class LinkTooLongException extends ImportException
     public function getMessageData(): array
     {
         return [
-            '{rownumber}' => strval($this->rowIndex),
+            '{max}' => strval($this->max),
         ];
     }
 }

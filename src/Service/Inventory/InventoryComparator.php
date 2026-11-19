@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Shared\Service\Inventory;
 
 use Exception;
+use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
@@ -26,6 +28,7 @@ class InventoryComparator
     public function __construct(
         private readonly DocumentRepository $documentRepository,
         private readonly DocumentComparator $documentComparator,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -63,7 +66,7 @@ class InventoryComparator
                 );
                 $document = $this->documentRepository->findByDocumentNumber($documentNumber);
 
-                if ($document === null) {
+                if (! $document instanceof Document) {
                     $changeset->markAsAdded($documentNumber);
 
                     continue;
@@ -86,8 +89,8 @@ class InventoryComparator
                 } else {
                     $changeset->markAsUnchanged($documentNumber);
                 }
-            } catch (ImportException $importException) {
-                $run->addRowError($rowIndex, ImportError::fromException($importException));
+            } catch (Exception $exception) {
+                $this->handleRowError($rowIndex, $run, $exception);
             }
 
             unset($document);
@@ -107,6 +110,14 @@ class InventoryComparator
         // Exception occurred, but we still continue with the next row. Just log the error
         if (! $exception instanceof ImportException) {
             $exception = new UnexpectedRowException($exception);
+        }
+
+        if ($exception instanceof UnexpectedRowException) {
+            $this->logger->error('Unexpected error while processing a production report row', [
+                'runUuid' => $run->getId(),
+                'rowIndex' => $rowIndex,
+                'exception' => $exception,
+            ]);
         }
 
         $run->addRowError($rowIndex, ImportError::fromException($exception));

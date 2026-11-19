@@ -30,11 +30,11 @@ We have no baseline expectation for production traffic, so the initial aim is pu
 
 All response times are reported as percentiles across all requests in a test run. For 1000 requests sorted fastest to slowest:
 
-| Metric | Meaning |
-| -------- | ------- |
-| p50 | Median — half of requests were faster. Typical user experience. |
-| p95 | 95% of requests were faster. What a slow-but-not-worst-case user sees. |
-| p99 | Near-worst case. Only 1% of requests were slower. |
+| Metric | Meaning                                                                |
+|--------|------------------------------------------------------------------------|
+| p50    | Median — half of requests were faster. Typical user experience.        |
+| p95    | 95% of requests were faster. What a slow-but-not-worst-case user sees. |
+| p99    | Near-worst case. Only 1% of requests were slower.                      |
 
 Averages hide outliers. A spike visible at p99 (e.g. 8s) may not be visible in an average (e.g. 130ms).
 
@@ -60,12 +60,12 @@ so the seed data remains intact and the environment is ready for the next run wi
 
 Run with **1 virtual user** for 2–3 minutes. Record p50/p95/p99 and error rate. This is your healthy baseline for all subsequent comparisons.
 
-| Scenario | Method | Endpoint |
-| ---------- | -------- | ---------- |
-| List dossiers | GET | `/organisation/{id}/dossiers/woo-decision` |
-| Get single dossier | GET | `/organisation/{id}/dossiers/woo-decision/external/{extId}` |
-| Upsert dossier | PUT | `/organisation/{id}/dossiers/woo-decision/external/{extId}` |
-| Upload small file (~10 KB) | PUT | `.../uploads/main-document` |
+| Scenario                   | Method | Endpoint                                                    |
+|----------------------------|--------|-------------------------------------------------------------|
+| List dossiers              | GET    | `/organisation/{id}/dossiers/woo-decision`                  |
+| Get single dossier         | GET    | `/organisation/{id}/dossiers/woo-decision/external/{extId}` |
+| Upsert dossier             | PUT    | `/organisation/{id}/dossiers/woo-decision/external/{extId}` |
+| Upload small file (~10 KB) | PUT    | `.../uploads/main-document`                                 |
 
 ## Phase 1 — Read path stress
 
@@ -73,10 +73,10 @@ Run with **1 virtual user** for 2–3 minutes. Record p50/p95/p99 and error rate
 
 Ramp: 1 → 5 → 10 → 25 → 50 → 100 concurrent users. Hold each step for 2 minutes.
 
-| Scenario | Method | Endpoint |
-| ---------- | -------- | ---------- |
-| List dossiers (paginated) | GET | `/organisation/{id}/dossiers/woo-decision` |
-| Get single dossier | GET | `/organisation/{id}/dossiers/woo-decision/external/{extId}` |
+| Scenario                  | Method | Endpoint                                                    |
+|---------------------------|--------|-------------------------------------------------------------|
+| List dossiers (paginated) | GET    | `/organisation/{id}/dossiers/woo-decision`                  |
+| Get single dossier        | GET    | `/organisation/{id}/dossiers/woo-decision/external/{extId}` |
 
 **Breaking signal**: p95 > 2s, or error rate > 1%.
 
@@ -123,12 +123,12 @@ Watch for: database lock contention on concurrent upserts of large document arra
 
 Ramp slowly to 50 concurrent users, hold for 10 minutes.
 
-| Scenario | Share |
-| ---------- | ------- |
-| Read dossier list | 40% |
-| Read single dossier | 30% |
-| Upsert dossier metadata | 20% |
-| Upload a file | 10% |
+| Scenario                | Share |
+|-------------------------|-------|
+| Read dossier list       | 40%   |
+| Read single dossier     | 30%   |
+| Upsert dossier metadata | 20%   |
+| Upload a file           | 10%   |
 
 Adjust the traffic mix once production usage patterns are known.
 

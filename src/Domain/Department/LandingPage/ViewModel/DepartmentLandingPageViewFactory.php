@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Department\LandingPage\ViewModel;
 
+use Shared\Controller\Admin\Upload\DepartmentUploadController;
 use Shared\Domain\Department\Department;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -12,7 +13,7 @@ use function hash;
 final readonly class DepartmentLandingPageViewFactory
 {
     public function __construct(
-        private readonly UrlGeneratorInterface $urlGenerator,
+        private UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
@@ -32,7 +33,10 @@ final readonly class DepartmentLandingPageViewFactory
                     'cacheKey' => hash('sha256', (string) $department->getUpdatedAt()->getTimestamp()),
                 ],
             ),
-            uploadLogoEndpoint: $this->urlGenerator->generate('app_admin_upload'),
+            uploadLogoEndpoint: $this->urlGenerator->generate(
+                DepartmentUploadController::ROUTE_NAME_UPLOAD,
+                ['departmentId' => $department->getId()],
+            ),
             hasLogo: $department->getFileInfo()->isUploaded(),
         );
     }

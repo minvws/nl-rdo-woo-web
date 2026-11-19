@@ -9,6 +9,7 @@ use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicRequestDto;
 use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicService;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\EntityWithNoticeNotPublic;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
 
 readonly class NoticeNotPublicSynchronizer
 {
@@ -28,7 +29,7 @@ readonly class NoticeNotPublicSynchronizer
         AbstractDossier&EntityWithNoticeNotPublic $dossier,
         NoticeNotPublicRequestDto $noticeNotPublicRequestDto,
     ): void {
-        $noticeNotPublic = $dossier->getNoticeNotPublic() !== null
+        $noticeNotPublic = $dossier->getNoticeNotPublic() instanceof NoticeNotPublic
             ? $this->noticeNotPublicService->updateForDossier($dossier, $noticeNotPublicRequestDto)
             : $this->noticeNotPublicService->createForDossier($dossier, $noticeNotPublicRequestDto);
 
@@ -37,7 +38,7 @@ readonly class NoticeNotPublicSynchronizer
 
     public function delete(AbstractDossier&EntityWithNoticeNotPublic $dossier): void
     {
-        if ($dossier->getNoticeNotPublic() === null) {
+        if (! $dossier->getNoticeNotPublic() instanceof NoticeNotPublic) {
             return;
         }
 

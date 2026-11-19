@@ -17,7 +17,6 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\Documen
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Handler\ProcessDocumentFileUpdateHandler;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository\DocumentFileUpdateRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Shared\Domain\Upload\UploadedFile;
 use Shared\Service\Storage\EntityStorageService;
 use Shared\Tests\Unit\Domain\Upload\IterableToGenerator;
 use Shared\Tests\Unit\UnitTestCase;
@@ -83,10 +82,6 @@ class ProcessDocumentFileUpdateHandlerTest extends UnitTestCase
             ->expects('getDocument')
             ->andReturn($document);
 
-        $update
-            ->expects('getFileInfo->getName')
-            ->andReturn('foo.bar');
-
         $update->expects('getFileInfo->removeFileProperties');
 
         $this->documentFileUpdateRepository
@@ -94,14 +89,9 @@ class ProcessDocumentFileUpdateHandlerTest extends UnitTestCase
             ->with($id)
             ->andReturn($update);
 
-        $this->entityStorageService
-            ->expects('downloadEntity')
-            ->with($update)
-            ->andReturn($localPath = '/foo/bar.baz');
-
         $this->fileProcessor
             ->expects('process')
-            ->with(Mockery::type(UploadedFile::class), $wooDecision, $documentId);
+            ->with($update, $wooDecision, $documentId);
 
         $update->expects('setStatus')->with(DocumentFileUpdateStatus::COMPLETED);
         $this->documentFileUpdateRepository->expects('save')->with($update, true);
@@ -109,7 +99,6 @@ class ProcessDocumentFileUpdateHandlerTest extends UnitTestCase
         $this->documentFileService->expects('checkProcessingUpdatesCompletion')->with($documentFileSet);
 
         $this->entityStorageService->expects('deleteAllFilesForEntity')->with($update);
-        $this->entityStorageService->expects('removeDownload')->with($localPath, true);
 
         $this->handler->__invoke(
             new ProcessDocumentFileUpdateCommand($id),
@@ -121,24 +110,6 @@ class ProcessDocumentFileUpdateHandlerTest extends UnitTestCase
         $id = Uuid::v6();
 
         $this->documentFileUpdateRepository->expects('find')->with($id)->andReturnNull();
-
-        $this->logger->expects('warning');
-
-        $this->handler->__invoke(
-            new ProcessDocumentFileUpdateCommand($id),
-        );
-    }
-
-    public function testInvokeLogsWarningAndAbortsWhenUpdateFileCannotBeDownloaded(): void
-    {
-        $id = Uuid::v6();
-
-        $update = Mockery::mock(DocumentFileUpdate::class);
-        $update->expects('getStatus')->andReturn(DocumentFileUpdateStatus::PENDING);
-
-        $this->documentFileUpdateRepository->expects('find')->with($id)->andReturn($update);
-
-        $this->entityStorageService->expects('downloadEntity')->with($update)->andReturnFalse();
 
         $this->logger->expects('warning');
 

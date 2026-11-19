@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Service\Inventory\Sanitizer;
 
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -31,7 +32,9 @@ readonly class InventoryDocumentMapper
             $document->getDocumentId()->toString(),
             $document->getDocumentNumber()->toString(),
             $document->getFileInfo()->getName() ?: '',
-            $document->getJudgement() ? $this->translator->trans('public.documents.judgment.short.' . $document->getJudgement()->value) : '',
+            $document->getJudgement() instanceof Judgement
+                ? $this->translator->trans('public.documents.judgment.short.' . $document->getJudgement()->value)
+                : '',
             $document->getGrounds(),
             $document->getRemark() ?: '',
             implode("\n", $document->getLinks()),
@@ -40,6 +43,10 @@ readonly class InventoryDocumentMapper
             implode(';', $this->getRelatedDocumentNumbers($document)),
             implode(';', $this->getRelatedDocumentUrls($document, $dossier, $urlStrategy)),
             (string) $dossier->getTitle(),
+            (string) ($document->getThreadId() ?? ''),
+            (string) ($document->getFamilyId() ?? ''),
+            $document->getFileInfo()->getSourceType()->value ?? '',
+            $document->getDocumentDate()?->toString() ?? '',
         ];
     }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Validator;
 
+use SensitiveParameter;
 use Shared\Service\Security\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -25,8 +26,10 @@ class NotTheSamePasswordValidator extends ConstraintValidator
     /**
      * @param string|null $value
      */
-    public function validate($value, Constraint $constraint): void
-    {
+    public function validate(
+        #[SensitiveParameter] $value,
+        Constraint $constraint,
+    ): void {
         if ($value === null) {
             return;
         }

@@ -6,6 +6,7 @@ namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Handler;
 
 use Exception;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Organisation\OrganisationRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\UpdateInquiryLinksCommand;
 use Shared\Service\Inquiry\InquiryService;
@@ -25,7 +26,7 @@ class UpdateInquiryLinksHandler
     {
         try {
             $organisation = $this->organisationRepo->find($message->getOrganisationId());
-            if (! $organisation) {
+            if (! $organisation instanceof Organisation) {
                 $this->logger->warning('No organisation found for this message', [
                     'uuid' => $message->getOrganisationId(),
                 ]);

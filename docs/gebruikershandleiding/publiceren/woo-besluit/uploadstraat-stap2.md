@@ -1,12 +1,13 @@
-# Stap  2: Woo-besluit gegevens
+# Stap 2: Woo-besluit gegevens
 
-Bij stap 2 worden de gegevens van het Woo-besluit ingevuld en wordt de besluitbrief geüpload. Daarnaast is het mogelijk om een bijlage toe te voegen.
+Bij stap 2 worden de gegevens van het **Woo-besluit** ingevuld en wordt de besluitbrief geüpload. Daarnaast is het mogelijk om een bijlage toe te voegen.
 
 ![Deze figuur laat de tweede stap van de uploadstraat zien waar de gegevens van het Woo-besluit zelf worden geregistreerd.](img/besluit_2.png)
 
-## Besluit Oordeel
+## Besluit oordeel
 
-Hoe tegemoet is gekomen aan het Woo-verzoek. Deze status heeft betrekking op het gehele verzoek. Dit veld is verplicht om in te vullen. Keuze uit de opties:
+Hier geef je aan hoe tegemoet is gekomen aan het Woo-verzoek. Deze status heeft betrekking op het gehele verzoek.
+Dit veld is verplicht om in te vullen. Keuze uit de opties:
 Reeds openbaar, Openbaarmaking, Gedeeltelijke openbaarmaking, Geen openbaarmaking en Geen documenten aangetroffen.
 
 In de gevallen van geen openbaarmaking of geen documenten aangetroffen zal stap 3 van de uploadstraat worden overgeslagen.
@@ -30,7 +31,7 @@ Dit is de officiële datum waarop het besluit is genomen. Dit veld is verplicht 
 ## Bijlage
 
 In het geval dat er extra ondersteunende documenten zijn, is er de mogelijkheid om een of meerdere bijlagen te uploaden die
-horen bij het Woo-besluit. Het uploaden van een bijlage is optioneel.
+horen bij het **Woo-besluit**. Het uploaden van een bijlage is optioneel.
 
 ![De figuur laat de uploadwizard voor de bijlage zien](img/besluit_3.png)
 

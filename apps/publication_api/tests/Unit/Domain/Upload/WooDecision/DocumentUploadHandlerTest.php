@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace PublicationApi\Tests\Unit\Domain\Upload\WooDecision;
 
 use Mockery;
-use Mockery\MockInterface;
 use PublicationApi\Domain\Upload\WooDecision\DocumentUploadHandler;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
 use Shared\Domain\Upload\Event\UploadValidatedEvent;
+use Shared\Domain\Upload\UploadContextReader;
 use Shared\Domain\Upload\UploadEntity;
 use Shared\Service\Uploader\UploadGroupId;
 use Shared\Tests\Unit\UnitTestCase;
@@ -16,24 +16,16 @@ use Symfony\Component\Uid\Uuid;
 
 final class DocumentUploadHandlerTest extends UnitTestCase
 {
-    private WooDecisionDispatcher&MockInterface $dispatcher;
-    private DocumentUploadHandler $handler;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->dispatcher = Mockery::mock(WooDecisionDispatcher::class);
-
-        $this->handler = new DocumentUploadHandler($this->dispatcher);
-    }
-
     public function testSkipsUploadsForOtherGroup(): void
     {
         $uploadEntity = Mockery::mock(UploadEntity::class);
         $uploadEntity->expects('getUploadGroupId')->andReturn(UploadGroupId::MAIN_DOCUMENTS);
 
-        $this->handler->__invoke(new UploadValidatedEvent($uploadEntity));
+        $documentUploadHandler = new DocumentUploadHandler(
+            Mockery::mock(WooDecisionDispatcher::class),
+            Mockery::mock(UploadContextReader::class),
+        );
+        $documentUploadHandler->__invoke(new UploadValidatedEvent($uploadEntity));
     }
 
     public function testHandleUploadSuccessfully(): void
@@ -44,15 +36,19 @@ final class DocumentUploadHandlerTest extends UnitTestCase
         $uploadEntity = Mockery::mock(UploadEntity::class);
         $uploadEntity->expects('getId')->andReturn($uploadEntityId);
         $uploadEntity->expects('getUploadGroupId')->andReturn(UploadGroupId::API_WOO_DECISION_DOCUMENTS);
-        $uploadEntity->expects('getContext->getString')->with('dossierId')->andReturn($wooDecisionId);
 
-        $this->dispatcher
+        $uploadContextReader = Mockery::mock(UploadContextReader::class);
+        $uploadContextReader->expects('getDossierId')->with($uploadEntity)->andReturn($wooDecisionId);
+
+        $wooDecisionDispatcher = Mockery::mock(WooDecisionDispatcher::class);
+        $wooDecisionDispatcher
             ->expects('dispatchProcessUploadedDocumentsCommand')
             ->withArgs(static function (Uuid $wooDecisionIdArg, Uuid $uploadEntityIdArg) use ($wooDecisionId, $uploadEntityId) {
                 return $wooDecisionIdArg->equals($wooDecisionId) && $uploadEntityIdArg->equals($uploadEntityId);
             })
             ->andReturnNull();
 
-        $this->handler->__invoke(new UploadValidatedEvent($uploadEntity));
+        $documentUploadHandler = new DocumentUploadHandler($wooDecisionDispatcher, $uploadContextReader);
+        $documentUploadHandler->__invoke(new UploadValidatedEvent($uploadEntity));
     }
 }

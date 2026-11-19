@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision;
 
+use InvalidArgumentException;
 use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
@@ -75,6 +76,26 @@ final class JudgementTest extends UnitTestCase
     public function testFromString(string $input, Judgement $expectedResult): void
     {
         self::assertEquals($expectedResult, Judgement::fromString($input));
+    }
+
+    #[DataProvider('invalidFromStringDataProvider')]
+    public function testFromStringThrowsForInvalidInput(string $input): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        Judgement::fromString($input);
+    }
+
+    /**
+     * @return array<string, array{input:string}>
+     */
+    public static function invalidFromStringDataProvider(): array
+    {
+        return [
+            'unknown' => ['input' => 'foobar'],
+            'empty' => ['input' => ''],
+            'whitespace' => ['input' => '   '],
+        ];
     }
 
     /**

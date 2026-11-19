@@ -30,7 +30,7 @@ readonly class DocumentNumberExtractor
         $filename = pathinfo($file->getOriginalFilename(), PATHINFO_FILENAME);
 
         $document = $this->findDocument($filename, $wooDecision);
-        if ($document !== null) {
+        if ($document instanceof Document) {
             return $document;
         }
 

@@ -5,14 +5,17 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Service\Storage;
 
 use Doctrine\ORM\EntityManagerInterface;
+use GuzzleHttp\Psr7\HttpFactory;
 use Mockery;
 use Mockery\MockInterface;
 use org\bovigo\vfs\vfsStream;
+use Psr\Http\Message\StreamInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Shared\Domain\Ingest\Content\Event\EntityFileUpdateEvent;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Publication\FileInfo;
+use Shared\Domain\Stream\StreamFactory;
 use Shared\Service\Storage\EntityStorageService;
 use Shared\Service\Storage\LocalFilesystem;
 use Shared\Service\Storage\RemoteFilesystem;
@@ -26,7 +29,11 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 
+use function basename;
+use function dirname;
 use function fopen;
+use function fwrite;
+use function rewind;
 use function sprintf;
 
 class EntityStorageServiceTest extends UnitTestCase
@@ -111,6 +118,38 @@ class EntityStorageServiceTest extends UnitTestCase
 
         $this->assertIsResource($stream);
         $this->assertSame($stream, $result);
+    }
+
+    public function testRetrieveResourceEntityAsStream(): void
+    {
+        $entity = $this->expectReadStreamFor('rootPath/myFilename.pdf');
+
+        $resource = fopen('php://memory', 'r+');
+        Assert::resource($resource, 'stream');
+        fwrite($resource, 'file contents');
+        rewind($resource);
+
+        $this->remoteFilesystem
+            ->expects('readStream')
+            ->with('rootPath/myFilename.pdf')
+            ->andReturn($resource);
+
+        $result = $this->getStorageService()->retrieveResourceEntityAsStream($entity);
+
+        self::assertInstanceOf(StreamInterface::class, $result);
+        self::assertSame('file contents', $result->getContents());
+    }
+
+    public function testRetrieveResourceEntityAsStreamReturnsNullWhenFileCannotBeRead(): void
+    {
+        $entity = $this->expectReadStreamFor('rootPath/myFilename.pdf');
+
+        $this->remoteFilesystem
+            ->expects('readStream')
+            ->with('rootPath/myFilename.pdf')
+            ->andReturnNull();
+
+        self::assertNull($this->getStorageService()->retrieveResourceEntityAsStream($entity));
     }
 
     public function testStoreEntity(): void
@@ -372,6 +411,109 @@ class EntityStorageServiceTest extends UnitTestCase
         $service->setHash($entity, 'foo/bar.txt');
     }
 
+    public function testCopyEntity(): void
+    {
+        $sourceRootPath = $this->getFaker()->word();
+        $targetRootPath = $this->getFaker()->word();
+        $fileName = $this->getFaker()->word();
+        $size = $this->getFaker()->randomNumber();
+        $hash = $this->getFaker()->sha256();
+        $mimetype = $this->getFaker()->word();
+        $targetId = Uuid::v6();
+
+        $sourceFileInfo = new FileInfo()
+            ->setPath(sprintf('%s/%s', $sourceRootPath, $fileName))
+            ->setSize($size)
+            ->setHash($hash)
+            ->setMimetype($mimetype);
+
+        $targetFileInfo = new FileInfo()
+            ->setHash($this->getFaker()->sha256())
+            ->setPageCount($this->getFaker()->randomNumber());
+
+        $source = Mockery::mock(EntityWithFileInfo::class);
+        $source->expects('getFileInfo')->times(3)->andReturn($sourceFileInfo);
+
+        $target = Mockery::mock(EntityWithFileInfo::class);
+        $target->expects('getFileInfo')->times(2)->andReturn($targetFileInfo);
+        $target->expects('getId')->andReturn($targetId);
+
+        $storageRootPathGenerator = Mockery::mock(StorageRootPathGenerator::class);
+        $storageRootPathGenerator->expects('__invoke')->with($target)->andReturn($targetRootPath);
+        $storageRootPathGenerator->expects('__invoke')->with($source)->andReturn($sourceRootPath);
+
+        $remoteFilesystem = Mockery::mock(RemoteFilesystem::class);
+        $remoteFilesystem
+            ->expects('copy')
+            ->with(sprintf('%s/%s', $sourceRootPath, $fileName), sprintf('%s/%s', $targetRootPath, $fileName))
+            ->andReturnTrue();
+
+        $messageBus = Mockery::mock(MessageBusInterface::class);
+        $messageBus
+            ->expects('dispatch')
+            ->with(Mockery::on(static function (EntityFileUpdateEvent $event) use ($targetId): bool {
+                return $event->entityId === $targetId;
+            }))
+            ->andReturn(new Envelope(new stdClass()));
+
+        $entityStorageService = new EntityStorageService(
+            $remoteFilesystem,
+            Mockery::mock(LocalFilesystem::class),
+            Mockery::mock(LoggerInterface::class),
+            $storageRootPathGenerator,
+            $messageBus,
+            Mockery::mock(EntityManagerInterface::class),
+            new StreamFactory(new HttpFactory()),
+        );
+
+        self::assertTrue($entityStorageService->copyEntity($source, $target));
+        self::assertSame(sprintf('%s/%s', $targetRootPath, $fileName), $targetFileInfo->getPath());
+        self::assertSame($size, $targetFileInfo->getSize());
+        self::assertSame($hash, $targetFileInfo->getHash());
+        self::assertSame($mimetype, $targetFileInfo->getMimetype());
+        self::assertTrue($targetFileInfo->isUploaded());
+        self::assertNull($targetFileInfo->getPageCount());
+    }
+
+    public function testCopyEntityReturnsFalseWhenCopyFails(): void
+    {
+        $sourceRootPath = $this->getFaker()->word();
+        $targetRootPath = $this->getFaker()->word();
+        $fileName = $this->getFaker()->word();
+
+        $sourceFileInfo = new FileInfo()->setPath(sprintf('%s/%s', $sourceRootPath, $fileName));
+        $targetFileInfo = new FileInfo();
+
+        $source = Mockery::mock(EntityWithFileInfo::class);
+        $source->expects('getFileInfo')->times(2)->andReturn($sourceFileInfo);
+
+        $target = Mockery::mock(EntityWithFileInfo::class);
+        $target->expects('getFileInfo')->andReturn($targetFileInfo);
+
+        $storageRootPathGenerator = Mockery::mock(StorageRootPathGenerator::class);
+        $storageRootPathGenerator->expects('__invoke')->with($target)->andReturn($targetRootPath);
+        $storageRootPathGenerator->expects('__invoke')->with($source)->andReturn($sourceRootPath);
+
+        $remoteFilesystem = Mockery::mock(RemoteFilesystem::class);
+        $remoteFilesystem
+            ->expects('copy')
+            ->with(sprintf('%s/%s', $sourceRootPath, $fileName), sprintf('%s/%s', $targetRootPath, $fileName))
+            ->andReturnFalse();
+
+        $entityStorageService = new EntityStorageService(
+            $remoteFilesystem,
+            Mockery::mock(LocalFilesystem::class),
+            Mockery::mock(LoggerInterface::class),
+            $storageRootPathGenerator,
+            Mockery::mock(MessageBusInterface::class),
+            Mockery::mock(EntityManagerInterface::class),
+            new StreamFactory(new HttpFactory()),
+        );
+
+        self::assertFalse($entityStorageService->copyEntity($source, $target));
+        self::assertFalse($targetFileInfo->isUploaded());
+    }
+
     private function getStorageService(
         bool $isLocal = false,
         string $documentRoot = 'documentRoot',
@@ -383,11 +525,28 @@ class EntityStorageServiceTest extends UnitTestCase
             $this->rootPathGenerator,
             $this->messageBus,
             $this->doctrine,
+            new StreamFactory(new HttpFactory()),
             $isLocal,
             $documentRoot,
         ])
             ->shouldAllowMockingProtectedMethods()
             ->makePartial();
+    }
+
+    private function expectReadStreamFor(string $remotePath): EntityWithFileInfo&MockInterface
+    {
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('getPath')->andReturn('aPath/' . basename($remotePath));
+
+        $entity = Mockery::mock(EntityWithFileInfo::class);
+        $entity->expects('getFileInfo')->andReturn($fileInfo);
+
+        $this->rootPathGenerator
+            ->expects('__invoke')
+            ->with($entity)
+            ->andReturn(dirname($remotePath));
+
+        return $entity;
     }
 
     /**

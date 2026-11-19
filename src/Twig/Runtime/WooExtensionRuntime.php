@@ -18,6 +18,7 @@ use Shared\Service\HistoryService;
 use Shared\Service\Search\Query\Component\HighlightComponent;
 use Shared\Service\Security\OrganisationSwitcher;
 use Shared\ValueObject\PlainDate;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Extension\RuntimeExtensionInterface;
 
@@ -54,7 +55,7 @@ readonly class WooExtensionRuntime implements RuntimeExtensionInterface
     public function queryStringWithoutParam(string $queryParam, string $value): string
     {
         $request = $this->requestStack->getCurrentRequest();
-        if (! $request) {
+        if (! $request instanceof Request) {
             return '';
         }
 

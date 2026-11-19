@@ -4,7 +4,7 @@
 
 Je opent het gebruikersoverzicht door in de zwarte menubalk bovenaan op 'Gebruikers' te klikken. Dit opent een overzicht van
 alle gebruikers die momenteel toegang hebben tot de organisatie of die gedeactiveerd zijn. Actieve gebruikers zijn accounts
-die nog kunnen inloggen en het uploadportaal kunnen gebruiken. Gedeactiveerde gebruikers zijn accounts die zijn uitgeschakeld en
+die nog kunnen inloggen en de Balie kunnen gebruiken. Gedeactiveerde gebruikers zijn accounts die zijn uitgeschakeld en
 geen toegang meer hebben.
 
 In dit overzicht worden niet alleen de namen van de gebruikers weergegeven, maar ook hun specifieke rollen binnen de organisatie
@@ -16,6 +16,18 @@ Vanuit dit scherm heb je verscheidene beheermogelijkheden. Je kunt nieuwe gebrui
 ![Alle actieve gebruikers tab](img/organisatiebeheer_1.1.png)
 
 ![Alle gedeactiveerde gebruikers tab](img/organisatiebeheer_1.2.png)
+
+## Rollen
+
+Er zijn verschillende rollen gedefinieerd, elk met hun eigen rechten. Onderstaande tabel geeft een overzicht van deze rollen, welke in de documentatie her en der terug komen.
+
+| Rol                  | Bevoegdheden                                                                                                                                                                                                                                                                                                                        |
+|----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Superbeheerder       | Een superbeheerder heeft toegang tot alle functionaliteiten en heeft toegang tot alle organisaties                                                                                                                                                                                                                                  |
+| Organisatiebeheerder | Met organisatiebeheer is het mogelijk om gebruikers te beheren door ze aan te maken, te bewerken en te verwijderen. Het is ook mogelijk om zaken en verzoeken aan te maken, echter heeft het geen mogelijkheid om ze te verwijderen. Verder heeft organisatie beher geen toegang tot het lezen van besluiten of andere publicaties. |
+| Publicatiebeheerder  | Een gebruiker met deze rechten kan zowel publicaties inzien als updaten. Daarbij kan deze wel niet-gepubliceerde publicaties verwijderen                                                                                                                                                                                            |
+| Alleen lezen         | Een gebruiker met deze rechten is alleen bevoegd om dossiers en zaken in te zien. De gebruiker is niet bevoegd om deze op enige manier aan te passen.                                                                                                                                                                               |
+| Contentbeheerder     | Een gebruiker met deze rechten kan de content-pagina's van de site bekijken en bewerken. Deze pagina's gelden voor alle organisaties. De gebruiker heeft geen toegang tot andere beheerfunctionaliteit, zoals Elasticsearch-beheer en datachecks. Alleen een superbeheerder kan deze rol toekennen.                                 |
 
 ## Nieuwe gebruiker aanmaken
 
@@ -58,7 +70,7 @@ Dit is het enige moment dat deze instructies gedownload kunnen worden.
 Het e-mailadres en tijdelijke wachtwoord is nodig om in te loggen op de uploadomgeving. Het tijdelijke wachtwoord kan eenmalig
 worden gebruikt om in te loggen, waarna de gebruiker een eigen wachtwoord kan instellen.
 
-Om in te kunnen loggen in het uploadportaal is 2FA benodigd. De gebruiker dient de QR-code te scannen in een authenticatie
+Om in te kunnen loggen in de Balie is 2FA benodigd. De gebruiker dient de QR-code te scannen in een authenticatie
 app om de 2FA te activeren.
 
 Het wordt aanbevolen om het .pdf-bestand goed te bewaren in het geval de gebruiker geen toegang meer heeft tot de authenticatie-app.

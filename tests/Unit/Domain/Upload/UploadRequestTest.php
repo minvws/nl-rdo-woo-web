@@ -43,89 +43,36 @@ class UploadRequestTest extends UnitTestCase
         self::assertEquals($params->all(), $request->additionalParameters->all());
     }
 
-    public function testFromHttpRequest(): void
+    public function testFromHttpRequestForGroup(): void
     {
+        $chunkIndex = $this->getFaker()->numberBetween(0, 10);
+        $chunkCount = $this->getFaker()->numberBetween(11, 20);
+        $uploadId = $this->getFaker()->uuid();
+        $departmentId = $this->getFaker()->uuid();
+        $uploadedFile = Mockery::mock(UploadedFile::class);
+
         $httpRequest = new Request(
-            query: [
-                'foo' => 'bar',
-                'chunkindex' => 2,
-            ],
             request: [
-                'chunkindex' => 2,
-                'totalchunkcount' => 3,
-                'uuid' => 'foo-bar-123',
-                'groupId' => UploadGroupId::WOO_DECISION_DOCUMENTS->value,
+                'chunkindex' => $chunkIndex,
+                'totalchunkcount' => $chunkCount,
+                'uuid' => $uploadId,
             ],
             files: [
-                'file' => $uploadedFile = Mockery::mock(UploadedFile::class),
+                'file' => $uploadedFile,
             ],
         );
 
-        $request = UploadRequest::fromHttpRequest($httpRequest);
-
-        self::assertEquals(2, $request->chunkIndex);
-        self::assertEquals(3, $request->chunkCount);
-        self::assertEquals('foo-bar-123', $request->uploadId);
-        self::assertEquals(UploadGroupId::WOO_DECISION_DOCUMENTS, $request->groupId);
-        self::assertTrue($request->isChunked());
-        self::assertFalse($request->hasMoreChunksToFollow());
-
-        $uploadedFile->expects('getClientOriginalName')->andReturn($name = 'foo.bar');
-        self::assertEquals($name, $request->getFilename());
-
-        $uploadedFile->expects('getClientMimeType')->andReturn($mimetype = 'foo/bar');
-        self::assertEquals($mimetype, $request->getMimeType());
-
-        self::assertEquals(['foo' => 'bar'], $request->additionalParameters->all());
-    }
-
-    public function testFromHttpRequestWithDossierId(): void
-    {
-        $httpRequest = new Request(
-            query: [
-                'foo' => 'bar',
-                'chunkindex' => 2,
-                'dossierId' => 'dossier-123', // gets overwritten by request payload value
-            ],
-            request: [
-                'groupId' => UploadGroupId::WOO_DECISION_DOCUMENTS->value,
-                'dossierId' => 'dossier-456',
-            ],
-            files: [
-                'file' => Mockery::mock(UploadedFile::class),
-            ],
+        $request = UploadRequest::fromHttpRequestForGroup(
+            $httpRequest,
+            UploadGroupId::DEPARTMENT,
+            new InputBag(['departmentId' => $departmentId]),
         );
 
-        $request = UploadRequest::fromHttpRequest($httpRequest);
-
-        self::assertEquals([
-            'foo' => 'bar',
-            'dossierId' => 'dossier-456',
-        ], $request->additionalParameters->all());
-    }
-
-    public function testFromHttpRequestWithDepartmentId(): void
-    {
-        $httpRequest = new Request(
-            query: [
-                'foo' => 'bar',
-                'chunkindex' => 2,
-                'departmentId' => 'department-123', // gets overwritten by request payload value
-            ],
-            request: [
-                'groupId' => UploadGroupId::DEPARTMENT->value,
-                'departmentId' => 'department-456',
-            ],
-            files: [
-                'file' => Mockery::mock(UploadedFile::class),
-            ],
-        );
-
-        $request = UploadRequest::fromHttpRequest($httpRequest);
-
-        self::assertEquals([
-            'foo' => 'bar',
-            'departmentId' => 'department-456',
-        ], $request->additionalParameters->all());
+        self::assertSame($chunkIndex, $request->chunkIndex);
+        self::assertSame($chunkCount, $request->chunkCount);
+        self::assertSame($uploadId, $request->uploadId);
+        self::assertSame($uploadedFile, $request->uploadedFile);
+        self::assertSame(UploadGroupId::DEPARTMENT, $request->groupId);
+        self::assertSame(['departmentId' => $departmentId], $request->additionalParameters->all());
     }
 }

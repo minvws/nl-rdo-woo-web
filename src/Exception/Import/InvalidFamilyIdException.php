@@ -4,30 +4,17 @@ declare(strict_types=1);
 
 namespace Shared\Exception\Import;
 
-use function sprintf;
-use function strval;
-
-final class InvalidFamilyIdException extends ImportException
+final class InvalidFamilyIdException extends RowImportException
 {
     public const string MESSAGE_KEY = 'publication.dossier.error.invalid_family_id';
 
-    public function __construct(public readonly int $rowIndex)
+    public function __construct(int $rowIndex)
     {
-        parent::__construct(sprintf('FamilyId in row #%d is invalid', $rowIndex));
+        parent::__construct($rowIndex, 'Invalid family ID');
     }
 
     public function getMessageKey(): string
     {
         return InvalidFamilyIdException::MESSAGE_KEY;
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    public function getMessageData(): array
-    {
-        return [
-            '{rownumber}' => strval($this->rowIndex),
-        ];
     }
 }

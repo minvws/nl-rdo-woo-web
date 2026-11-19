@@ -5,20 +5,19 @@ declare(strict_types=1);
 namespace PublicationApi\Domain\Exception;
 
 use Override;
-use RuntimeException;
 use Shared\Domain\Exception\ProvidesDiagnosticContext;
-use Stringable;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-final class EntityNotFoundException extends RuntimeException implements ProvidesDiagnosticContext
+final class EntityNotFoundException extends NotFoundHttpException implements ProvidesDiagnosticContext
 {
     private function __construct(
         public readonly string $entityName,
-        public readonly string|Stringable $id,
+        public readonly string $id,
     ) {
         parent::__construct('Entity not found');
     }
 
-    public static function for(string $entityName, string|Stringable $id): self
+    public static function for(string $entityName, string $id): self
     {
         return new self($entityName, $id);
     }
@@ -28,9 +27,7 @@ final class EntityNotFoundException extends RuntimeException implements Provides
     {
         return [
             'entityName' => $this->entityName,
-            'id' => $this->id instanceof Stringable
-                ? $this->id->__toString()
-                : $this->id,
+            'id' => $this->id,
         ];
     }
 }

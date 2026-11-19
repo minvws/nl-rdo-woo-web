@@ -134,7 +134,6 @@ Error: Fout
 'Please upload a valid spreadsheet': 'Upload een geldige spreadsheet.'
 'Enter a inquiry number or multiple inquiry numbers, separate multiple inquiry numbers with commas': 'Vul een zaaknummer of meerdere zaaknummers in, scheid meerdere zaaknummers met komma’s'
 'Choose from the selection of published decisions': 'Kies uit de selectie gepubliceerde besluiten'
-'Mapping version does not exist': 'De mapping versie bestaat niet'
 date_mandatory: 'Deze datum is verplicht. Vul een datum in. Je kunt op het kalender-icoon klikken om een datum te selecteren.'
 date_to_before_date_from: 'Einddatum dient na begindatum te liggen'
 date_max_10_year_old: 'Datum mag niet meer dan 10 jaar in het verleden liggen'

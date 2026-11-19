@@ -11,6 +11,7 @@ use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\DossierBreadcrumbFactory;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierViewParamsBuilder;
 use Shared\Service\DossierWizard\DossierWizardStatus;
+use Shared\Service\DossierWizard\StepStatus;
 use Shared\Service\DossierWizard\WizardStatusFactory;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\SubmitButton;
@@ -48,7 +49,7 @@ readonly class StepActionHelper
     public function redirectToFirstOpenStep(DossierWizardStatus $wizardStatus): RedirectResponse
     {
         $firstOpenStep = $wizardStatus->getFirstOpenStep();
-        if ($firstOpenStep === null) {
+        if (! $firstOpenStep instanceof StepStatus) {
             return $this->redirectToDossier($wizardStatus->getDossier());
         }
 

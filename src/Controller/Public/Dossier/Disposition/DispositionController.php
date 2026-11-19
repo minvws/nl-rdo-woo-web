@@ -8,6 +8,7 @@ use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use InvalidArgumentException;
 use Shared\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\ViewModel\NoticeNotPublicViewFactory;
 use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
@@ -15,6 +16,7 @@ use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\Disposition\ViewModel\DispositionViewFactory;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -61,11 +63,11 @@ class DispositionController extends AbstractController
         );
         $noticeNotPublic = $disposition->getNoticeNotPublic();
 
-        if ($document === null && $noticeNotPublic === null) {
+        if (! $document instanceof AbstractMainDocument && ! $noticeNotPublic instanceof NoticeNotPublic) {
             throw new InvalidArgumentException('either mainDocument or NoticeNotPublic must be set');
         }
 
-        if ($document !== null) {
+        if ($document instanceof AbstractMainDocument) {
             $parameters['document'] = $this->mainDocumentViewFactory->make($disposition, $document);
             $parameters['noticeNotPublic'] = null;
         } else {

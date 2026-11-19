@@ -40,7 +40,7 @@
             {% if dossier.canProvideInventory  %}
                 <div class="mb-6">
                     <twig:Admin:Publication:WooDecision:ReplaceDocuments
-                        dossier="{{ dossier }}"
+                        dossierId="{{ dossier.id }}"
                         uploadGroupId="{{ uploadGroupId }}"
                     />
                 </div>

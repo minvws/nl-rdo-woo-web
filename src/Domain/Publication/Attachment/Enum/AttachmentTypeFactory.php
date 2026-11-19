@@ -203,7 +203,7 @@ readonly class AttachmentTypeFactory
             foreach ($collection as $item) {
                 if ($item instanceof AttachmentTypeBranch) {
                     $branch = $item->filter($allowedTypes);
-                    if ($branch !== null) {
+                    if ($branch instanceof AttachmentTypeBranch) {
                         $newCollection->add($branch);
                     }
                 } elseif (in_array($item, $allowedTypes, true)) {

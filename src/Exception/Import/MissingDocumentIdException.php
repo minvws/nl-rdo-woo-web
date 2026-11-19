@@ -4,30 +4,17 @@ declare(strict_types=1);
 
 namespace Shared\Exception\Import;
 
-use function sprintf;
-use function strval;
-
-final class MissingDocumentIdException extends ImportException
+final class MissingDocumentIdException extends RowImportException
 {
     public const string MESSAGE_KEY = 'publication.dossier.error.missing_document_number';
 
-    public function __construct(public readonly int $rowIndex)
+    public function __construct(int $rowIndex)
     {
-        parent::__construct(sprintf('Missing document ID in inventory row #%d', $rowIndex));
+        parent::__construct($rowIndex, 'Missing document ID');
     }
 
     public function getMessageKey(): string
     {
         return MissingDocumentIdException::MESSAGE_KEY;
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    public function getMessageData(): array
-    {
-        return [
-            '{rownumber}' => strval($this->rowIndex),
-        ];
     }
 }

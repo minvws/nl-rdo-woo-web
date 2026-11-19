@@ -48,7 +48,7 @@ final class CovenantUploadAttachmentTest extends ApiPublicationV1UploadTestCase
         );
     }
 
-    public function testUploadOnPublishedDossierReturnsValidationError(): void
+    public function testUploadOnPublishedDossier(): void
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
@@ -63,21 +63,19 @@ final class CovenantUploadAttachmentTest extends ApiPublicationV1UploadTestCase
             'externalId' => $this->getFaker()->externalId(),
         ]);
 
-        $client = self::createPublicationApiClient();
-        $client->request(Request::METHOD_PUT, sprintf(
-            '/api/publication/v1/organisation/%s/dossiers/covenant/external/%s/uploads/attachment/external/%s',
-            $organisation->getId(),
-            $covenant->getExternalId(),
-            $covenantAttachment->getExternalId(),
-        ), [
-            'headers' => [
-                'Content-Type' => 'application/octet-stream',
-            ],
-            'body' => $this->getTestFileContent('1008.pdf'),
-        ]);
-
-        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
-        self::assertJsonContains(['violations' => [['message' => 'document upload is not allowed for a published dossier']]]);
+        $this->assertUpload(
+            url: sprintf(
+                '/api/publication/v1/organisation/%s/dossiers/covenant/external/%s/uploads/attachment/external/%s',
+                $organisation->getId(),
+                $covenant->getExternalId(),
+                $covenantAttachment->getExternalId(),
+            ),
+            dossierId: $covenant->getId()->toRfc4122(),
+            entityId: $covenantAttachment->getId()->toRfc4122(),
+            entityFileName: $covenantAttachment->getFileInfo()->getName(),
+            uploadGroupId: UploadGroupId::ATTACHMENTS,
+            entityParameterKey: 'attachmentId',
+        );
     }
 
     public function testUploadWithoutFile(): void

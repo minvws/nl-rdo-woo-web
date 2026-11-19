@@ -4,6 +4,7 @@ Library             DataDriver  reader_class=libraries/yaml_reader.py  file_path
 Resource            ../../resources/API.resource
 Resource            ../../resources/Disposition.resource
 Resource            ../../resources/Dossier.resource
+Resource            ../../resources/SpreadsheetAPI.resource
 Suite Setup         Suite Setup
 Test Template       Disposition Test Case
 Test Tags           api  api-disposition

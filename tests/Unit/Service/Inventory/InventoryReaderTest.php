@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Service\Inventory;
 
 use ArrayIterator;
+use GuzzleHttp\Psr7\Utils;
 use Mockery;
 use RuntimeException;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\SourceType;
 use Shared\Exception\Import\FilenameTooLongException;
@@ -14,6 +16,7 @@ use Shared\Exception\Import\InvalidDocumentIdException;
 use Shared\Exception\Import\InvalidDocumentIdLengthException;
 use Shared\Exception\Import\InvalidFamilyIdException;
 use Shared\Exception\Import\InvalidInquiryNumbersException;
+use Shared\Exception\Import\InvalidJudgementException;
 use Shared\Exception\Import\InvalidLinkException;
 use Shared\Exception\Import\InvalidPublicationContextException;
 use Shared\Exception\Import\InvalidRefersToException;
@@ -23,9 +26,8 @@ use Shared\Exception\Import\MatterAndPublicationContextCombinationException;
 use Shared\Exception\Import\MissingDocumentIdException;
 use Shared\Exception\Import\MissingMatterAndPublicationContextException;
 use Shared\Exception\Import\RemarkTooLongException;
-use Shared\Exception\Import\RowProcessingException;
+use Shared\Exception\Import\UnexpectedRowException;
 use Shared\Service\FileReader\CsvReaderFactory;
-use Shared\Service\FileReader\ExcelReaderFactory;
 use Shared\Service\FileReader\FileReaderInterface;
 use Shared\Service\FileReader\ReaderFactoryInterface;
 use Shared\Service\Inventory\DocumentMetadata;
@@ -48,10 +50,10 @@ class InventoryReaderTest extends UnitTestCase
     protected function setUp(): void
     {
         $factory = new InventoryReaderFactory([
-            new ExcelReaderFactory(),
+            new CsvReaderFactory(),
         ]);
 
-        $this->reader = $factory->create('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $this->reader = $factory->create('text/csv');
 
         parent::setUp();
     }
@@ -60,31 +62,31 @@ class InventoryReaderTest extends UnitTestCase
     {
         $dossier = new WooDecision();
 
-        $this->reader->open(__DIR__ . '/inventory-link-remark-1.xlsx');
+        $this->reader->open(Utils::tryFopen(sprintf('%s/inventory-link-remark-1.csv', __DIR__), 'r'));
         $item = $this->reader->getDocumentMetadataGenerator($dossier)->current();
         self::assertNotNull($item->getDocumentMetaData());
         self::assertEquals(['https://www.example.org'], $item->getDocumentMetaData()->getLinks());
         self::assertNull($item->getDocumentMetaData()->getRemark());
 
-        $this->reader->open(__DIR__ . '/inventory-link-remark-2.xlsx');
+        $this->reader->open(Utils::tryFopen(sprintf('%s/inventory-link-remark-2.csv', __DIR__), 'r'));
         $item = $this->reader->getDocumentMetadataGenerator($dossier)->current();
         self::assertNotNull($item->getDocumentMetaData());
         self::assertEquals(['https://www.example.org'], $item->getDocumentMetaData()->getLinks());
         self::assertNull($item->getDocumentMetaData()->getRemark());
 
-        $this->reader->open(__DIR__ . '/inventory-link-remark-3.xlsx');
+        $this->reader->open(Utils::tryFopen(sprintf('%s/inventory-link-remark-3.csv', __DIR__), 'r'));
         $item = $this->reader->getDocumentMetadataGenerator($dossier)->current();
         self::assertNotNull($item->getDocumentMetaData());
         self::assertEquals([], $item->getDocumentMetaData()->getLinks());
         self::assertEquals('foo bar', $item->getDocumentMetaData()->getRemark());
 
-        $this->reader->open(__DIR__ . '/inventory-link-remark-4.xlsx');
+        $this->reader->open(Utils::tryFopen(sprintf('%s/inventory-link-remark-4.csv', __DIR__), 'r'));
         $item = $this->reader->getDocumentMetadataGenerator($dossier)->current();
         self::assertNotNull($item->getDocumentMetaData());
         self::assertEquals(['https://www.example.org'], $item->getDocumentMetaData()->getLinks());
         self::assertEquals('https://notok.example.org', $item->getDocumentMetaData()->getRemark());
 
-        $this->reader->open(__DIR__ . '/inventory-link-remark-5.xlsx');
+        $this->reader->open(Utils::tryFopen(sprintf('%s/inventory-link-remark-5.csv', __DIR__), 'r'));
         $item = $this->reader->getDocumentMetadataGenerator($dossier)->current();
         self::assertNotNull($item->getDocumentMetaData());
         self::assertEquals(['https://example.org'], $item->getDocumentMetaData()->getLinks());
@@ -93,7 +95,7 @@ class InventoryReaderTest extends UnitTestCase
 
     public function testInventoryWithNewFormatDescribedInWoo1645(): void
     {
-        $this->reader->open(__DIR__ . '/inventory-1645.xlsx');
+        $this->reader->open(Utils::tryFopen(sprintf('%s/inventory-1645.csv', __DIR__), 'r'));
 
         $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
 
@@ -117,16 +119,16 @@ class InventoryReaderTest extends UnitTestCase
 
     public function testInventoryReaderAddsExceptionForMissingMatterAndPublicationContext(): void
     {
-        $this->reader->open(__DIR__ . '/inventory-missing-matter.xlsx');
+        $this->reader->open(Utils::tryFopen(sprintf('%s/inventory-missing-matter.csv', __DIR__), 'r'));
 
         $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
 
         self::assertEquals(
-            new MissingMatterAndPublicationContextException(2),
+            new MissingMatterAndPublicationContextException(1),
             $result[0]->getException(),
         );
         self::assertEquals(
-            new MissingMatterAndPublicationContextException(3),
+            new MissingMatterAndPublicationContextException(2),
             $result[1]->getException(),
         );
     }
@@ -138,7 +140,9 @@ class InventoryReaderTest extends UnitTestCase
         ]);
         $reader = $factory->create('text/csv');
 
-        $reader->open(__DIR__ . '/inventory-missing-matter-and-publication-context.csv');
+        $reader->open(
+            Utils::tryFopen(sprintf('%s/inventory-missing-matter-and-publication-context.csv', __DIR__), 'r'),
+        );
 
         $result = $reader->getDocumentMetadataGenerator(new WooDecision())->current();
 
@@ -150,34 +154,79 @@ class InventoryReaderTest extends UnitTestCase
 
     public function testInventoryReaderAddsExceptionsForTooLongRemark(): void
     {
-        $this->reader->open(__DIR__ . '/inventory-remark-too-long.xlsx');
+        $this->reader->open(Utils::tryFopen(sprintf('%s/inventory-remark-too-long.csv', __DIR__), 'r'));
 
         $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
 
-        self::assertEquals(new RemarkTooLongException(3, 1000), $result[1]->getException());
+        self::assertEquals(new RemarkTooLongException(2, 1000), $result[1]->getException());
     }
 
     public function testInventoryReaderAddsExceptionsForNegativeFamilyId(): void
     {
-        $this->reader->open(__DIR__ . '/inventory-negative-family-id.xlsx');
+        $this->reader->open(Utils::tryFopen(sprintf('%s/inventory-negative-family-id.csv', __DIR__), 'r'));
 
         $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
 
-        self::assertEquals(new InvalidFamilyIdException(3), $result[1]->getException());
+        self::assertEquals(new InvalidFamilyIdException(2), $result[1]->getException());
     }
 
     public function testInventoryReaderAddsExceptionsForNegativeThreadId(): void
     {
-        $this->reader->open(__DIR__ . '/inventory-negative-thread-id.xlsx');
+        $this->reader->open(Utils::tryFopen(sprintf('%s/inventory-negative-thread-id.csv', __DIR__), 'r'));
 
         $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
 
-        self::assertEquals(new InvalidThreadIdException(3), $result[1]->getException());
+        self::assertEquals(new InvalidThreadIdException(2), $result[1]->getException());
+    }
+
+    public function testInventoryReaderAddsExceptionForInvalidJudgement(): void
+    {
+        $this->reader->open(Utils::tryFopen(sprintf('%s/inventory-invalid-judgement.csv', __DIR__), 'r'));
+
+        $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
+
+        self::assertNull($result[0]->getException());
+        self::assertSame(Judgement::PARTIAL_PUBLIC, $result[0]->getDocumentMetadata()?->getJudgement());
+
+        self::assertEquals(new InvalidJudgementException(2, 'foobar'), $result[1]->getException());
+        self::assertNull($result[1]->getDocumentMetadata());
+
+        self::assertNull($result[2]->getException());
+        self::assertSame(Judgement::NOT_PUBLIC, $result[2]->getDocumentMetadata()?->getJudgement());
+    }
+
+    public function testInventoryReaderValidatesFamilyAndThreadIds(): void
+    {
+        $factory = new InventoryReaderFactory([
+            new CsvReaderFactory(),
+        ]);
+        $reader = $factory->create('text/csv');
+
+        $reader->open(Utils::tryFopen(sprintf('%s/inventory-family-and-thread-ids.csv', __DIR__), 'r'));
+
+        $result = iterator_to_array($reader->getDocumentMetadataGenerator(new WooDecision()), false);
+
+        self::assertNull($result[0]->getException());
+        $documentMetadata = $result[0]->getDocumentMetadata();
+        self::assertNotNull($documentMetadata);
+        self::assertSame(12, $documentMetadata->getFamilyId());
+        self::assertSame(34, $documentMetadata->getThreadId());
+
+        self::assertNull($result[1]->getException());
+        $documentMetadata = $result[1]->getDocumentMetadata();
+        self::assertNotNull($documentMetadata);
+        self::assertNull($documentMetadata->getFamilyId());
+        self::assertNull($documentMetadata->getThreadId());
+
+        self::assertEquals(new InvalidFamilyIdException(3), $result[2]->getException());
+        self::assertEquals(new InvalidFamilyIdException(4), $result[3]->getException());
+        self::assertEquals(new InvalidThreadIdException(5), $result[4]->getException());
+        self::assertEquals(new InvalidThreadIdException(6), $result[5]->getException());
     }
 
     public function testInventoryReaderAllowsSingleCharacterMatterCells(): void
     {
-        $this->reader->open(__DIR__ . '/inventory-single-character-matter.xlsx');
+        $this->reader->open(Utils::tryFopen(sprintf('%s/inventory-single-character-matter.csv', __DIR__), 'r'));
 
         $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
 
@@ -187,7 +236,7 @@ class InventoryReaderTest extends UnitTestCase
 
     public function testInventoryWithEmptyDates(): void
     {
-        $this->reader->open(__DIR__ . '/inventory-empty-date.xlsx');
+        $this->reader->open(Utils::tryFopen(sprintf('%s/inventory-empty-date.csv', __DIR__), 'r'));
 
         $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
 
@@ -202,17 +251,17 @@ class InventoryReaderTest extends UnitTestCase
 
     public function testInventoryReaderAddsExceptionForInvalidDocumentId(): void
     {
-        $this->reader->open(__DIR__ . '/inventory-invalid-document-id.xlsx');
+        $this->reader->open(Utils::tryFopen(sprintf('%s/inventory-invalid-document-id.csv', __DIR__), 'r'));
 
         $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
 
         self::assertNull($result[0]->getException());
-        self::assertEquals(new InvalidDocumentIdException(3), $result[1]->getException());
+        self::assertEquals(new InvalidDocumentIdException(2), $result[1]->getException());
     }
 
     public function testInventoryReaderSplitsRemarkWithMultipleUrls(): void
     {
-        $this->reader->open(__DIR__ . '/inventory-link-remark-6.xlsx');
+        $this->reader->open(Utils::tryFopen(sprintf('%s/inventory-link-remark-6.csv', __DIR__), 'r'));
 
         $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
 
@@ -227,20 +276,20 @@ class InventoryReaderTest extends UnitTestCase
 
     public function testInventoryReaderAddsExceptionForInvalidLinkInLinkColumn(): void
     {
-        $this->reader->open(__DIR__ . '/inventory-invalid-link.xlsx');
+        $this->reader->open(Utils::tryFopen(sprintf('%s/inventory-invalid-link.csv', __DIR__), 'r'));
 
         $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
 
-        self::assertEquals(new InvalidLinkException('not-a-valid-url', 2), $result[0]->getException());
+        self::assertEquals(new InvalidLinkException(1, 'not-a-valid-url'), $result[0]->getException());
     }
 
     public function testInventoryReaderAddsExceptionForInvalidLinkInRemarkColumn(): void
     {
-        $this->reader->open(__DIR__ . '/inventory-invalid-link-in-remark.xlsx');
+        $this->reader->open(Utils::tryFopen(sprintf('%s/inventory-invalid-link-in-remark.csv', __DIR__), 'r'));
 
         $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
 
-        self::assertEquals(new InvalidLinkException('http://invalid link because of spaces', 2), $result[0]->getException());
+        self::assertEquals(new InvalidLinkException(1, 'http://invalid link because of spaces'), $result[0]->getException());
     }
 
     public function testInventoryReaderParsesPublicationContextColumn(): void
@@ -250,7 +299,7 @@ class InventoryReaderTest extends UnitTestCase
         ]);
         $reader = $factory->create('text/csv');
 
-        $reader->open(__DIR__ . '/inventory-publicationcontext.csv');
+        $reader->open(Utils::tryFopen(sprintf('%s/inventory-publicationcontext.csv', __DIR__), 'r'));
 
         $result = $reader->getDocumentMetadataGenerator(new WooDecision())->current();
         self::assertInstanceOf(InventoryReadItem::class, $result);
@@ -268,7 +317,7 @@ class InventoryReaderTest extends UnitTestCase
         ]);
         $reader = $factory->create('text/csv');
 
-        $reader->open(__DIR__ . '/inventory-publicationcontext-with-matter.csv');
+        $reader->open(Utils::tryFopen(sprintf('%s/inventory-publicationcontext-with-matter.csv', __DIR__), 'r'));
 
         $result = $reader->getDocumentMetadataGenerator(new WooDecision())->current();
         self::assertInstanceOf(InventoryReadItem::class, $result);
@@ -285,7 +334,7 @@ class InventoryReaderTest extends UnitTestCase
         ]);
         $reader = $factory->create('text/csv');
 
-        $reader->open(__DIR__ . '/inventory-publicationcontext-with-empty-matter.csv');
+        $reader->open(Utils::tryFopen(sprintf('%s/inventory-publicationcontext-with-empty-matter.csv', __DIR__), 'r'));
 
         $result = $reader->getDocumentMetadataGenerator(new WooDecision())->current();
         self::assertInstanceOf(InventoryReadItem::class, $result);
@@ -303,7 +352,7 @@ class InventoryReaderTest extends UnitTestCase
         ]);
         $reader = $factory->create('text/csv');
 
-        $reader->open(sprintf('%s/inventory-matter-with-related-id.csv', __DIR__));
+        $reader->open(Utils::tryFopen(sprintf('%s/inventory-matter-with-related-id.csv', __DIR__), 'r'));
 
         $dossier = new WooDecision();
         $dossier->setDocumentPrefix('PREF');
@@ -324,7 +373,7 @@ class InventoryReaderTest extends UnitTestCase
         ]);
         $reader = $factory->create('text/csv');
 
-        $reader->open(sprintf('%s/inventory-matter-with-invalid-related-id.csv', __DIR__));
+        $reader->open(Utils::tryFopen(sprintf('%s/inventory-matter-with-invalid-related-id.csv', __DIR__), 'r'));
 
         $dossier = new WooDecision();
         $dossier->setDocumentPrefix('PREF');
@@ -332,7 +381,7 @@ class InventoryReaderTest extends UnitTestCase
         $result = $reader->getDocumentMetadataGenerator($dossier)->current();
         self::assertInstanceOf(InventoryReadItem::class, $result);
         self::assertNull($result->getDocumentMetadata());
-        self::assertEquals(new InvalidRefersToException('1004 | 1005', 1), $result->getException());
+        self::assertEquals(new InvalidRefersToException(1, '1004 | 1005'), $result->getException());
     }
 
     public function testInventoryReaderKeepsRelatedIdsWhenTheRowHasAPublicationContext(): void
@@ -342,7 +391,7 @@ class InventoryReaderTest extends UnitTestCase
         ]);
         $reader = $factory->create('text/csv');
 
-        $reader->open(sprintf('%s/inventory-publicationcontext-with-related-id.csv', __DIR__));
+        $reader->open(Utils::tryFopen(sprintf('%s/inventory-publicationcontext-with-related-id.csv', __DIR__), 'r'));
 
         $dossier = new WooDecision();
         $dossier->setDocumentPrefix('PREF');
@@ -358,7 +407,7 @@ class InventoryReaderTest extends UnitTestCase
 
     public function testInventoryReaderAcceptsAlternativeColumnNamesForDateAndGround(): void
     {
-        $this->reader->open(sprintf('%s/inventory-alternative-date-and-ground.xlsx', __DIR__));
+        $this->reader->open(Utils::tryFopen(sprintf('%s/inventory-alternative-date-and-ground.csv', __DIR__), 'r'));
 
         $iterator = $this->reader->getDocumentMetadataGenerator(new WooDecision());
 
@@ -376,7 +425,7 @@ class InventoryReaderTest extends UnitTestCase
         ]);
         $reader = $factory->create('text/csv');
 
-        $reader->open(__DIR__ . '/inventory-matter-with-related-id.csv');
+        $reader->open(Utils::tryFopen(sprintf('%s/inventory-matter-with-related-id.csv', __DIR__), 'r'));
 
         self::assertTrue($reader->hasMatterColumn());
     }
@@ -388,7 +437,7 @@ class InventoryReaderTest extends UnitTestCase
         ]);
         $reader = $factory->create('text/csv');
 
-        $reader->open(__DIR__ . '/inventory-publicationcontext.csv');
+        $reader->open(Utils::tryFopen(sprintf('%s/inventory-publicationcontext.csv', __DIR__), 'r'));
 
         self::assertFalse($reader->hasMatterColumn());
     }
@@ -396,7 +445,7 @@ class InventoryReaderTest extends UnitTestCase
     public function testGetDocumentMetadataGeneratorFailsWhenDocumentIdIsMissing(): void
     {
         $rowIndex = $this->getFaker()->numberBetween(1, 100);
-        $filepath = $this->getFaker()->word();
+        $stream = Utils::tryFopen('php://memory', 'r');
         $publicationContext = $this->getFaker()->publicationContext()->toString();
         $filename = $this->getFaker()->word();
 
@@ -408,16 +457,16 @@ class InventoryReaderTest extends UnitTestCase
         $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::REMARK->value)->andReturnNull();
         $fileReader->expects('getOptionalDateTime')->with($rowIndex, MetadataField::DATE->value)->andReturnNull();
         $fileReader->expects('getString')->with($rowIndex, MetadataField::DOCUMENT->value)->andReturn($filename);
-        $fileReader->expects('getOptionalInt')->with($rowIndex, MetadataField::FAMILY->value)->andReturnNull();
+        $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::FAMILY->value)->andReturnNull();
         $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::SOURCETYPE->value)->andReturnNull();
         $fileReader->expects('getString')->with($rowIndex, MetadataField::GROUND->value)->andReturn('');
         $fileReader->expects('getString')->with($rowIndex, MetadataField::ID->value)->andReturn('');
 
         $readerFactory = Mockery::mock(ReaderFactoryInterface::class);
-        $readerFactory->expects('createReader')->with($filepath)->andReturn($fileReader);
+        $readerFactory->expects('createReader')->with($stream)->andReturn($fileReader);
 
         $inventoryReader = new InventoryReader($readerFactory);
-        $inventoryReader->open($filepath);
+        $inventoryReader->open($stream);
 
         $inventoryReadItem = $inventoryReader->getDocumentMetadataGenerator(new WooDecision())->current();
 
@@ -427,7 +476,7 @@ class InventoryReaderTest extends UnitTestCase
     public function testGetDocumentMetadataGeneratorFailsWhenDocumentIdIsTooLong(): void
     {
         $rowIndex = $this->getFaker()->numberBetween(1, 100);
-        $filepath = $this->getFaker()->word();
+        $stream = Utils::tryFopen('php://memory', 'r');
         $publicationContext = $this->getFaker()->publicationContext()->toString();
         $filename = $this->getFaker()->word();
         $documentId = $this->getFaker()->numerify(str_repeat('#', 171));
@@ -440,16 +489,16 @@ class InventoryReaderTest extends UnitTestCase
         $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::REMARK->value)->andReturnNull();
         $fileReader->expects('getOptionalDateTime')->with($rowIndex, MetadataField::DATE->value)->andReturnNull();
         $fileReader->expects('getString')->with($rowIndex, MetadataField::DOCUMENT->value)->andReturn($filename);
-        $fileReader->expects('getOptionalInt')->with($rowIndex, MetadataField::FAMILY->value)->andReturnNull();
+        $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::FAMILY->value)->andReturnNull();
         $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::SOURCETYPE->value)->andReturnNull();
         $fileReader->expects('getString')->with($rowIndex, MetadataField::GROUND->value)->andReturn('');
         $fileReader->expects('getString')->with($rowIndex, MetadataField::ID->value)->andReturn($documentId);
 
         $readerFactory = Mockery::mock(ReaderFactoryInterface::class);
-        $readerFactory->expects('createReader')->with($filepath)->andReturn($fileReader);
+        $readerFactory->expects('createReader')->with($stream)->andReturn($fileReader);
 
         $inventoryReader = new InventoryReader($readerFactory);
-        $inventoryReader->open($filepath);
+        $inventoryReader->open($stream);
 
         $inventoryReadItem = $inventoryReader->getDocumentMetadataGenerator(new WooDecision())->current();
 
@@ -459,7 +508,7 @@ class InventoryReaderTest extends UnitTestCase
     public function testGetDocumentMetadataGeneratorFailsWhenFilenameIsTooLong(): void
     {
         $rowIndex = $this->getFaker()->numberBetween(1, 100);
-        $filepath = $this->getFaker()->word();
+        $stream = Utils::tryFopen('php://memory', 'r');
         $publicationContext = $this->getFaker()->publicationContext()->toString();
         $filename = $this->getFaker()->lexify(str_repeat('?', 501));
 
@@ -473,24 +522,24 @@ class InventoryReaderTest extends UnitTestCase
         $fileReader->expects('getString')->with($rowIndex, MetadataField::DOCUMENT->value)->andReturn($filename);
 
         $readerFactory = Mockery::mock(ReaderFactoryInterface::class);
-        $readerFactory->expects('createReader')->with($filepath)->andReturn($fileReader);
+        $readerFactory->expects('createReader')->with($stream)->andReturn($fileReader);
 
         $inventoryReader = new InventoryReader($readerFactory);
-        $inventoryReader->open($filepath);
+        $inventoryReader->open($stream);
 
         $inventoryReadItem = $inventoryReader->getDocumentMetadataGenerator(new WooDecision())->current();
 
-        self::assertEquals(new FilenameTooLongException($filename, $rowIndex, 500), $inventoryReadItem->getException());
+        self::assertEquals(new FilenameTooLongException($rowIndex, $filename, 500), $inventoryReadItem->getException());
     }
 
     public function testGetDocumentMetadataGeneratorFailsWhenInquiryNumbersAreInvalid(): void
     {
         $rowIndex = $this->getFaker()->numberBetween(1, 100);
-        $filepath = $this->getFaker()->word();
+        $stream = Utils::tryFopen('php://memory', 'r');
         $publicationContext = $this->getFaker()->publicationContext()->toString();
         $filename = $this->getFaker()->word();
         $documentId = $this->getFaker()->documentId()->toString();
-        $judgement = $this->getFaker()->word();
+        $judgement = $this->getFaker()->randomElement(['openbaar', 'deels openbaar', 'reeds openbaar', 'niet openbaar']);
         $inquiryNumbers = sprintf('<%s>', $this->getFaker()->word());
 
         $fileReader = Mockery::mock(FileReaderInterface::class);
@@ -501,33 +550,33 @@ class InventoryReaderTest extends UnitTestCase
         $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::REMARK->value)->andReturnNull();
         $fileReader->expects('getOptionalDateTime')->with($rowIndex, MetadataField::DATE->value)->andReturnNull();
         $fileReader->expects('getString')->with($rowIndex, MetadataField::DOCUMENT->value)->andReturn($filename);
-        $fileReader->expects('getOptionalInt')->with($rowIndex, MetadataField::FAMILY->value)->andReturnNull();
+        $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::FAMILY->value)->andReturnNull();
         $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::SOURCETYPE->value)->andReturnNull();
         $fileReader->expects('getString')->with($rowIndex, MetadataField::GROUND->value)->andReturn('');
         $fileReader->expects('getString')->with($rowIndex, MetadataField::ID->value)->andReturn($documentId);
         $fileReader->expects('getString')->with($rowIndex, MetadataField::JUDGEMENT->value)->andReturn($judgement);
-        $fileReader->expects('getOptionalInt')->with($rowIndex, MetadataField::THREADID->value)->andReturnNull();
+        $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::THREADID->value)->andReturnNull();
         $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::INQUIRY_NUMBER->value)->andReturn($inquiryNumbers);
 
         $readerFactory = Mockery::mock(ReaderFactoryInterface::class);
-        $readerFactory->expects('createReader')->with($filepath)->andReturn($fileReader);
+        $readerFactory->expects('createReader')->with($stream)->andReturn($fileReader);
 
         $inventoryReader = new InventoryReader($readerFactory);
-        $inventoryReader->open($filepath);
+        $inventoryReader->open($stream);
 
         $inventoryReadItem = $inventoryReader->getDocumentMetadataGenerator(new WooDecision())->current();
 
-        self::assertEquals(new InvalidInquiryNumbersException($inquiryNumbers, $rowIndex), $inventoryReadItem->getException());
+        self::assertEquals(new InvalidInquiryNumbersException($rowIndex, $inquiryNumbers), $inventoryReadItem->getException());
     }
 
     public function testGetDocumentMetadataGeneratorFailsWhenPublicationContextIsInvalid(): void
     {
         $rowIndex = $this->getFaker()->numberBetween(1, 100);
-        $filepath = $this->getFaker()->word();
+        $stream = Utils::tryFopen('php://memory', 'r');
         $publicationContext = sprintf('%s %s', $this->getFaker()->word(), $this->getFaker()->word());
         $filename = $this->getFaker()->word();
         $documentId = $this->getFaker()->documentId()->toString();
-        $judgement = $this->getFaker()->word();
+        $judgement = $this->getFaker()->randomElement(['openbaar', 'deels openbaar', 'reeds openbaar', 'niet openbaar']);
 
         $fileReader = Mockery::mock(FileReaderInterface::class);
         $fileReader->expects('getIterator')->andReturn(new ArrayIterator([$rowIndex => []]));
@@ -541,20 +590,20 @@ class InventoryReaderTest extends UnitTestCase
         $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::REMARK->value)->andReturnNull();
         $fileReader->expects('getOptionalDateTime')->with($rowIndex, MetadataField::DATE->value)->andReturnNull();
         $fileReader->expects('getString')->with($rowIndex, MetadataField::DOCUMENT->value)->andReturn($filename);
-        $fileReader->expects('getOptionalInt')->with($rowIndex, MetadataField::FAMILY->value)->andReturnNull();
+        $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::FAMILY->value)->andReturnNull();
         $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::SOURCETYPE->value)->andReturnNull();
         $fileReader->expects('getString')->with($rowIndex, MetadataField::GROUND->value)->andReturn('');
         $fileReader->expects('getString')->with($rowIndex, MetadataField::ID->value)->andReturn($documentId);
         $fileReader->expects('getString')->with($rowIndex, MetadataField::JUDGEMENT->value)->andReturn($judgement);
-        $fileReader->expects('getOptionalInt')->with($rowIndex, MetadataField::THREADID->value)->andReturnNull();
+        $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::THREADID->value)->andReturnNull();
         $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::INQUIRY_NUMBER->value)->andReturnNull();
         $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::SUSPENDED->value)->andReturnNull();
 
         $readerFactory = Mockery::mock(ReaderFactoryInterface::class);
-        $readerFactory->expects('createReader')->with($filepath)->andReturn($fileReader);
+        $readerFactory->expects('createReader')->with($stream)->andReturn($fileReader);
 
         $inventoryReader = new InventoryReader($readerFactory);
-        $inventoryReader->open($filepath);
+        $inventoryReader->open($stream);
 
         $inventoryReadItem = $inventoryReader->getDocumentMetadataGenerator(new WooDecision())->current();
 
@@ -564,11 +613,11 @@ class InventoryReaderTest extends UnitTestCase
     public function testGetDocumentMetadataGeneratorFailsWhenPublicationContextFromMatterIsInvalid(): void
     {
         $rowIndex = $this->getFaker()->numberBetween(1, 100);
-        $filepath = $this->getFaker()->word();
+        $stream = Utils::tryFopen('php://memory', 'r');
         $matter = $this->getFaker()->lexify(str_repeat('?', 255));
         $filename = $this->getFaker()->word();
         $documentId = $this->getFaker()->documentId()->toString();
-        $judgement = $this->getFaker()->word();
+        $judgement = $this->getFaker()->randomElement(['openbaar', 'deels openbaar', 'reeds openbaar', 'niet openbaar']);
 
         $fileReader = Mockery::mock(FileReaderInterface::class);
         $fileReader->expects('getIterator')->andReturn(new ArrayIterator([$rowIndex => []]));
@@ -578,22 +627,22 @@ class InventoryReaderTest extends UnitTestCase
         $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::REMARK->value)->andReturnNull();
         $fileReader->expects('getOptionalDateTime')->with($rowIndex, MetadataField::DATE->value)->andReturnNull();
         $fileReader->expects('getString')->with($rowIndex, MetadataField::DOCUMENT->value)->andReturn($filename);
-        $fileReader->expects('getOptionalInt')->with($rowIndex, MetadataField::FAMILY->value)->andReturnNull();
+        $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::FAMILY->value)->andReturnNull();
         $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::SOURCETYPE->value)->andReturnNull();
         $fileReader->expects('getString')->with($rowIndex, MetadataField::GROUND->value)->andReturn('');
         $fileReader->expects('getString')->with($rowIndex, MetadataField::ID->value)->andReturn($documentId);
         $fileReader->expects('getString')->with($rowIndex, MetadataField::JUDGEMENT->value)->andReturn($judgement);
-        $fileReader->expects('getOptionalInt')->with($rowIndex, MetadataField::THREADID->value)->andReturnNull();
+        $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::THREADID->value)->andReturnNull();
         $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::INQUIRY_NUMBER->value)->andReturnNull();
         $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::SUSPENDED->value)->andReturnNull();
 
         $readerFactory = Mockery::mock(ReaderFactoryInterface::class);
         $readerFactory->expects('createReader')
-            ->with($filepath)
+            ->with($stream)
             ->andReturn($fileReader);
 
         $inventoryReader = new InventoryReader($readerFactory);
-        $inventoryReader->open($filepath);
+        $inventoryReader->open($stream);
 
         $inventoryReadItem = $inventoryReader->getDocumentMetadataGenerator(new WooDecision())->current();
 
@@ -603,7 +652,7 @@ class InventoryReaderTest extends UnitTestCase
     public function testGetDocumentMetadataGeneratorFailsWhenLinkIsTooLong(): void
     {
         $rowIndex = $this->getFaker()->numberBetween(1, 100);
-        $filepath = $this->getFaker()->word();
+        $stream = Utils::tryFopen('php://memory', 'r');
         $publicationContext = $this->getFaker()->publicationContext()->toString();
         $link = sprintf('https://%s/%s', $this->getFaker()->domainName(), $this->getFaker()->lexify(str_repeat('?', 2048)));
 
@@ -615,25 +664,25 @@ class InventoryReaderTest extends UnitTestCase
 
         $readerFactory = Mockery::mock(ReaderFactoryInterface::class);
         $readerFactory->expects('createReader')
-            ->with($filepath)
+            ->with($stream)
             ->andReturn($fileReader);
 
         $inventoryReader = new InventoryReader($readerFactory);
-        $inventoryReader->open($filepath);
+        $inventoryReader->open($stream);
 
         $inventoryReadItem = $inventoryReader->getDocumentMetadataGenerator(new WooDecision())->current();
 
-        self::assertEquals(new LinkTooLongException($link, $rowIndex), $inventoryReadItem->getException());
+        self::assertEquals(new LinkTooLongException($rowIndex, $link, 2048), $inventoryReadItem->getException());
     }
 
     public function testGetDocumentMetadataGeneratorFailsWhenRefersToIsInvalid(): void
     {
         $rowIndex = $this->getFaker()->numberBetween(1, 100);
-        $filepath = $this->getFaker()->word();
+        $stream = Utils::tryFopen('php://memory', 'r');
         $matter = $this->getFaker()->lexify();
         $filename = $this->getFaker()->word();
         $documentId = $this->getFaker()->documentId()->toString();
-        $judgement = $this->getFaker()->word();
+        $judgement = $this->getFaker()->randomElement(['openbaar', 'deels openbaar', 'reeds openbaar', 'niet openbaar']);
         $refersTo = sprintf('%s %s', $this->getFaker()->word(), $this->getFaker()->word());
 
         $fileReader = Mockery::mock(FileReaderInterface::class);
@@ -644,51 +693,53 @@ class InventoryReaderTest extends UnitTestCase
         $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::REMARK->value)->andReturnNull();
         $fileReader->expects('getOptionalDateTime')->with($rowIndex, MetadataField::DATE->value)->andReturnNull();
         $fileReader->expects('getString')->with($rowIndex, MetadataField::DOCUMENT->value)->andReturn($filename);
-        $fileReader->expects('getOptionalInt')->with($rowIndex, MetadataField::FAMILY->value)->andReturnNull();
+        $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::FAMILY->value)->andReturnNull();
         $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::SOURCETYPE->value)->andReturnNull();
         $fileReader->expects('getString')->with($rowIndex, MetadataField::GROUND->value)->andReturn('');
         $fileReader->expects('getString')->with($rowIndex, MetadataField::ID->value)->andReturn($documentId);
         $fileReader->expects('getString')->with($rowIndex, MetadataField::JUDGEMENT->value)->andReturn($judgement);
-        $fileReader->expects('getOptionalInt')->with($rowIndex, MetadataField::THREADID->value)->andReturnNull();
+        $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::THREADID->value)->andReturnNull();
         $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::INQUIRY_NUMBER->value)->andReturnNull();
         $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::SUSPENDED->value)->andReturnNull();
         $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::REFERS_TO->value)->andReturn($refersTo);
 
         $readerFactory = Mockery::mock(ReaderFactoryInterface::class);
         $readerFactory->expects('createReader')
-            ->with($filepath)
+            ->with($stream)
             ->andReturn($fileReader);
 
         $inventoryReader = new InventoryReader($readerFactory);
-        $inventoryReader->open($filepath);
+        $inventoryReader->open($stream);
 
         $inventoryReadItem = $inventoryReader->getDocumentMetadataGenerator(new WooDecision())->current();
 
-        self::assertEquals(new InvalidRefersToException($refersTo, $rowIndex), $inventoryReadItem->getException());
+        self::assertEquals(new InvalidRefersToException($rowIndex, $refersTo), $inventoryReadItem->getException());
     }
 
     public function testGetDocumentMetadataGeneratorFailsWhenRowCannotBeProcessed(): void
     {
         $rowIndex = $this->getFaker()->numberBetween(1, 100);
-        $filepath = $this->getFaker()->word();
+        $stream = Utils::tryFopen('php://memory', 'r');
+        $runtimeException = new RuntimeException();
 
         $fileReader = Mockery::mock(FileReaderInterface::class);
         $fileReader->expects('getIterator')->andReturn(new ArrayIterator([$rowIndex => []]));
-        $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::MATTER->value)->andThrow(new RuntimeException());
+        $fileReader->expects('getOptionalString')->with($rowIndex, MetadataField::MATTER->value)->andThrow($runtimeException);
 
         $readerFactory = Mockery::mock(ReaderFactoryInterface::class);
         $readerFactory->expects('createReader')
-            ->with($filepath)
+            ->with($stream)
             ->andReturn($fileReader);
 
         $inventoryReader = new InventoryReader($readerFactory);
-        $inventoryReader->open($filepath);
+        $inventoryReader->open($stream);
 
         $inventoryReadItem = $inventoryReader->getDocumentMetadataGenerator(new WooDecision())->current();
 
         $exception = $inventoryReadItem->getException();
 
-        self::assertInstanceOf(RowProcessingException::class, $exception);
-        self::assertSame($rowIndex, $exception->rowIndex);
+        self::assertSame($rowIndex, $inventoryReadItem->getIndex());
+        self::assertInstanceOf(UnexpectedRowException::class, $exception);
+        self::assertSame($runtimeException, $exception->getPrevious());
     }
 }

@@ -23,7 +23,6 @@ import {
 
 interface Props {
   dateLabel?: string;
-  dossierId?: null | string;
   endpoint: string;
   file: PublicationFile;
   fileLimits: FileUploadLimit[];
@@ -33,7 +32,7 @@ interface Props {
   isEditMode?: boolean;
   languageOptions: SelectOptions;
   maxLength?: number;
-  uploadGroupId: string;
+  shouldValidateExcelFiles?: boolean;
 }
 
 interface Emits {
@@ -47,6 +46,7 @@ const props = withDefaults(defineProps<Props>(), {
   isEditMode: false,
   languageOptions: () => [],
   maxLength: 1,
+  shouldValidateExcelFiles: false,
 });
 
 const emit = defineEmits<Emits>();
@@ -139,12 +139,23 @@ watch(
     @submitSuccess="onSubmitSuccess"
     :store="formStore"
   >
+    <div
+      v-if="props.shouldValidateExcelFiles"
+      class="mb-6"
+      data-e2e-name="excel-files-info"
+    >
+      <Alert type="info">
+        Bij het uploaden van een Excel-bestand nemen we de eerste rij over als
+        kolomnamen. Ook kolommen die in het bestand verborgen zijn, worden
+        getoond. Als het bestand macro’s of opmaak bevat, worden deze niet
+        meegenomen.
+      </Alert>
+    </div>
+
     <InputFileUpload
       :display-max-one-file-message="props.maxLength === 1"
-      :dossier-id="props.dossierId"
       :file-info="fileInfo"
       :file-limits="props.fileLimits"
-      :group-id="props.uploadGroupId"
     />
 
     <InputReference :value="internalReference" />

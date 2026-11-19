@@ -33,7 +33,7 @@ readonly class DocumentFileService
     public function getDocumentFileSet(WooDecision $wooDecision): DocumentFileSet
     {
         $documentFileSet = $this->documentFileSetRepository->findUncompletedByDossier($wooDecision);
-        if ($documentFileSet === null) {
+        if (! $documentFileSet instanceof DocumentFileSet) {
             $documentFileSet = new DocumentFileSet($wooDecision);
             $this->documentFileSetRepository->save($documentFileSet, true);
         }

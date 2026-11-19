@@ -6,9 +6,11 @@ namespace Shared\Tests\Unit\Domain\Department\ViewModel;
 
 use Mockery;
 use Mockery\MockInterface;
+use Shared\Controller\Public\Dossier\WooDecision\DocumentController;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
 use Shared\Service\Storage\ThumbnailStorageService;
 use Shared\Tests\Unit\UnitTestCase;
@@ -64,6 +66,30 @@ final class DossierFileViewFactoryTest extends UnitTestCase
         self::assertEquals($expectedUrl, $fileView->downloadUrl);
         self::assertFalse($fileView->hasPages);
         self::assertCount(0, $fileView->pages);
+    }
+
+    public function testMakeUsesCanonicalDownloadUrlForDocument(): void
+    {
+        $dossier = Mockery::mock(Covenant::class);
+        $documentNumber = $this->getFaker()->documentNumber();
+
+        $document = Mockery::mock(Document::class);
+        $document->expects('getDocumentNumber')->andReturn($documentNumber);
+        $document->expects('getFileInfo->getType')->andReturn('pdf');
+        $document->expects('getFileInfo->getSize')->andReturn(456);
+        $document->expects('getFileInfo->hasPages')->andReturnFalse();
+
+        $this->urlGenerator
+            ->expects('generate')
+            ->with(
+                DocumentController::ROUTE_NAME_DOCUMENT_DOWNLOAD,
+                ['documentNumber' => $documentNumber->toString()],
+            )
+            ->andReturn($expectedUrl = 'my-canonical-url');
+
+        $fileView = $this->factory->make($dossier, $document, DossierFileType::DOCUMENT);
+
+        self::assertSame($expectedUrl, $fileView->downloadUrl);
     }
 
     public function testMakeWithPages(): void

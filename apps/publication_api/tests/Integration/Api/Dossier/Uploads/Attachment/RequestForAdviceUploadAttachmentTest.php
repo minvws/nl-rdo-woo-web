@@ -48,7 +48,7 @@ final class RequestForAdviceUploadAttachmentTest extends ApiPublicationV1UploadT
         );
     }
 
-    public function testUploadOnPublishedDossierReturnsValidationError(): void
+    public function testUploadOnPublishedDossier(): void
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
@@ -63,21 +63,19 @@ final class RequestForAdviceUploadAttachmentTest extends ApiPublicationV1UploadT
             'externalId' => $this->getFaker()->externalId(),
         ]);
 
-        $client = self::createPublicationApiClient();
-        $client->request(Request::METHOD_PUT, sprintf(
-            '/api/publication/v1/organisation/%s/dossiers/request-for-advice/external/%s/uploads/attachment/external/%s',
-            $organisation->getId(),
-            $requestForAdvice->getExternalId(),
-            $requestForAdviceAttachment->getExternalId(),
-        ), [
-            'headers' => [
-                'Content-Type' => 'application/octet-stream',
-            ],
-            'body' => $this->getTestFileContent('1008.pdf'),
-        ]);
-
-        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
-        self::assertJsonContains(['violations' => [['message' => 'document upload is not allowed for a published dossier']]]);
+        $this->assertUpload(
+            url: sprintf(
+                '/api/publication/v1/organisation/%s/dossiers/request-for-advice/external/%s/uploads/attachment/external/%s',
+                $organisation->getId(),
+                $requestForAdvice->getExternalId(),
+                $requestForAdviceAttachment->getExternalId(),
+            ),
+            dossierId: $requestForAdvice->getId()->toRfc4122(),
+            entityId: $requestForAdviceAttachment->getId()->toRfc4122(),
+            entityFileName: $requestForAdviceAttachment->getFileInfo()->getName(),
+            uploadGroupId: UploadGroupId::ATTACHMENTS,
+            entityParameterKey: 'attachmentId',
+        );
     }
 
     public function testUploadWithoutFile(): void

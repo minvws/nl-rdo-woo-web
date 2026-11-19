@@ -6,6 +6,7 @@ namespace Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Ha
 
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Command\ConfirmProductionReportUpdateCommand;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportDispatcher;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRunRepository;
 use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
@@ -30,7 +31,7 @@ readonly class ConfirmProductionReportUpdateHandler
         $this->dossierWorkflowManager->applyTransition($command->dossier, DossierStatusTransition::UPDATE_PRODUCTION_REPORT);
 
         $run = $command->dossier->getProcessRun();
-        if (! $run) {
+        if (! $run instanceof ProductionReportProcessRun) {
             throw ProductionReportUpdaterException::forNoRunFound();
         }
 

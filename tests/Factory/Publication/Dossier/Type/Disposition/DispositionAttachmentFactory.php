@@ -9,7 +9,6 @@ use Override;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
 use Shared\Tests\Factory\FileInfoFactory;
-use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
@@ -26,7 +25,7 @@ final class DispositionAttachmentFactory extends PersistentObjectFactory
     {
         return [
             'createdAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
-            'dossier' => CovenantFactory::new(),
+            'dossier' => DispositionFactory::new(),
             'fileInfo' => FileInfoFactory::new(),
             'formalDate' => self::faker()->plainDate(),
             'type' => self::faker()->randomElement(DispositionAttachment::getAllowedTypes()),

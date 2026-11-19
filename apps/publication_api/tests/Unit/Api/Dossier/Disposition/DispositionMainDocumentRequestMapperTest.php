@@ -34,7 +34,8 @@ final class DispositionMainDocumentRequestMapperTest extends UnitTestCase
             array_map(Ground::from(...), $grounds),
         );
 
-        $mainDocument = DispositionMainDocumentRequestMapper::create($disposition, $dispositionMainDocumentRequestDto);
+        $dispositionMainDocumentRequestMapper = new DispositionMainDocumentRequestMapper();
+        $mainDocument = $dispositionMainDocumentRequestMapper->create($disposition, $dispositionMainDocumentRequestDto);
 
         self::assertSame($disposition, $mainDocument->getDossier());
         self::assertSame($fileName->toString(), $mainDocument->getFileInfo()->getName());
@@ -70,7 +71,8 @@ final class DispositionMainDocumentRequestMapperTest extends UnitTestCase
             array_map(Ground::from(...), $grounds),
         );
 
-        $mainDocument = DispositionMainDocumentRequestMapper::update($disposition, $dispositionMainDocumentRequestDto);
+        $dispositionMainDocumentRequestMapper = new DispositionMainDocumentRequestMapper();
+        $mainDocument = $dispositionMainDocumentRequestMapper->update($disposition, $dispositionMainDocumentRequestDto);
 
         self::assertSame($existingMainDocument, $mainDocument);
         self::assertSame($fileName->toString(), $mainDocument->getFileInfo()->getName());
@@ -91,8 +93,10 @@ final class DispositionMainDocumentRequestMapperTest extends UnitTestCase
             $this->getFaker()->attachmentType(DispositionMainDocument::getAllowedTypes()),
         );
 
+        $dispositionMainDocumentRequestMapper = new DispositionMainDocumentRequestMapper();
+
         self::expectException(InvalidArgumentException::class);
 
-        DispositionMainDocumentRequestMapper::update($disposition, $dispositionMainDocumentRequestDto);
+        $dispositionMainDocumentRequestMapper->update($disposition, $dispositionMainDocumentRequestDto);
     }
 }

@@ -19,7 +19,7 @@ trait MatchesSnapshots
 
     public function assertMatchesSnapshot(mixed $actual, ?Driver $driver = null, ?string $id = null): void
     {
-        if ($driver === null && ! is_string($actual) && ! is_int($actual) && ! is_float($actual)) {
+        if (! $driver instanceof Driver && ! is_string($actual) && ! is_int($actual) && ! is_float($actual)) {
             $driver = new ObjectDriver();
         }
 

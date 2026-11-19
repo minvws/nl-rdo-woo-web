@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\Property\Factory\PropertyMetadataFactoryInterface;
 use PublicationApi\Api\MainDocument\MainDocumentDtoInterface;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
+use Symfony\Component\TypeInfo\Type;
 use Symfony\Component\TypeInfo\Type\EnumType;
 use Symfony\Component\TypeInfo\Type\NullableType;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -22,10 +23,10 @@ use function is_subclass_of;
  * MainDocumentRequestDto and MainDocumentResponseDto classes to only the AttachmentTypes
  * allowed by that dossier, as declared via the DTO's own getAllowedTypes() method.
  *
- * Runs at priority -10 (outermost user-defined decorator, since higher priority = innermost in Symfony)
- * so it can filter the `x-enum-varnames` that TranslatableEnumPropertyMetadataFactory adds for all cases.
+ * Runs before API Platform's SchemaPropertyMetadataFactory so the latter can add
+ * property metadata to this structural schema.
  */
-#[AsDecorator(decorates: 'api_platform.metadata.property.metadata_factory', priority: -10)]
+#[AsDecorator(decorates: 'api_platform.metadata.property.metadata_factory', priority: 15)]
 final readonly class MainDocumentAttachmentTypePropertyMetadataFactory implements PropertyMetadataFactoryInterface
 {
     public function __construct(
@@ -50,7 +51,7 @@ final readonly class MainDocumentAttachmentTypePropertyMetadataFactory implement
         }
 
         $nativeType = $propertyMetadata->getNativeType();
-        if ($nativeType === null) {
+        if (! $nativeType instanceof Type) {
             return $propertyMetadata;
         }
 

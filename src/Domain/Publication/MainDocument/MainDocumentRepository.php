@@ -58,4 +58,13 @@ class MainDocumentRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->toIterable();
     }
+
+    public function save(AbstractMainDocument $entity, bool $flush): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
 }

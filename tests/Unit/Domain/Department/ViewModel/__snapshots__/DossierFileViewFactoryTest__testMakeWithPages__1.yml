@@ -5,3 +5,4 @@ type: pdf
 size: 456
 hasPages: true
 downloadUrl: my-url
+spreadsheet: null

@@ -7,6 +7,8 @@ namespace Admin\Validator\Organisation;
 use Admin\Form\Organisation\OrganisationFormData;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Organisation\OrganisationRepository;
+use Shared\ValueObject\OrganisationPrefix;
+use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -38,7 +40,7 @@ class UniqueOrganisationValidator extends ConstraintValidator
             }
         }
 
-        if ($value->prefix === null) {
+        if (! $value->prefix instanceof OrganisationPrefix) {
             return;
         }
 
@@ -53,6 +55,6 @@ class UniqueOrganisationValidator extends ConstraintValidator
 
     private function isExcluded(Organisation $organisation, OrganisationFormData $data): bool
     {
-        return $data->organisationId !== null && $organisation->getId()->equals($data->organisationId);
+        return $data->organisationId instanceof Uuid && $organisation->getId()->equals($data->organisationId);
     }
 }

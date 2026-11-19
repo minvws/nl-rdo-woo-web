@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PublicationApi\Serializer;
 
 use PublicationApi\Api\Pagination\CursorPage;
+use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareTrait;
@@ -35,7 +36,7 @@ final class CursorPageNormalizer implements NormalizerInterface, NormalizerAware
             'hasNextPage' => $object->hasNextPage,
         ];
 
-        if ($object->halLinks !== null) {
+        if ($object->halLinks instanceof LinkCollection) {
             $result['_links'] = $this->normalizer->normalize($object->halLinks, $format, $context);
         }
 

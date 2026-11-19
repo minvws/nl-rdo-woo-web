@@ -88,7 +88,8 @@ class SearchParametersTest extends UnitTestCase
 
         $parameters = new SearchParameters(
             facetInputs: $facetInputCollection,
-            offset: 13,
+            limit: 10,
+            offset: 20,
             query: 'foo',
             searchType: SearchType::DOSSIER,
         );
@@ -184,7 +185,8 @@ class SearchParametersTest extends UnitTestCase
 
         $parameters = new SearchParameters(
             facetInputs: $facetInputCollection,
-            offset: 13,
+            limit: 10,
+            offset: 20,
             query: 'foo',
             searchType: SearchType::DOSSIER,
         );
@@ -275,6 +277,56 @@ class SearchParametersTest extends UnitTestCase
 
         $this->assertMatchesObjectSnapshot(
             $parameters->withoutFacetFilters(),
+        );
+    }
+
+    public function testWithoutFacetFiltersResetsPagination(): void
+    {
+        $parameters = new SearchParameters(
+            facetInputs: new FacetInputCollection(),
+            limit: 10,
+            offset: 50,
+        );
+
+        $this->assertFalse($parameters->withoutFacetFilters()->getQueryParameters()->has('page'));
+    }
+
+    public function testGetQueryParametersConvertsOffsetToPageNumber(): void
+    {
+        $parameters = new SearchParameters(
+            facetInputs: new FacetInputCollection(),
+            limit: 10,
+            offset: 50,
+        );
+
+        $this->assertSame(6, $parameters->getQueryParameters()->getInt('page'));
+    }
+
+    public function testGetQueryParametersOmitsPageOnFirstPage(): void
+    {
+        $parameters = new SearchParameters(
+            facetInputs: new FacetInputCollection(),
+            limit: 10,
+        );
+
+        $this->assertFalse($parameters->getQueryParameters()->has('page'));
+    }
+
+    public function testWithFacetInputResetsPagination(): void
+    {
+        $parameters = new SearchParameters(
+            facetInputs: new FacetInputCollection(),
+            limit: 10,
+            offset: 50,
+        );
+
+        $dateFacetInput = DateFacetInput::fromParameterBag(
+            new DateFacet(new LocaleSwitcher('nl', [])),
+            new ParameterBag(['dt' => ['from' => '2021-01-15']]),
+        );
+
+        $this->assertFalse(
+            $parameters->withFacetInput(FacetKey::DATE, $dateFacetInput)->getQueryParameters()->has('page'),
         );
     }
 }

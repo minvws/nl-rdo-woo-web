@@ -9,6 +9,7 @@ use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
 use Shared\Domain\Publication\EntityWithFileInfo;
@@ -21,6 +22,7 @@ use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory
 use Shared\Tests\Integration\SharedWebTestCase;
 use Shared\Tests\Integration\VfsStreamHelpers;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Component\HttpFoundation\Response;
 
 use function sprintf;
 
@@ -204,6 +206,14 @@ final class DossierFileControllerTest extends SharedWebTestCase
                 $entityWithFileInfo->getId(),
             ),
         );
+
+        if ($entityWithFileInfo instanceof Document) {
+            self::assertResponseRedirects(
+                sprintf('/document/%s/download', $entityWithFileInfo->getDocumentNumber()->toString()),
+                Response::HTTP_MOVED_PERMANENTLY,
+            );
+            $this->client->followRedirect();
+        }
 
         $this->assertResponseIsSuccessful();
 

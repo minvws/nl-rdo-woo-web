@@ -29,7 +29,7 @@ class DateRangeConverter
         $from = self::convertToDateTimeImmutableOrNull($from);
         $to = self::convertToDateTimeImmutableOrNull($to);
 
-        if ($from === null || $to === null) {
+        if (! $from instanceof DateTimeImmutable || ! $to instanceof DateTimeImmutable) {
             return self::handleRangeWithNull($from, $to);
         }
 
@@ -53,11 +53,11 @@ class DateRangeConverter
 
     private static function handleRangeWithNull(?DateTimeImmutable $from, ?DateTimeImmutable $to): string
     {
-        if ($from === null && $to === null) {
+        if (! $from instanceof DateTimeImmutable && ! $to instanceof DateTimeImmutable) {
             return 'Alles';
         }
 
-        if ($from === null) {
+        if (! $from instanceof DateTimeImmutable) {
             return 'Tot ' . self::getMonthAndYear($to);
         }
 

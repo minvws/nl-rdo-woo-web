@@ -13,7 +13,7 @@ use League\CommonMark\Node\Inline\Newline;
 use League\CommonMark\Node\Inline\Text;
 use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Shared\Domain\Content\Markdown\MarkdownConverter;
+use Shared\Domain\Content\Markdown\MarkdownFormatter;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\Validator\MarkdownAllowedNodeTypes\MarkdownAllowedNodeTypes;
 use Shared\Validator\MarkdownAllowedNodeTypes\MarkdownAllowedNodeTypesValidator;
@@ -49,7 +49,7 @@ final class MarkdownAllowedNodeTypesValidatorTest extends UnitTestCase
         $context = Mockery::mock(ExecutionContextInterface::class);
         $context->expects('buildViolation')->never();
 
-        $validator = new MarkdownAllowedNodeTypesValidator(new MarkdownConverter());
+        $validator = new MarkdownAllowedNodeTypesValidator(new MarkdownFormatter());
         $constraint = new MarkdownAllowedNodeTypes(self::ALLOWED_NODE_TYPES);
 
         $validator->validateInContext(null, $constraint, $context);
@@ -61,7 +61,7 @@ final class MarkdownAllowedNodeTypesValidatorTest extends UnitTestCase
         $context = Mockery::mock(ExecutionContextInterface::class);
         $context->expects('buildViolation')->never();
 
-        $validator = new MarkdownAllowedNodeTypesValidator(new MarkdownConverter());
+        $validator = new MarkdownAllowedNodeTypesValidator(new MarkdownFormatter());
 
         $validator->validateInContext(
             <<<'MARKDOWN'
@@ -91,7 +91,7 @@ MARKDOWN,
             ->with('The Markdown contains an element that is not allowed ({{ type }}).')
             ->andReturn($builder);
 
-        $validator = new MarkdownAllowedNodeTypesValidator(new MarkdownConverter());
+        $validator = new MarkdownAllowedNodeTypesValidator(new MarkdownFormatter());
 
         $validator->validateInContext($markdown, new MarkdownAllowedNodeTypes(self::ALLOWED_NODE_TYPES), $context);
     }
@@ -111,7 +111,7 @@ MARKDOWN,
             ->with('Markdown node is not allowed: {{ type }}.')
             ->andReturn($builder);
 
-        $validator = new MarkdownAllowedNodeTypesValidator(new MarkdownConverter());
+        $validator = new MarkdownAllowedNodeTypesValidator(new MarkdownFormatter());
 
         $validator->validateInContext(
             '# Heading',
@@ -122,7 +122,7 @@ MARKDOWN,
 
     public function testThrowsUnexpectedTypeExceptionForWrongConstraint(): void
     {
-        $validator = new MarkdownAllowedNodeTypesValidator(new MarkdownConverter());
+        $validator = new MarkdownAllowedNodeTypesValidator(new MarkdownFormatter());
 
         $this->expectException(UnexpectedTypeException::class);
 
@@ -135,7 +135,7 @@ MARKDOWN,
 
     public function testThrowsUnexpectedValueExceptionForNonStringValue(): void
     {
-        $validator = new MarkdownAllowedNodeTypesValidator(new MarkdownConverter());
+        $validator = new MarkdownAllowedNodeTypesValidator(new MarkdownFormatter());
 
         $this->expectException(UnexpectedValueException::class);
 

@@ -13,7 +13,6 @@ use Webmozart\Assert\Assert;
 
 use function in_array;
 use function json_encode;
-use function strtolower;
 
 readonly class MimeTypeHelper
 {
@@ -26,15 +25,14 @@ readonly class MimeTypeHelper
     }
 
     public function isValidForUploadGroup(
-        string $fileExtension,
+        FileExtension $fileExtension,
         ?string $mimeType,
         UploadGroupId $groupId,
     ): MimeTypeHelperResult {
-        $fileExtension = strtolower($fileExtension);
         $groupExtensions = $groupId->getExtensions();
         if (! in_array($fileExtension, $groupExtensions, true)) {
             $this->logger->warning('fileExtension not allowed in groupExtensions', [
-                'fileExtension' => $fileExtension,
+                'fileExtension' => $fileExtension->value,
                 'uploadGroupId' => $groupId->value,
             ]);
 
@@ -54,9 +52,9 @@ readonly class MimeTypeHelper
         $fileExtensionsFromMimeType = FileType::fromMimeType($mimeType);
         Assert::isInstanceOf($fileExtensionsFromMimeType, FileType::class);
 
-        if (! in_array($fileExtension, $fileExtensionsFromMimeType->getExtensions())) {
+        if (! in_array($fileExtension, $fileExtensionsFromMimeType->getExtensions(), true)) {
             $this->logger->warning('fileExtension not allowed for fileExtensionsFromMimeType', [
-                'fileExtension' => $fileExtension,
+                'fileExtension' => $fileExtension->value,
                 'fileExtensionsFromMimeType' => json_encode($fileExtensionsFromMimeType),
             ]);
 

@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace Shared\Service\FileReader;
 
 use PhpOffice\PhpSpreadsheet\Exception;
-use RuntimeException;
 use Webmozart\Assert\Assert;
 
-use function fclose;
 use function fgetcsv;
-use function fopen;
 use function in_array;
+use function rewind;
 use function strtolower;
 
 /**
@@ -22,7 +20,7 @@ class CsvReaderFactory implements ReaderFactoryInterface
     use HeaderMappingTrait;
 
     /** @var array<array-key, string> */
-    protected $supportedMimeTypes = [
+    protected array $supportedMimeTypes = [
         'text/csv',
         'text/plain',
         'application/csv',
@@ -36,16 +34,14 @@ class CsvReaderFactory implements ReaderFactoryInterface
     }
 
     /**
+     * @param resource $stream
+     *
      * @throws Exception
      */
-    public function createReader(string $filepath, ColumnMapping ...$columnMappings): FileReaderInterface
+    public function createReader($stream, ColumnMapping ...$columnMappings): FileReaderInterface
     {
-        $handle = fopen($filepath, 'r');
-        if (! $handle) {
-            throw new RuntimeException('Failed to open file: ' . $filepath);
-        }
-        $headers = fgetcsv($handle, escape: '\\');
-        fclose($handle);
+        $headers = fgetcsv($stream, escape: '\\');
+        rewind($stream);
 
         if ($headers === false) {
             $headers = [];
@@ -54,6 +50,6 @@ class CsvReaderFactory implements ReaderFactoryInterface
 
         $mapping = $this->resolveHeaderMapping($headers, $columnMappings);
 
-        return new CsvReader($filepath, $mapping);
+        return new CsvReader($stream, $mapping);
     }
 }

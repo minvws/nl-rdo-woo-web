@@ -92,7 +92,7 @@ class AuthMatrixVoter extends Voter
 
     private function isUserAllowed(?UserInterface $user): bool
     {
-        if ($user === null) {
+        if (! $user instanceof UserInterface) {
             return false;
         }
 

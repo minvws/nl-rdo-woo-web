@@ -1,5 +1,6 @@
-test-xx-5033:
-    - foo123
-    - bar456
-test-xx-5034:
-    - foo123
+2:
+    documentNumber: test-xx-5033
+    inquiryNumbers: [foo123, bar456]
+3:
+    documentNumber: test-xx-5034
+    inquiryNumbers: [foo123]

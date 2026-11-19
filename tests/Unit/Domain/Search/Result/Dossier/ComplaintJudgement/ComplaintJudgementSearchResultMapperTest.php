@@ -10,7 +10,6 @@ use Mockery\MockInterface;
 use Shared\ApplicationId;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementRepository;
 use Shared\Domain\Search\Index\ElasticDocumentType;
-use Shared\Domain\Search\Index\Schema\ElasticField;
 use Shared\Domain\Search\Result\Dossier\ComplaintJudgement\ComplaintJudgementSearchResultMapper;
 use Shared\Domain\Search\Result\Dossier\DossierSearchResultBaseMapper;
 use Shared\Domain\Search\Result\ResultEntryInterface;
@@ -51,7 +50,6 @@ class ComplaintJudgementSearchResultMapperTest extends UnitTestCase
                 $hit,
                 $this->repository,
                 ElasticDocumentType::COMPLAINT_JUDGEMENT,
-                [ElasticField::TITLE->value, ElasticField::SUMMARY->value],
                 ApplicationId::ADMIN,
             )
             ->andReturn($expectedResult);

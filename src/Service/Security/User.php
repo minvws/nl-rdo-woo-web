@@ -14,6 +14,7 @@ use Scheb\TwoFactorBundle\Model\BackupCodeInterface;
 use Scheb\TwoFactorBundle\Model\Totp\TotpConfiguration;
 use Scheb\TwoFactorBundle\Model\Totp\TotpConfigurationInterface;
 use Scheb\TwoFactorBundle\Model\Totp\TwoFactorInterface;
+use SensitiveParameter;
 use Shared\Doctrine\TimestampableTrait;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Service\Security\LoginActivity\LoginActivity;
@@ -144,7 +145,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return $this->password;
     }
 
-    public function setPassword(string $password): self
+    public function setPassword(#[SensitiveParameter] string $password): self
     {
         $this->password = $password;
 
@@ -168,7 +169,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return $this->mfaToken;
     }
 
-    public function setMfaToken(?string $mfaToken): self
+    public function setMfaToken(#[SensitiveParameter] ?string $mfaToken): self
     {
         $this->mfaToken = $mfaToken;
 
@@ -188,7 +189,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
      *
      * @return $this
      */
-    public function setMfaRecovery(?array $mfaRecovery): static
+    public function setMfaRecovery(#[SensitiveParameter] ?array $mfaRecovery): static
     {
         $this->mfaRecovery = $mfaRecovery;
 
@@ -210,12 +211,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return new TotpConfiguration($this->mfaToken ?? '', TotpConfiguration::ALGORITHM_SHA1, 30, 6);
     }
 
-    public function isBackupCode(string $code): bool
+    public function isBackupCode(#[SensitiveParameter] string $code): bool
     {
         return in_array($code, $this->mfaRecovery ?? []);
     }
 
-    public function invalidateBackupCode(string $code): void
+    public function invalidateBackupCode(#[SensitiveParameter] string $code): void
     {
         $this->mfaRecovery = array_filter($this->mfaRecovery ?? [], static fn ($target) => $target !== $code);
     }

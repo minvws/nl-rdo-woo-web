@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Service\Uploader;
 
+use Shared\Domain\Upload\FileType\FileExtension;
 use Shared\Domain\Upload\FileType\FileType;
 
 use function array_map;
@@ -63,16 +64,18 @@ enum UploadGroupId: string
     }
 
     /**
-     * @return list<string>
+     * @return list<FileExtension>
      */
     public function getExtensions(): array
     {
-        $exts = [];
+        $fileExtensions = [];
         foreach ($this->getFileTypes() as $fileType) {
-            $exts = array_merge($exts, $fileType->getExtensions());
+            foreach ($fileType->getExtensions() as $fileExtension) {
+                $fileExtensions[$fileExtension->value] = $fileExtension;
+            }
         }
 
-        return array_values(array_unique($exts));
+        return array_values($fileExtensions);
     }
 
     /**

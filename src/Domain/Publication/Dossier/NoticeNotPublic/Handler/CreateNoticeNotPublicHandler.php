@@ -10,6 +10,7 @@ use Shared\Domain\Publication\Dossier\NoticeNotPublic\Event\NoticeNotPublicCreat
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublicAlreadyExistsException;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublicRepository;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Domain\Publication\MainDocument\MainDocumentAlreadyExistsException;
 use Shared\Domain\Search\SearchDispatcher;
@@ -30,13 +31,13 @@ readonly class CreateNoticeNotPublicHandler
 
     public function __invoke(CreateNoticeNotPublicCommand $command): NoticeNotPublic
     {
-        if ($this->repository->findOneByDossierId($command->dossierId) !== null) {
+        if ($this->repository->findOneByDossierId($command->dossierId) instanceof NoticeNotPublic) {
             throw new NoticeNotPublicAlreadyExistsException();
         }
 
         $dossier = $this->dossierRepository->findOneByDossierId($command->dossierId);
 
-        if ($dossier instanceof EntityWithMainDocument && $dossier->getMainDocument() !== null) {
+        if ($dossier instanceof EntityWithMainDocument && $dossier->getMainDocument() instanceof AbstractMainDocument) {
             throw new MainDocumentAlreadyExistsException();
         }
 

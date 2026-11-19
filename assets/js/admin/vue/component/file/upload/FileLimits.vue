@@ -27,7 +27,7 @@ const formatAllowedFileLabels = () => {
           .filter((limit) => limit.size === maxFileSize)
           .map((limit) => limit.label),
       ),
-    ].sort();
+    ].sort((firstLabel, secondLabel) => firstLabel.localeCompare(secondLabel));
 
     return `${labels.join(', ')} (max ${formatFileSize(maxFileSize)})`;
   });

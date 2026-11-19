@@ -9,4 +9,13 @@ tasks:
         docker build
         --file ./docker/php/Dockerfile
         --tag ghcr.io/minvws/nl-rdo-woo-web-private/php:dev
-        {{.BASE_PATH}}
+        {{ .BASE_PATH }}
+
+  utils:
+    desc: Build the Utils image locally
+    cmds:
+      - >-
+        docker build
+        --file ./docker/utils/Dockerfile
+        --tag ghcr.io/minvws/nl-rdo-woo-private/utils:dev
+        {{ .BASE_PATH }}

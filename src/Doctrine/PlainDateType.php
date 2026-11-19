@@ -34,7 +34,7 @@ final class PlainDateType extends Type
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
         Assert::nullOrIsInstanceOf($value, PlainDate::class);
-        if ($value === null) {
+        if (! $value instanceof PlainDate) {
             return null;
         }
 

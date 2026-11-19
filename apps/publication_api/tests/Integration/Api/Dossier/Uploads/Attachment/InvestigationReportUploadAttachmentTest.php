@@ -48,7 +48,7 @@ final class InvestigationReportUploadAttachmentTest extends ApiPublicationV1Uplo
         );
     }
 
-    public function testUploadOnPublishedDossierReturnsValidationError(): void
+    public function testUploadOnPublishedDossier(): void
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
@@ -63,21 +63,19 @@ final class InvestigationReportUploadAttachmentTest extends ApiPublicationV1Uplo
             'externalId' => $this->getFaker()->externalId(),
         ]);
 
-        $client = self::createPublicationApiClient();
-        $client->request(Request::METHOD_PUT, sprintf(
-            '/api/publication/v1/organisation/%s/dossiers/investigation-report/external/%s/uploads/attachment/external/%s',
-            $organisation->getId(),
-            $investigationReport->getExternalId(),
-            $attachment->getExternalId(),
-        ), [
-            'headers' => [
-                'Content-Type' => 'application/octet-stream',
-            ],
-            'body' => $this->getTestFileContent('1008.pdf'),
-        ]);
-
-        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
-        self::assertJsonContains(['violations' => [['message' => 'document upload is not allowed for a published dossier']]]);
+        $this->assertUpload(
+            url: sprintf(
+                '/api/publication/v1/organisation/%s/dossiers/investigation-report/external/%s/uploads/attachment/external/%s',
+                $organisation->getId(),
+                $investigationReport->getExternalId(),
+                $attachment->getExternalId(),
+            ),
+            dossierId: $investigationReport->getId()->toRfc4122(),
+            entityId: $attachment->getId()->toRfc4122(),
+            entityFileName: $attachment->getFileInfo()->getName(),
+            uploadGroupId: UploadGroupId::ATTACHMENTS,
+            entityParameterKey: 'attachmentId',
+        );
     }
 
     public function testUploadWithTooLongDossierExternalId(): void

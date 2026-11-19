@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Faker;
 
 use Faker\Provider\File;
+use Shared\Domain\Upload\FileType\FileExtension;
 use Shared\Service\Uploader\UploadGroupId;
 use Shared\ValueObject\FileName;
 use Webmozart\Assert\Assert;
@@ -27,9 +28,9 @@ final class FileFakerProvider extends File
     public function fileNameForGroup(UploadGroupId $uploadGroupId): FileName
     {
         $name = $this->generator->word();
-        $extension = $this->generator->randomElement($uploadGroupId->getExtensions());
-        Assert::string($extension);
+        $fileExtension = $this->generator->randomElement($uploadGroupId->getExtensions());
+        Assert::isInstanceOf($fileExtension, FileExtension::class);
 
-        return FileName::create(sprintf('%s.%s', $name, $extension));
+        return FileName::create(sprintf('%s.%s', $name, $fileExtension->value));
     }
 }

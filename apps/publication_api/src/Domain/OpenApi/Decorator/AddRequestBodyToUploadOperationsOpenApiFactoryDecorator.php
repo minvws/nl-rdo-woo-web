@@ -51,7 +51,7 @@ final readonly class AddRequestBodyToUploadOperationsOpenApiFactoryDecorator imp
     private function updateUploadOperationRequestBodyForPathItem(PathItem $pathItem): PathItem
     {
         $uploadOperation = $this->getUploadOperation($pathItem);
-        if ($uploadOperation === null) {
+        if (! $uploadOperation instanceof Operation) {
             return $pathItem;
         }
 
@@ -71,7 +71,7 @@ final readonly class AddRequestBodyToUploadOperationsOpenApiFactoryDecorator imp
     private function getUploadOperation(PathItem $pathItem): ?Operation
     {
         $putOperation = $pathItem->getPut();
-        if ($putOperation === null) {
+        if (! $putOperation instanceof Operation) {
             return null;
         }
 

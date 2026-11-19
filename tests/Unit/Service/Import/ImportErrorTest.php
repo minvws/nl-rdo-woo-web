@@ -43,7 +43,6 @@ final class ImportErrorTest extends UnitTestCase
         self::assertSame($importException->getMessage(), $importError->message);
         self::assertSame('publication.dossier.error.remark_too_long', $importError->translationKey);
         self::assertSame([
-            '{rownumber}' => strval($rowIndex),
             '{max}' => strval($max),
         ], $importError->placeholders);
     }

@@ -37,7 +37,7 @@ Edit An Existing Main Document
   Click Edit Details
   Edit Main Document
   Fill Text  //dialog[@open]//input[@name="internalReference"]  1234567890
-  Click  //dialog[@open]//button[@type="submit"]
+  Click  //dialog[@open]//button[@data-e2e-name="submit"]
   Success Alert Is Visible  is bijgewerkt
 
 Remove An Attachment
@@ -113,11 +113,10 @@ Upload A File With Incorrect File And/Or Mimetype
   Create New Dossier  ${type}
   Fill Out Basic Details  type=${type}
   Click  " Convenant toevoegen... "
+  VAR  ${mismatched_files_warning} =  //dialog[@open]//*[@data-e2e-name="mismatched-files-warning"]
+  Get Element Count  ${mismatched_files_warning}  should be  0
   Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  files/magicbytes-fail.xlsx
-  Get Text
-  ...  //dialog[@open]//p
-  ...  contains
-  ...  Er zijn mogelijk gevaren gevonden in het bestand, het bestand wordt niet opgeslagen. Probeer een ander bestand.
+  Wait For Elements State  ${mismatched_files_warning}  attached  timeout=30s
 
 
 *** Keywords ***

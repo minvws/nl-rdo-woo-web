@@ -406,7 +406,7 @@ abstract class AbstractDossier implements HasId
 
     public function hasFuturePublicationDate(): bool
     {
-        if ($this->publicationDate === null) {
+        if (! $this->publicationDate instanceof PlainDate) {
             return false;
         }
 

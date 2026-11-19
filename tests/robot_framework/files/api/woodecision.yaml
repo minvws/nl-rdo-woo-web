@@ -670,3 +670,62 @@ testcases:
         name: Public Document Page Should Show Link
         args:
           - https://voorbeeld.nl/reeds-openbaar
+
+- title: Create dossier without a period
+  steps:
+    - name: Create dossier without dateFrom and dateTo
+      request:
+        body:
+          dateFrom: null
+          dateTo: null
+    - name: Verify the period is empty in the API
+      keyword:
+        name: WooDecision Period Should Match Previous Request
+    - name: Verify the period on public
+      keyword:
+        name: Verify WooDecision Period On Public
+        args:
+          - Alles
+
+- title: Create dossier with only an end date for the period
+  steps:
+    - name: Create dossier without dateFrom
+      request:
+        body:
+          dateFrom: null
+    - name: Verify only dateTo is set in the API
+      keyword:
+        name: WooDecision Period Should Match Previous Request
+
+- title: Clear the period of an existing dossier
+  steps:
+    - name: Create dossier with a period
+      request: {}
+    - name: Clear dateFrom
+      keyword:
+        name: Update Previous Request Body
+        args:
+          - dateFrom
+          - null
+    - name: Clear dateTo
+      keyword:
+        name: Update Previous Request Body
+        args:
+          - dateTo
+          - null
+    - name: Re-send without a period
+      reuse_previous_request: true
+      request:
+        files:
+          mainDocument:
+          attachments: []
+          documents: []
+        expected_publication_status: published
+    - name: Verify the period is empty in the API
+      keyword:
+        name: WooDecision Period Should Match Previous Request
+    - name: Verify the period on public
+      keyword:
+        name: Verify WooDecision Period On Public
+        args:
+          - Alles

@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace Shared\Exception\Import;
 
-use function sprintf;
 use function strval;
 
-final class InvalidDocumentIdLengthException extends ImportException
+final class InvalidDocumentIdLengthException extends RowImportException
 {
     public const string MESSAGE_KEY = 'publication.dossier.error.invalid_document_id_length';
 
     public function __construct(
-        public readonly int $rowIndex,
+        int $rowIndex,
         public readonly int $min,
         public readonly int $max,
     ) {
-        parent::__construct(sprintf('Invalid document ID length in inventory row #%d', $rowIndex));
+        parent::__construct($rowIndex, 'Invalid document ID length');
     }
 
     public function getMessageKey(): string
@@ -30,7 +29,6 @@ final class InvalidDocumentIdLengthException extends ImportException
     public function getMessageData(): array
     {
         return [
-            '{rownumber}' => strval($this->rowIndex),
             '{min}' => strval($this->min),
             '{max}' => strval($this->max),
         ];

@@ -25,7 +25,7 @@ readonly class NoticeNotPublicViewFactory
         AbstractDossier&EntityWithNoticeNotPublic $dossier,
     ): NoticeNotPublic {
         $noticeNotPublic = $dossier->getNoticeNotPublic();
-        if ($noticeNotPublic === null) {
+        if (! $noticeNotPublic instanceof \Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic) {
             throw new NoticeNotPublicNotFoundException();
         }
 

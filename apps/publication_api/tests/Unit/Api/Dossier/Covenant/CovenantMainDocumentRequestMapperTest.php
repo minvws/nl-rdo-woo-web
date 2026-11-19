@@ -34,7 +34,8 @@ final class CovenantMainDocumentRequestMapperTest extends UnitTestCase
             array_map(Ground::from(...), $grounds),
         );
 
-        $mainDocument = CovenantMainDocumentRequestMapper::create($covenant, $covenantMainDocumentRequestDto);
+        $covenantMainDocumentRequestMapper = new CovenantMainDocumentRequestMapper();
+        $mainDocument = $covenantMainDocumentRequestMapper->create($covenant, $covenantMainDocumentRequestDto);
 
         self::assertSame($covenant, $mainDocument->getDossier());
         self::assertSame($fileName->toString(), $mainDocument->getFileInfo()->getName());
@@ -64,7 +65,8 @@ final class CovenantMainDocumentRequestMapperTest extends UnitTestCase
             array_map(Ground::from(...), $grounds),
         );
 
-        $mainDocument = CovenantMainDocumentRequestMapper::update($covenant, $covenantMainDocumentRequestDto);
+        $covenantMainDocumentRequestMapper = new CovenantMainDocumentRequestMapper();
+        $mainDocument = $covenantMainDocumentRequestMapper->update($covenant, $covenantMainDocumentRequestDto);
 
         self::assertSame($existingMainDocument, $mainDocument);
         self::assertSame($fileName->toString(), $mainDocument->getFileInfo()->getName());
@@ -83,8 +85,10 @@ final class CovenantMainDocumentRequestMapperTest extends UnitTestCase
             $this->getFaker()->attachmentLanguage(),
         );
 
+        $covenantMainDocumentRequestMapper = new CovenantMainDocumentRequestMapper();
+
         self::expectException(InvalidArgumentException::class);
 
-        CovenantMainDocumentRequestMapper::update($covenant, $covenantMainDocumentRequestDto);
+        $covenantMainDocumentRequestMapper->update($covenant, $covenantMainDocumentRequestDto);
     }
 }

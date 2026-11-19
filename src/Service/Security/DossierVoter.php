@@ -20,7 +20,7 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class DossierVoter extends Voter
 {
-    public const VIEW = 'view';
+    public const string VIEW = 'view';
 
     protected function supports(string $attribute, mixed $subject): bool
     {

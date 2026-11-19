@@ -12,8 +12,8 @@ use Shared\Service\Search\Query\Dsl\Query;
 
 readonly class HighlightComponent
 {
-    public const HL_START = '[[hl_start]]';
-    public const HL_END = '[[hl_end]]';
+    public const string HL_START = '[[hl_start]]';
+    public const string HL_END = '[[hl_end]]';
 
     public function apply(QueryBuilder $queryBuilder, SearchParameters $searchParameters): void
     {
@@ -30,6 +30,8 @@ readonly class HighlightComponent
                 ElasticPath::dossiersSummary()->value,
                 ElasticPath::dossiersTitle()->value,
                 ElasticPath::pagesContent()->value,
+                ElasticPath::contentTreeTitle()->value,
+                ElasticPath::contentTreeBody()->value,
             ],
             query: $searchParameters->query,
         )->setDefaultOperator($searchParameters->operator->value);
@@ -62,6 +64,17 @@ readonly class HighlightComponent
                     'type' => 'unified',
                 ],
                 ElasticField::SUMMARY->value => [
+                    'fragment_size' => 50,
+                    'number_of_fragments' => 5,
+                    'type' => 'unified',
+                ],
+                // Subject object
+                ElasticPath::contentTreeTitle()->value => [
+                    'fragment_size' => 50,
+                    'number_of_fragments' => 5,
+                    'type' => 'unified',
+                ],
+                ElasticPath::contentTreeBody()->value => [
                     'fragment_size' => 50,
                     'number_of_fragments' => 5,
                     'type' => 'unified',

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Utils\PHPStan\Rules;
 
+use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PhpParser\Node\Expr\ArrowFunction;
 use PhpParser\Node\Expr\Closure;
@@ -14,6 +15,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\PhpDocParser\Ast\AbstractNodeVisitor;
 use PHPStan\PhpDocParser\Ast\NodeTraverser;
 use PHPStan\PhpDocParser\Ast\Type\GenericTypeNode;
+use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Lexer\Lexer;
 use PHPStan\PhpDocParser\Parser\PhpDocParser;
 use PHPStan\PhpDocParser\Parser\TokenIterator;
@@ -77,7 +79,7 @@ final readonly class RequireExplicitArrayKeyTypeRule implements Rule
         }
 
         $docComment = $node->getDocComment();
-        if ($docComment === null) {
+        if (! $docComment instanceof Doc) {
             return [];
         }
 
@@ -99,7 +101,7 @@ final readonly class RequireExplicitArrayKeyTypeRule implements Rule
 
             public function enterNode(\PHPStan\PhpDocParser\Ast\Node $node): \PHPStan\PhpDocParser\Ast\Node
             {
-                if (! $node instanceof GenericTypeNode) {
+                if (! $node instanceof GenericTypeNode || ! $node->type instanceof IdentifierTypeNode) {
                     return $node;
                 }
 

@@ -6,16 +6,16 @@ namespace Shared\Exception\Import;
 
 use function strval;
 
-final class FilenameTooLongException extends ImportException
+final class FilenameTooLongException extends RowImportException
 {
     public const string MESSAGE_KEY = 'publication.dossier.error.file_name_too_long';
 
     public function __construct(
+        int $rowIndex,
         public readonly string $filename,
-        public readonly int $rowIndex,
         public readonly int $max,
     ) {
-        parent::__construct('Filename is too long');
+        parent::__construct($rowIndex, 'Filename is too long');
     }
 
     public function getMessageKey(): string
@@ -29,7 +29,6 @@ final class FilenameTooLongException extends ImportException
     public function getMessageData(): array
     {
         return [
-            '{rownumber}' => strval($this->rowIndex),
             '{filename}' => $this->filename,
             '{max}' => strval($this->max),
         ];

@@ -16,22 +16,6 @@
     .woo-fill-cell {
         @apply block -my-2.5 py-2.5 -mx-2 px-2;
     }
-
-    &:first-child {
-        @apply pl-0;
-
-        .woo-fill-cell {
-            @apply pl-0 ml-0;
-        }
-    }
-
-    &:last-child {
-        @apply pr-0;
-
-        .woo-fill-cell {
-            @apply pr-0 mr-0;
-        }
-    }
   }
 }
 

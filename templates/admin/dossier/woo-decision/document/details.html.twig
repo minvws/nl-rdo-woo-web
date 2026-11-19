@@ -53,6 +53,22 @@
                         <td>{{ document.judgement | trans }}</td>
                     </tr>
                     <tr>
+                        <th scope="row">Links</th>
+                        <td data-e2e-name="document-links">
+                            {% if document.links | default([]) | length > 0 %}
+                                <ul class="bhr-ul">
+                                    {% for link in document.links %}
+                                        <li class="bhr-li">
+                                            <a class="bhr-a" href="{{ link }}">{{ link }}</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                {{ 'global.not_available' | trans }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
                         <th scope="row">Gelakte gegevens</th>
                         <td>
                             {% if document.grounds | length > 0 %}

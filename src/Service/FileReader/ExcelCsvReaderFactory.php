@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Shared\Service\FileReader;
 
+use GuzzleHttp\Psr7\Utils;
 use PhpOffice\PhpSpreadsheet\Exception;
 use RuntimeException;
-use Symfony\Component\Process\Process;
+use Shared\Service\ProcessFactory;
 use Webmozart\Assert\Assert;
 
-use function fclose;
 use function fgetcsv;
-use function fopen;
+use function fwrite;
 use function in_array;
+use function rewind;
+use function sprintf;
 use function strtolower;
-use function sys_get_temp_dir;
-use function tempnam;
 
 /**
  * Creates a file reader for CSV files.
@@ -24,12 +24,20 @@ class ExcelCsvReaderFactory implements ReaderFactoryInterface
 {
     use HeaderMappingTrait;
 
+    public const string XLSX2CSV_PATH = '/usr/bin/xlsx2csv';
+    public const string INPUT_FROM_STDIN = '-';
+
     /** @var array<array-key, string> */
-    protected $supportedMimeTypes = [
+    protected array $supportedMimeTypes = [
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'application/vnd.ms-excel',
         'application/vnd.oasis.opendocument.spreadsheet',
     ];
+
+    public function __construct(
+        private readonly ProcessFactory $processFactory,
+    ) {
+    }
 
     public function supports(string $mimetype): bool
     {
@@ -37,36 +45,25 @@ class ExcelCsvReaderFactory implements ReaderFactoryInterface
     }
 
     /**
+     * @param resource $stream
+     *
      * @throws Exception
      */
-    public function createReader(string $filepath, ColumnMapping ...$columnMappings): FileReaderInterface
+    public function createReader($stream, ColumnMapping ...$columnMappings): FileReaderInterface
     {
-        $csvFilePath = tempnam(sys_get_temp_dir(), 'xls-convert-');
-        if ($csvFilePath === false) {
-            throw new RuntimeException('Failed to create temporary file');
-        }
-
-        // Convert to CSV file.
-        $params = [
-            '/usr/bin/xlsx2csv',
-            $filepath,
-            $csvFilePath,
-        ];
-        $process = new Process($params);
+        $process = $this->processFactory->create([self::XLSX2CSV_PATH, self::INPUT_FROM_STDIN]);
+        $process->setInput($stream);
         $process->run();
-        if ($process->getExitCode() !== 0) {
-            $error = $process->getErrorOutput();
-            throw new RuntimeException('Failed to create csv: ' . $error);
+        if (! $process->isSuccessful()) {
+            throw new RuntimeException(sprintf('Failed to create csv: %s', $process->getErrorOutput()));
         }
 
-        // From this point on we have a CSV file, and we can use the CsvReader.
-        $handle = fopen($csvFilePath, 'r');
-        if (! $handle) {
-            throw new RuntimeException('Failed to open file: ' . $csvFilePath);
-        }
+        $csv = Utils::tryFopen('php://memory', 'r+');
+        fwrite($csv, $process->getOutput());
+        rewind($csv);
 
-        $headers = fgetcsv($handle, escape: '\\');
-        fclose($handle);
+        $headers = fgetcsv($csv, escape: '\\');
+        rewind($csv);
 
         if ($headers === false) {
             $headers = [];
@@ -75,6 +72,6 @@ class ExcelCsvReaderFactory implements ReaderFactoryInterface
 
         $mapping = $this->resolveHeaderMapping($headers, $columnMappings);
 
-        return new CsvReader($csvFilePath, $mapping);
+        return new CsvReader($csv, $mapping);
     }
 }

@@ -71,7 +71,7 @@ final readonly class OrganisationProvider implements ProviderInterface
     {
         $organisation = $this->organisationRepository->find($organisationId);
         if ($organisation === null) {
-            throw EntityNotFoundException::for('Organisation', $organisationId);
+            throw EntityNotFoundException::for('Organisation', $organisationId->toString());
         }
 
         return OrganisationMapper::fromEntityWithDetail($organisation);

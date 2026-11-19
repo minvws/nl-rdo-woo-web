@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Shared\Service\Storage;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Http\Message\StreamInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Ingest\Content\Event\EntityFileUpdateEvent;
 use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Stream\StreamFactory;
 use SplFileInfo;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -35,6 +37,7 @@ class EntityStorageService extends StorageService
         StorageRootPathGenerator $rootPathGenerator,
         private readonly MessageBusInterface $messageBus,
         private readonly EntityManagerInterface $doctrine,
+        private readonly StreamFactory $streamFactory,
         private readonly bool $isLocal = false,
         ?string $documentRoot = null,
     ) {
@@ -61,6 +64,16 @@ class EntityStorageService extends StorageService
         $remotePath = $this->generateEntityPath($entity);
 
         return $this->remoteFilesystem->readStream($remotePath);
+    }
+
+    public function retrieveResourceEntityAsStream(EntityWithFileInfo $entity): ?StreamInterface
+    {
+        $resource = $this->retrieveResourceEntity($entity);
+        if ($resource === null) {
+            return null;
+        }
+
+        return $this->streamFactory->createStreamFromResource($resource);
     }
 
     public function storeEntity(SplFileInfo $localFile, EntityWithFileInfo $entity, bool $flush = true): bool
@@ -98,6 +111,31 @@ class EntityStorageService extends StorageService
         if ($flush) {
             $this->doctrine->flush();
         }
+
+        return true;
+    }
+
+    public function copyEntity(EntityWithFileInfo $source, EntityWithFileInfo $target): bool
+    {
+        if ($target->getFileInfo()->getHash() !== null) {
+            $this->messageBus->dispatch(EntityFileUpdateEvent::forEntity($target));
+        }
+
+        $sourcePath = $this->generateEntityPath($source);
+        $remotePath = $this->generateEntityPath($target, $this->getBasenameOfFilePath($source));
+
+        if (! $this->remoteFilesystem->copy($sourcePath, $remotePath)) {
+            return false;
+        }
+
+        $sourceFileInfo = $source->getFileInfo();
+        $target->getFileInfo()
+            ->setPath($remotePath)
+            ->setSize($sourceFileInfo->getSize())
+            ->setHash($sourceFileInfo->getHash())
+            ->setMimetype($sourceFileInfo->getMimetype())
+            ->setUploaded(true)
+            ->setPageCount(null);
 
         return true;
     }

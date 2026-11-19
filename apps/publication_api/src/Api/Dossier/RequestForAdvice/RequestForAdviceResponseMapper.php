@@ -21,7 +21,9 @@ use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\ValueObject\PlainDate;
 use Webmozart\Assert\Assert;
 
@@ -88,7 +90,7 @@ readonly class RequestForAdviceResponseMapper implements DossierResponseMapper
     private function mainDocument(RequestForAdvice $requestForAdvice): ?RequestForAdviceMainDocumentResponseDto
     {
         $mainDocument = $requestForAdvice->getMainDocument();
-        if ($mainDocument === null) {
+        if (! $mainDocument instanceof AbstractMainDocument) {
             return null;
         }
 
@@ -102,7 +104,7 @@ readonly class RequestForAdviceResponseMapper implements DossierResponseMapper
     private function noticeNotPublic(RequestForAdvice $requestForAdvice): ?NoticeNotPublicResponseDto
     {
         $noticeNotPublic = $requestForAdvice->getNoticeNotPublic();
-        if ($noticeNotPublic === null) {
+        if (! $noticeNotPublic instanceof NoticeNotPublic) {
             return null;
         }
 

@@ -6,6 +6,7 @@ namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Handler;
 
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\GenerateInventoryCommand;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Shared\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderFactory;
 use Shared\Service\Inventory\Sanitizer\InventorySanitizer;
@@ -25,7 +26,7 @@ readonly class GenerateInventoryHandler
     public function __invoke(GenerateInventoryCommand $message): void
     {
         $wooDecision = $this->wooDecisionRepository->find($message->getUuid());
-        if (! $wooDecision) {
+        if (! $wooDecision instanceof WooDecision) {
             $this->logger->warning('No dossier found for this message', [
                 'uuid' => $message->getUuid(),
             ]);

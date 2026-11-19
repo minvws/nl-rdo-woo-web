@@ -40,7 +40,6 @@ class ElasticIndexManagerTest extends UnitTestCase
     public function testCreate(): void
     {
         $name = 'foo';
-        $version = 12;
 
         $this->elasticClient->expects('indices->create')->with(['index' => $name]);
         $this->elasticClient->expects('indices->close')->with(['index' => $name]);
@@ -48,28 +47,24 @@ class ElasticIndexManagerTest extends UnitTestCase
         $this->mappingService->expects('getSettings')->andReturn($settings = ['foo' => 'bar']);
         $this->elasticClient->expects('indices->putSettings')->with(['index' => $name, 'body' => $settings]);
 
-        $this->mappingService->expects('getMapping')->with($version)->andReturn($mapping = ['bar' => 'baz']);
+        $this->mappingService->expects('getMapping')->andReturn($mapping = ['bar' => 'baz']);
         $this->elasticClient->expects('indices->putMapping')->with(['index' => $name, 'body' => $mapping]);
 
         $this->elasticClient->expects('indices->open')->with(['index' => $name]);
 
-        $this->indexManager->create($name, $version);
+        $this->indexManager->create($name);
     }
 
     public function testCreateLatestWithAliases(): void
     {
         $name = 'foo';
-        $latestVersion = 12;
-
-        $this->mappingService->expects('getLatestMappingVersion')->andReturn($latestVersion);
-
         $this->elasticClient->expects('indices->create')->with(['index' => $name]);
         $this->elasticClient->expects('indices->close')->with(['index' => $name]);
 
         $this->mappingService->expects('getSettings')->andReturn($settings = ['foo' => 'bar']);
         $this->elasticClient->expects('indices->putSettings')->with(['index' => $name, 'body' => $settings]);
 
-        $this->mappingService->expects('getMapping')->with($latestVersion)->andReturn($mapping = ['bar' => 'baz']);
+        $this->mappingService->expects('getMapping')->andReturn($mapping = ['bar' => 'baz']);
         $this->elasticClient->expects('indices->putMapping')->with(['index' => $name, 'body' => $mapping]);
 
         $this->elasticClient->expects('indices->open')->with(['index' => $name]);

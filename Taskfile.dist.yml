@@ -2,9 +2,6 @@
 version: '3.50.0'
 
 includes:
-  docs:
-    taskfile: ./docs/Taskfile.docs.yml
-    dir: ./docs
   s3: ./taskfiles/Taskfile.s3.yml
   api: ./taskfiles/Taskfile.api.yml
   certs: ./taskfiles/Taskfile.certs.yml
@@ -13,6 +10,10 @@ includes:
   pnpm: ./taskfiles/Taskfile.pnpm.yml
   ci: ./taskfiles/Taskfile.ci.yml
   db: ./taskfiles/Taskfile.db.yml
+  kube: ./kube/Taskfile.kube.yml
+  docs:
+    taskfile: ./docs/Taskfile.docs.yml
+    dir: ./docs
   console:
     taskfile: ./taskfiles/Taskfile.console.yml
     aliases: [ app ]
@@ -69,7 +70,7 @@ tasks:
     cmds:
       - task: dc
         vars:
-          SUB_CMD: 'run --rm {{ .USER_FLAG }} {{ .RUN_FLAGS }} {{ .SERVICE }} {{ .SUB_CMD }} {{ .CLI_ARGS }}'
+          SUB_CMD: 'run --rm --quiet {{ .USER_FLAG }} {{ .RUN_FLAGS }} {{ .SERVICE }} {{ .SUB_CMD }} {{ .CLI_ARGS }}'
     requires:
       vars:
         - name: SERVICE
@@ -133,7 +134,7 @@ tasks:
       - task: console:cmd:woopie:index:create
         vars:
           TENANT: '{{ .ITEM }}'
-          SUB_CMD: '{{ .ITEM }}-initial latest --read --write'
+          SUB_CMD: '{{ .ITEM }}-initial --read --write'
         for: { var: LOCAL_TENANTS }
       - task: pnpm:install
       - task: pnpm:script:build
@@ -197,8 +198,6 @@ tasks:
     cmds:
       - task: dc
         vars: { SUB_CMD: '--profile "*" down --volumes --remove-orphans' }
-      - task: d:remove-legacy-minio-volume
-      - task: d:remove-legacy-npm-volume
 
   reset:
     desc: Reset the development environment
@@ -216,6 +215,23 @@ tasks:
     cmds:
       - task: dc
         vars: { SUB_CMD: 'ps -a' }
+
+  checkall:
+    desc: Run all back-end and front-end checks
+    cmds:
+      - task: docs:lint
+      - task: reuse:lint
+      - task: composer:script:checkall
+      - task: pnpm:checkall
+      - task: api:openapi:export
+      - task: api:lint
+      # TODO: uncomment once rf:lint runs inside a container instead of on the host
+      # - task: rf:lint
+
+  reuse:lint:
+    desc: Check REUSE compliance
+    cmds:
+      - docker run --rm --volume "{{ .BASE_PATH }}":/data fsfe/reuse:6.2.0 lint
 
   env:
     desc: Manage dotenvs
@@ -270,29 +286,8 @@ tasks:
       PROJECT_NAME:
         sh: docker compose config --environment | grep '^COMPOSE_PROJECT_NAME=' | cut -d= -f2-
     cmds:
-      - docker volume create {{ .PROJECT_NAME }}_woo_composer
-      - docker volume create {{ .PROJECT_NAME }}_woo_pnpm
-
-  # TODO: temporary, remove once everyone has run "task down" at least once.
-  # MinIO was replaced by RustFS, and "down --volumes" only removes the volumes
-  # compose.yml still declares. Errors are ignored: the volume is already gone.
-  d:remove-legacy-minio-volume:
-    internal: true
-    vars:
-      PROJECT_NAME:
-        sh: docker compose config --environment | grep '^COMPOSE_PROJECT_NAME=' | cut -d= -f2-
-    cmds:
-      - cmd: docker volume rm {{ .PROJECT_NAME }}_minio_data 2> /dev/null
-        ignore_error: true
-
-  d:remove-legacy-npm-volume:
-    internal: true
-    vars:
-      PROJECT_NAME:
-        sh: docker compose config --environment | grep '^COMPOSE_PROJECT_NAME=' | cut -d= -f2-
-    cmds:
-      - cmd: docker volume rm {{ .PROJECT_NAME }}_woo_npm 2> /dev/null
-        ignore_error: true
+      - docker volume create {{ .PROJECT_NAME }}_woo_composer > /dev/null
+      - docker volume create {{ .PROJECT_NAME }}_woo_pnpm > /dev/null
 
   postdeploy:
     desc: Run postdeploy script
@@ -313,3 +308,4 @@ tasks:
       - task: dc:exec:admin
         vars: { SUB_CMD: 'bin/console --tenant={{ .TENANT }} woopie:dev:clean-sheet --index {{ .TENANT }}-initial --force {{ .CLI_ARGS }}' }
       - task: s3:clear-buckets
+        vars: { ONLY_TENANT: '{{ .TENANT }}' }

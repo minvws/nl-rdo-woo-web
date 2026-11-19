@@ -44,6 +44,16 @@ final readonly class IngestPdfHandler
 
         /** @var EntityWithFileInfo $entity */
         Assert::isInstanceOf($entity, EntityWithFileInfo::class);
+
+        if (! $entity->getFileInfo()->isUploaded()) {
+            $this->logger->warning('No uploaded file found in IngestPdfHandler', [
+                'id' => $message->getEntityId()->toRfc4122(),
+                'class' => $message->getEntityClass(),
+            ]);
+
+            return;
+        }
+
         Assert::true($entity->getFileInfo()->isPaginatable(), 'Entity is not paginatable');
 
         $this->ensurePageCountIsSet($entity);

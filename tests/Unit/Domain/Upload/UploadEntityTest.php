@@ -7,6 +7,7 @@ namespace Shared\Tests\Unit\Domain\Upload;
 use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Upload\Exception\UploadException;
+use Shared\Domain\Upload\Exception\UploadValidationErrorReason;
 use Shared\Domain\Upload\Exception\UploadValidationException;
 use Shared\Domain\Upload\UploadEntity;
 use Shared\Domain\Upload\UploadEntityStatus;
@@ -120,13 +121,28 @@ class UploadEntityTest extends UnitTestCase
         $uploadEntity->finishUploading('foo.bar', 123);
         self::assertEquals(UploadEntityStatus::UPLOADED, $uploadEntity->getStatus());
 
-        $exception = new UploadValidationException($message = 'oops');
+        $exception = UploadValidationException::forUnsafeFile();
         $uploadEntity->failValidation($exception);
         self::assertEquals(UploadEntityStatus::VALIDATION_FAILED, $uploadEntity->getStatus());
-        self::assertEquals([$message], $uploadEntity->getError());
+        self::assertEquals([$exception->getMessage()], $uploadEntity->getError());
 
         $this->expectException(UploadException::class);
         $uploadEntity->failValidation($exception);
+    }
+
+    public function testFailValidationStoresTheErrorReasonOfTheException(): void
+    {
+        $uploadEntity = new UploadEntity(
+            'foo-bar-123',
+            UploadGroupId::WOO_DECISION_DOCUMENTS,
+            $this->user,
+            $this->context,
+        );
+        $uploadEntity->finishUploading('foo.bar', 123);
+
+        $uploadEntity->failValidation(UploadValidationException::forUnsafeFile());
+
+        self::assertSame(UploadValidationErrorReason::UNSAFE_FILE, $uploadEntity->getErrorReason());
     }
 
     public function testMarkAsStored(): void

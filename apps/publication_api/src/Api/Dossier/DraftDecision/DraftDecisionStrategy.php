@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\DraftDecision;
 
+use PublicationApi\Api\Dossier\DossierMainDocumentSynchronizer;
+use PublicationApi\Api\Dossier\DossierPersister;
 use PublicationApi\Api\Dossier\DossierRequestDtoInterface;
 use PublicationApi\Api\Dossier\DossierStrategy;
 use Shared\Domain\Department\Department;
@@ -20,10 +22,11 @@ use Webmozart\Assert\Assert;
 readonly class DraftDecisionStrategy implements DossierStrategy
 {
     public function __construct(
-        private DraftDecisionPersister $draftDecisionPersister,
+        private DossierPersister $dossierPersister,
         private DraftDecisionRequestMapper $draftDecisionRequestMapper,
         private DraftDecisionAttachmentSynchronizer $draftDecisionAttachmentSynchronizer,
-        private DraftDecisionMainDocumentSynchronizer $draftDecisionMainDocumentSynchronizer,
+        private DraftDecisionMainDocumentRequestMapper $draftDecisionMainDocumentRequestMapper,
+        private DossierMainDocumentSynchronizer $dossierMainDocumentSynchronizer,
     ) {
     }
 
@@ -56,11 +59,15 @@ readonly class DraftDecisionStrategy implements DossierStrategy
             $documentPrefix,
         );
 
-        $this->draftDecisionMainDocumentSynchronizer->create($draftDecision, self::mainDocument($dossierRequestDto));
+        $this->dossierMainDocumentSynchronizer->create(
+            $draftDecision,
+            self::mainDocument($dossierRequestDto),
+            $this->draftDecisionMainDocumentRequestMapper,
+        );
 
         $attachmentEvents = $this->draftDecisionAttachmentSynchronizer->create($draftDecision, $dossierRequestDto->attachments);
 
-        $this->draftDecisionPersister->persist($draftDecision, null, $attachmentEvents);
+        $this->dossierPersister->persist($draftDecision, null, $attachmentEvents);
 
         return $draftDecision;
     }
@@ -77,13 +84,17 @@ readonly class DraftDecisionStrategy implements DossierStrategy
 
         $this->draftDecisionRequestMapper->update($dossier, $dossierRequestDto, $organisation, $department, $subject);
 
-        $draftDecisionSnapshot = $this->draftDecisionPersister->snapshot($dossier);
+        $mainDocumentSnapshot = $this->dossierPersister->snapshot($dossier);
 
-        $this->draftDecisionMainDocumentSynchronizer->update($dossier, self::mainDocument($dossierRequestDto));
+        $this->dossierMainDocumentSynchronizer->update(
+            $dossier,
+            self::mainDocument($dossierRequestDto),
+            $this->draftDecisionMainDocumentRequestMapper,
+        );
 
         $attachmentEvents = $this->draftDecisionAttachmentSynchronizer->update($dossier, $dossierRequestDto->attachments);
 
-        $this->draftDecisionPersister->persist($dossier, $draftDecisionSnapshot, $attachmentEvents);
+        $this->dossierPersister->persist($dossier, $mainDocumentSnapshot, $attachmentEvents);
     }
 
     private static function mainDocument(DraftDecisionRequestDto $draftDecisionRequestDto): DraftDecisionMainDocumentRequestDto

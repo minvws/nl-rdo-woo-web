@@ -8,10 +8,11 @@ use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\Property\Factory\PropertyMetadataFactoryInterface;
 use Shared\ValueObject\ExternalId;
 use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
+use Symfony\Component\TypeInfo\Type;
 use Symfony\Component\TypeInfo\Type\NullableType;
 use Symfony\Component\TypeInfo\Type\ObjectType;
 
-#[AsDecorator(decorates: 'api_platform.metadata.property.metadata_factory')]
+#[AsDecorator(decorates: 'api_platform.metadata.property.metadata_factory', priority: 15)]
 final readonly class ExternalIdPropertyMetadataFactory implements PropertyMetadataFactoryInterface
 {
     public function __construct(
@@ -24,7 +25,7 @@ final readonly class ExternalIdPropertyMetadataFactory implements PropertyMetada
         $propertyMetadata = $this->decorated->create($resourceClass, $property, $options);
 
         $nativeType = $propertyMetadata->getNativeType();
-        if ($nativeType === null) {
+        if (! $nativeType instanceof Type) {
             return $propertyMetadata;
         }
 

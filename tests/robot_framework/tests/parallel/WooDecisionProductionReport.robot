@@ -203,6 +203,22 @@ In A Public Dossier With N Public Files, Replace The Production Report With A Co
   Upload Production Report  ${replacement_report}  ${TRUE}
   Verify Production Report Replace  ${doc_ids}[1001] mist in het productierapport
 
+Public Links From The Production Report Are Shown On The Admin And Public Document Page
+  ${prod_report}  ${docs}  ${doc_ids} =  Randomize Production Report
+  ...  files/woodecision/productierapport - mix.xlsx
+  ...  files/woodecision/documenten - 10.zip
+  Click Publications
+  Publish Test WooDecision
+  ...  production_report=${prod_report}
+  ...  documents=${docs}
+  ...  number_of_documents=4
+  Search For A Publication  ${DOSSIER_REFERENCE}
+  Click Documents Edit
+  Open Document In Dossier  ${doc_ids}[1007]
+  Get Text  //*[@data-e2e-name="document-links"]  contains  https://voorbeeld.nl/reeds-openbaar
+  Click Public URL
+  Verify Notification  https://voorbeeld.nl/reeds-openbaar
+
 Upload A Production Report With Both Matter And PublicationContext Columns Should Fail
   Click Publications
   Create New Dossier  woo-decision

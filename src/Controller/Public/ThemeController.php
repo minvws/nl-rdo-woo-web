@@ -104,7 +104,7 @@ class ThemeController extends AbstractController
     private function getTheme(string $name): ThemeInterface
     {
         $theme = $this->themeManager->getThemeByUrlName($name);
-        if ($theme === null) {
+        if (! $theme instanceof ThemeInterface) {
             throw new NotFoundHttpException();
         }
 

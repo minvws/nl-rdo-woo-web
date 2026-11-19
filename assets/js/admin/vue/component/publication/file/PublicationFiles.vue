@@ -25,7 +25,6 @@ import PublicationFilesList from './PublicationFilesList.vue';
 interface Props {
   canDelete: boolean;
   dateLabel?: string;
-  dossierId?: null | string;
   endpoint: string;
   e2eName?: string;
   fileLimits: FileUploadLimit[];
@@ -36,8 +35,8 @@ interface Props {
   languageOptions: SelectOptions;
   maxLength?: number;
   readableFileType?: string;
+  shouldValidateExcelFiles?: boolean;
   uploadEndpoint?: null | string;
-  uploadGroupId: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -49,6 +48,7 @@ const props = withDefaults(defineProps<Props>(), {
   isMainDocument: false,
   languageOptions: () => [],
   maxLength: 1,
+  shouldValidateExcelFiles: false,
 });
 
 const store = usePublicationFilesStore();
@@ -270,7 +270,6 @@ retrieveFiles();
         @cancel="onCancel"
         @saved="onSaved"
         :date-label="props.dateLabel"
-        :dossier-id="props.dossierId"
         :endpoint="props.endpoint"
         :file="currentFile"
         :file-limits="props.fileLimits"
@@ -280,7 +279,7 @@ retrieveFiles();
         :is-edit-mode="isEditMode"
         :language-options="props.languageOptions"
         :max-length="props.maxLength"
-        :upload-group-id="props.uploadGroupId"
+        :should-validate-excel-files="props.shouldValidateExcelFiles"
       />
     </Dialog>
   </Teleport>

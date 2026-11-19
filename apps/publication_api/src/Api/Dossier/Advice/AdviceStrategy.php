@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\Advice;
 
+use PublicationApi\Api\Dossier\DossierMainDocumentOrNoticeSynchronizer;
+use PublicationApi\Api\Dossier\DossierPersister;
 use PublicationApi\Api\Dossier\DossierRequestDtoInterface;
 use PublicationApi\Api\Dossier\DossierStrategy;
-use PublicationApi\Api\Dossier\NoticeNotPublicSynchronizer;
-use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicRequestDto;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
@@ -22,11 +22,11 @@ use Webmozart\Assert\Assert;
 readonly class AdviceStrategy implements DossierStrategy
 {
     public function __construct(
-        private AdvicePersister $advicePersister,
+        private DossierPersister $dossierPersister,
         private AdviceRequestMapper $adviceRequestMapper,
         private AdviceAttachmentSynchronizer $adviceAttachmentSynchronizer,
-        private AdviceMainDocumentSynchronizer $adviceMainDocumentSynchronizer,
-        private NoticeNotPublicSynchronizer $noticeNotPublicSynchronizer,
+        private AdviceMainDocumentRequestMapper $adviceMainDocumentRequestMapper,
+        private DossierMainDocumentOrNoticeSynchronizer $dossierMainDocumentOrNoticeSynchronizer,
     ) {
     }
 
@@ -59,15 +59,16 @@ readonly class AdviceStrategy implements DossierStrategy
             $documentPrefix,
         );
 
-        if ($dossierRequestDto->mainDocument !== null) {
-            $this->adviceMainDocumentSynchronizer->create($advice, $dossierRequestDto->mainDocument);
-        } else {
-            $this->noticeNotPublicSynchronizer->create($advice, self::noticeNotPublic($dossierRequestDto));
-        }
+        $this->dossierMainDocumentOrNoticeSynchronizer->create(
+            $advice,
+            $dossierRequestDto->mainDocument,
+            $dossierRequestDto->noticeNotPublic,
+            $this->adviceMainDocumentRequestMapper,
+        );
 
         $attachmentEvents = $this->adviceAttachmentSynchronizer->create($advice, $dossierRequestDto->attachments);
 
-        $this->advicePersister->persist($advice, null, $attachmentEvents);
+        $this->dossierPersister->persist($advice, null, $attachmentEvents);
 
         return $advice;
     }
@@ -84,26 +85,17 @@ readonly class AdviceStrategy implements DossierStrategy
 
         $this->adviceRequestMapper->update($dossier, $dossierRequestDto, $organisation, $department, $subject);
 
-        $adviceSnapshot = $this->advicePersister->snapshot($dossier);
+        $mainDocumentSnapshot = $this->dossierPersister->snapshot($dossier);
 
-        if ($dossierRequestDto->mainDocument !== null) {
-            $this->noticeNotPublicSynchronizer->delete($dossier);
-            $this->adviceMainDocumentSynchronizer->update($dossier, $dossierRequestDto->mainDocument);
-        } else {
-            $this->adviceMainDocumentSynchronizer->delete($dossier);
-            $this->noticeNotPublicSynchronizer->update($dossier, self::noticeNotPublic($dossierRequestDto));
-        }
+        $this->dossierMainDocumentOrNoticeSynchronizer->update(
+            $dossier,
+            $dossierRequestDto->mainDocument,
+            $dossierRequestDto->noticeNotPublic,
+            $this->adviceMainDocumentRequestMapper,
+        );
 
         $attachmentEvents = $this->adviceAttachmentSynchronizer->update($dossier, $dossierRequestDto->attachments);
 
-        $this->advicePersister->persist($dossier, $adviceSnapshot, $attachmentEvents);
-    }
-
-    private static function noticeNotPublic(AdviceRequestDto $adviceRequestDto): NoticeNotPublicRequestDto
-    {
-        $noticeNotPublic = $adviceRequestDto->noticeNotPublic;
-        Assert::notNull($noticeNotPublic);
-
-        return $noticeNotPublic;
+        $this->dossierPersister->persist($dossier, $mainDocumentSnapshot, $attachmentEvents);
     }
 }

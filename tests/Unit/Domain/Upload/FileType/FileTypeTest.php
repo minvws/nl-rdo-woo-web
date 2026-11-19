@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Upload\FileType;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use Shared\Domain\Upload\FileType\FileExtension;
 use Shared\Domain\Upload\FileType\FileType;
 use Shared\Tests\Unit\UnitTestCase;
 
@@ -44,33 +45,31 @@ final class FileTypeTest extends UnitTestCase
     }
 
     #[DataProvider('fromExtensionDataProvider')]
-    public function testFromExtension(string $extension, ?FileType $expected): void
+    public function testFromExtension(FileExtension $fileExtension, FileType $expected): void
     {
-        $result = FileType::fromExtension($extension);
+        $result = FileType::fromExtension($fileExtension);
 
         $this->assertSame($expected, $result);
     }
 
     /**
-     * @return array<array-key, array{extension: string, expected: ?FileType}>
+     * @return array<array-key, array{fileExtension: FileExtension, expected: FileType}>
      */
     public static function fromExtensionDataProvider(): array
     {
         return [
-            'pdf extension' => ['extension' => 'pdf', 'expected' => FileType::PDF],
-            'xls extension' => ['extension' => 'xls', 'expected' => FileType::XLS],
-            'xlsx extension' => ['extension' => 'xlsx', 'expected' => FileType::XLS],
-            'doc extension' => ['extension' => 'doc', 'expected' => FileType::DOC],
-            'docx extension' => ['extension' => 'docx', 'expected' => FileType::DOC],
-            'txt extension' => ['extension' => 'txt', 'expected' => FileType::TXT],
-            'ppt extension' => ['extension' => 'ppt', 'expected' => FileType::PPT],
-            'zip extension' => ['extension' => 'zip', 'expected' => FileType::ZIP],
-            '7z extension' => ['extension' => '7z', 'expected' => FileType::ZIP],
-            'mp3 extension' => ['extension' => 'mp3', 'expected' => FileType::AUDIO],
-            'mp4 extension' => ['extension' => 'mp4', 'expected' => FileType::VIDEO],
-            'svg extension' => ['extension' => 'svg', 'expected' => FileType::VECTOR_IMAGE],
-            'empty extension' => ['extension' => '', 'expected' => null],
-            'unknown extension' => ['extension' => 'unknown', 'expected' => null],
+            'pdf extension' => ['fileExtension' => FileExtension::PDF, 'expected' => FileType::PDF],
+            'xls extension' => ['fileExtension' => FileExtension::XLS, 'expected' => FileType::XLS],
+            'xlsx extension' => ['fileExtension' => FileExtension::XLSX, 'expected' => FileType::XLS],
+            'doc extension' => ['fileExtension' => FileExtension::DOC, 'expected' => FileType::DOC],
+            'docx extension' => ['fileExtension' => FileExtension::DOCX, 'expected' => FileType::DOC],
+            'txt extension' => ['fileExtension' => FileExtension::TXT, 'expected' => FileType::TXT],
+            'ppt extension' => ['fileExtension' => FileExtension::PPT, 'expected' => FileType::PPT],
+            'zip extension' => ['fileExtension' => FileExtension::ZIP, 'expected' => FileType::ZIP],
+            '7z extension' => ['fileExtension' => FileExtension::SEVEN_ZIP, 'expected' => FileType::ZIP],
+            'mp3 extension' => ['fileExtension' => FileExtension::MP3, 'expected' => FileType::AUDIO],
+            'mp4 extension' => ['fileExtension' => FileExtension::MP4, 'expected' => FileType::VIDEO],
+            'svg extension' => ['fileExtension' => FileExtension::SVG, 'expected' => FileType::VECTOR_IMAGE],
         ];
     }
 }

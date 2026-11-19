@@ -117,7 +117,7 @@ class SubjectTest extends UnitTestCase
                     self::assertSame(
                         $pageStatus === SubjectLandingPageStatus::PUBLISHED
                             && $treeStatus === SubjectContentTreeStatus::PUBLISHED
-                            && $tree !== null,
+                            && $tree instanceof SubjectContentTree,
                         $subject->hasVisibleLandingPageContentTree(),
                     );
                 }

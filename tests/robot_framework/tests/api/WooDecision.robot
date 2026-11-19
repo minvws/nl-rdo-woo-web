@@ -4,6 +4,7 @@
 
 *** Settings ***
 Documentation       Tests for the WooDecision endpoint, utilizing a custom DataDriver reader. Actual testcases are in the file files/api/woodecision.yaml.
+Library             ../../libraries/Inventory.py
 Library             DataDriver  reader_class=libraries/yaml_reader.py  file_path=files/api/woodecision.yaml
 Resource            ../../resources/API.resource
 Resource            ../../resources/Dossier.resource
@@ -18,6 +19,14 @@ ${EXTERNAL_ID}                  ${EMPTY}
 ${STORED_DOCUMENT_EXTERNAL_ID}  ${EMPTY}
 ${STORED_DOCUMENT_ID}           ${EMPTY}
 ${PUBLICATION_CONTEXT}          ${EMPTY}
+@{INVENTORY_HEADERS}
+...                             Document ID  Documentnummer  Bestandsnaam  Beoordeling  Beoordelingsgrond  Toelichting
+...                             Publieke link  Locatie document  Opgeschort  Gerelateerd document
+...                             Locatie gerelateerd document  Besluitnaam  EmailThreadID  FamilyID  Source Type
+...                             Document Date
+&{JUDGEMENTS}
+...                             public=Openbaar  partial_public=Deels openbaar  already_public=Reeds openbaar
+...                             not_public=Niet openbaar
 
 
 *** Test Cases ***
@@ -238,12 +247,28 @@ Verify HAL Links Are Reachable
   [Documentation]    This is not unused, it's referenced from the YAML file.
   Verify HAL Links Are Reachable For Dossier  woo-decision  has_documents=${TRUE}
 
+WooDecision Period Should Match Previous Request
+  [Documentation]    This is not unused, it's referenced from the YAML file.
+  ${get_response} =  GET On Session
+  ...  alias=publication_api
+  ...  url=${URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/woo-decision/external/${EXTERNAL_ID}
+  Should Be Equal  ${get_response.json()}[dateFrom]  ${PREVIOUS_REQUEST_BODY}[dateFrom]
+  Should Be Equal  ${get_response.json()}[dateTo]  ${PREVIOUS_REQUEST_BODY}[dateTo]
+
+Verify WooDecision Period On Public
+  [Documentation]    This is not unused, it's referenced from the YAML file.
+  [Arguments]  ${expected_period}
+  Suite Setup Generic
+  Navigate To Dossier On Public  ${DOSSIER_REFERENCE}
+  Get Text  //*[@data-e2e-name="dossier-metadata-period"]  contains  ${expected_period}
+
 Deeply Validate WooDecision On Public
   [Documentation]    This is not unused, it's referenced from the YAML file.
   Suite Setup Generic
   Navigate To Dossier On Public  ${DOSSIER_REFERENCE}
   Verify WooDecision Dossier Metadata On Public
-  Download WooDecision Inventory
+  ${inventory_file} =  Download WooDecision Inventory
+  Verify WooDecision Inventory Matches Documents  ${inventory_file}
   Download WooDecision Main Document
   Download WooDecision Documents
   Bulk Download WooDecision Documents
@@ -252,6 +277,42 @@ Verify WooDecision Dossier Metadata On Public
   ${reference_lower} =  Convert To Lower Case  ${DOSSIER_REFERENCE}
   Get Text  //*[@data-e2e-name="dossier-metadata-title"]  contains  ${DOSSIER_REFERENCE}
   Get Text  //*[@data-e2e-name="dossier-metadata-number"]  contains  ${reference_lower}
+
+Verify WooDecision Inventory Matches Documents
+  [Arguments]  ${inventory_file}
+  ${headers}  ${rows} =  Read Inventory Rows  ${inventory_file}
+  Lists Should Be Equal  ${headers}  ${INVENTORY_HEADERS}
+  VAR  @{documents} =  @{PREVIOUS_REQUEST_BODY}[documents]
+  Length Should Be  ${rows}  ${{ len($documents) }}
+  # Document order in the inventory is not fixed, so look up each row by its Document ID
+  &{rows_by_id} =  Evaluate  {row['Document ID']: row for row in $rows}
+  FOR  ${document}  IN  @{documents}
+    VAR  ${document_id} =  ${document}[documentId]
+    VAR  ${row} =  ${rows_by_id}[${document_id}]
+    Verify Inventory Row  ${row}  ${document}  ${documents}
+  END
+
+Verify Inventory Row
+  [Arguments]  ${row}  ${document}  ${documents}
+  # Document numbers are stored in lowercase
+  ${document_number} =  Convert To Lower Case  ${document}[publicationContext]-${document}[documentId]
+  ${related_numbers} =  Get Related Document Numbers  ${document}  ${documents}
+  Should Be Equal  ${row}[Documentnummer]  ${document_number}
+  Should Be Equal  ${row}[Bestandsnaam]  ${document}[fileName]
+  Should Be Equal  ${row}[Beoordeling]  ${JUDGEMENTS}[${document}[judgement]]
+  Should Be Equal  ${row}[Beoordelingsgrond]  ${{ ';'.join($document['grounds']) }}
+  Should Be Equal  ${row}[Toelichting]  ${document}[remark]
+  Should Be Equal  ${row}[Publieke link]  ${{ '\\n'.join($document['links']) }}
+  Should End With  ${row}[Locatie document]  /document/${document_number}
+  Should Be Equal  ${row}[Opgeschort]  ${{ 'ja' if $document['isSuspended'] else '' }}
+  Should Be Equal  ${row}[Gerelateerd document]  ${related_numbers}
+  Length Should Be  ${{ [url for url in $row['Locatie gerelateerd document'].split(';') if url] }}
+  ...  ${{ len($document['refersTo']) }}
+  Should Be Equal  ${row}[Besluitnaam]  ${PREVIOUS_REQUEST_BODY}[title]
+  Should Be Equal  ${row}[EmailThreadID]  ${{ str($document['threadId'] or '') }}
+  Should Be Equal  ${row}[FamilyID]  ${{ str($document['familyId'] or '') }}
+  Should Be Equal  ${row}[Source Type]  ${document}[sourceType]
+  Should Be Equal  ${row}[Document Date]  ${document}[documentDate]
 
 Download WooDecision Main Document
   Click  //*[@data-e2e-name="main-document-detail-link"]

@@ -53,7 +53,7 @@ describe('The <SelectedFiles /> component', () => {
   test('should display the provided files', () => {
     const selectedFileComponents = getSelectedFileComponents(createComponent());
 
-    expect(selectedFileComponents.length).toBe(2);
+    expect(selectedFileComponents).toHaveLength(2);
     expect(selectedFileComponents[0].props()).toMatchObject({
       enableAutoUpload: true,
       file: mockedFiles.get('1'),
@@ -67,7 +67,7 @@ describe('The <SelectedFiles /> component', () => {
   test('should display skip links above and below the list of files', () => {
     const skipLinkComponents = getSkipLinkComponents(createComponent());
 
-    expect(skipLinkComponents.length).toBe(2);
+    expect(skipLinkComponents).toHaveLength(2);
     expect(skipLinkComponents[0].html()).toContain(
       'Naar einde van lijst met te uploaden bestanden',
     );
@@ -120,11 +120,7 @@ describe('The <SelectedFiles /> component', () => {
 
     expect(component.emitted('uploadError')).toBeFalsy();
 
-    const mockedUploadError = {
-      isTechnialError: false,
-      isUnsafeError: false,
-      isWhiteListError: true,
-    };
+    const mockedUploadError = { validationErrorReason: null };
 
     await getSelectedFileComponents(component)[0].vm.$emit(
       'uploadError',

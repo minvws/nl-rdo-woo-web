@@ -7,12 +7,12 @@ namespace Shared\EventSubscriber;
 use ApiPlatform\Symfony\EventListener\EventPriorities;
 use Shared\Domain\Publication\Dossier\Command\UpdateDossierPublicationCommand;
 use Shared\Domain\Publication\Dossier\DossierRepository;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Messenger\Event\WorkerMessageHandledEvent;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-final readonly class DossierChangedCollectionPublisher implements EventSubscriberInterface
+final readonly class DossierChangedCollectionPublisher
 {
     public function __construct(
         private DossierChangedCollection $dossierChangedCollection,
@@ -21,14 +21,8 @@ final readonly class DossierChangedCollectionPublisher implements EventSubscribe
     ) {
     }
 
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            KernelEvents::TERMINATE => ['processDossierChangedCollection', EventPriorities::PRE_RESPOND],
-            WorkerMessageHandledEvent::class => 'processDossierChangedCollection',
-        ];
-    }
-
+    #[AsEventListener(event: KernelEvents::TERMINATE, priority: EventPriorities::PRE_RESPOND)]
+    #[AsEventListener(event: WorkerMessageHandledEvent::class)]
     public function processDossierChangedCollection(): void
     {
         foreach ($this->dossierChangedCollection->claim() as $dossierId) {

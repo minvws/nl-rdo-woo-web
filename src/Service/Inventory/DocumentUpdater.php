@@ -135,7 +135,7 @@ readonly class DocumentUpdater
 
         foreach (array_diff(array_keys($currentReferrals), array_keys($newReferrals)) as $refersToRemove) {
             $documentToRemove = $this->documentRepository->findByDocumentNumber($currentReferrals[$refersToRemove]);
-            if ($documentToRemove) {
+            if ($documentToRemove instanceof Document) {
                 $document->removeRefersTo($documentToRemove);
             }
         }
@@ -143,7 +143,7 @@ readonly class DocumentUpdater
         foreach (array_diff(array_keys($newReferrals), array_keys($currentReferrals)) as $refersToAdd) {
             $documentToAdd = $this->documentRepository->findByDocumentNumber($newReferrals[$refersToAdd]);
 
-            if ($documentToAdd) {
+            if ($documentToAdd instanceof Document) {
                 $document->addRefersTo($documentToAdd);
             }
         }
@@ -157,18 +157,18 @@ readonly class DocumentUpdater
         /** @var array<array-key, ExternalId> $currentReferrals */
         $currentReferrals = $document->getRefersTo()
             ->map(static function (Document $document): ?ExternalId {
-                if ($document->getExternalId() === null) {
+                if (! $document->getExternalId() instanceof ExternalId) {
                     return null;
                 }
 
                 return $document->getExternalId();
             })
-            ->filter(static fn (?ExternalId $value): bool => $value !== null)
+            ->filter(static fn (?ExternalId $value): bool => $value instanceof ExternalId)
             ->toArray();
 
         foreach (array_diff($currentReferrals, $refersTo) as $refersToRemove) {
             $documentToRemove = $this->documentRepository->findByExternalId($refersToRemove);
-            if ($documentToRemove) {
+            if ($documentToRemove instanceof Document) {
                 $document->removeRefersTo($documentToRemove);
             }
         }
@@ -176,7 +176,7 @@ readonly class DocumentUpdater
         foreach (array_diff($refersTo, $currentReferrals) as $refersToAdd) {
             $documentToAdd = $this->documentRepository->findByExternalId($refersToAdd);
 
-            if ($documentToAdd) {
+            if ($documentToAdd instanceof Document) {
                 $document->addRefersTo($documentToAdd);
             }
         }

@@ -13,6 +13,7 @@ use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DossierTitle;
@@ -80,5 +81,44 @@ final class WooDecisionRequestMapperTest extends UnitTestCase
         self::assertSame($organisation, $wooDecision->getOrganisation());
         self::assertSame($subject, $wooDecision->getSubject());
         self::assertSame([$department], $wooDecision->getDepartments()->getValues());
+    }
+
+    public function testUpdateWithNullDates(): void
+    {
+        $wooDecision = new WooDecision();
+        $wooDecision->setDateFrom($this->getFaker()->plainDate());
+        $wooDecision->setDateTo($this->getFaker()->plainDate());
+
+        $wooDecisionRequestDto = new WooDecisionRequestDto(
+            Uuid::v6(),
+            new WooDecisionMainDocumentRequestDto(
+                $this->getFaker()->fileName(),
+                $this->getFaker()->plainDate(),
+                $this->getFaker()->attachmentLanguage(),
+            ),
+            null,
+            $this->getFaker()->sentence(),
+            DossierTitle::create($this->getFaker()->sentence()),
+            [],
+            null,
+            null,
+            $this->getFaker()->dossierNumber(),
+            $this->getFaker()->plainDate(),
+            DecisionType::PUBLIC,
+            PublicationReason::WOO_REQUEST,
+            $this->getFaker()->plainDate(),
+        );
+
+        $wooDecisionRequestMapper = new WooDecisionRequestMapper();
+        $wooDecisionRequestMapper->update(
+            $wooDecision,
+            $wooDecisionRequestDto,
+            Mockery::mock(Organisation::class),
+            Mockery::mock(Department::class),
+            null,
+        );
+
+        self::assertNull($wooDecision->getDateFrom());
+        self::assertNull($wooDecision->getDateTo());
     }
 }

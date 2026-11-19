@@ -7,6 +7,7 @@ namespace Shared\Service\Inventory\Sanitizer;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Shared\Domain\Upload\FileType\FileExtension;
 
 use function implode;
 use function is_array;
@@ -52,8 +53,8 @@ class ExcelWriter implements InventoryWriterInterface
         $writer->save($this->filename);
     }
 
-    public function getFileExtension(): string
+    public function getFileExtension(): FileExtension
     {
-        return 'xlsx';
+        return FileExtension::XLSX;
     }
 }

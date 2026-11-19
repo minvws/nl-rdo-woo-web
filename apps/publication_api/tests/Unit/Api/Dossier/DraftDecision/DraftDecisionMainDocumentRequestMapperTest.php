@@ -24,7 +24,8 @@ final class DraftDecisionMainDocumentRequestMapperTest extends UnitTestCase
 
         $draftDecisionMainDocumentRequestDto = new DraftDecisionMainDocumentRequestDto($fileName, $formalDate, $language, $type);
 
-        $mainDocument = DraftDecisionMainDocumentRequestMapper::create($draftDecision, $draftDecisionMainDocumentRequestDto);
+        $draftDecisionMainDocumentRequestMapper = new DraftDecisionMainDocumentRequestMapper();
+        $mainDocument = $draftDecisionMainDocumentRequestMapper->create($draftDecision, $draftDecisionMainDocumentRequestDto);
 
         self::assertSame($draftDecision, $mainDocument->getDossier());
         self::assertSame($fileName->toString(), $mainDocument->getFileInfo()->getName());
@@ -54,7 +55,8 @@ final class DraftDecisionMainDocumentRequestMapperTest extends UnitTestCase
 
         $draftDecisionMainDocumentRequestDto = new DraftDecisionMainDocumentRequestDto($fileName, $formalDate, $language, $type);
 
-        $mainDocument = DraftDecisionMainDocumentRequestMapper::update($draftDecision, $draftDecisionMainDocumentRequestDto);
+        $draftDecisionMainDocumentRequestMapper = new DraftDecisionMainDocumentRequestMapper();
+        $mainDocument = $draftDecisionMainDocumentRequestMapper->update($draftDecision, $draftDecisionMainDocumentRequestDto);
 
         self::assertSame($existingMainDocument, $mainDocument);
         self::assertSame($fileName->toString(), $mainDocument->getFileInfo()->getName());
@@ -74,8 +76,10 @@ final class DraftDecisionMainDocumentRequestMapperTest extends UnitTestCase
             $this->getFaker()->attachmentType(DraftDecisionMainDocument::getAllowedTypes()),
         );
 
+        $draftDecisionMainDocumentRequestMapper = new DraftDecisionMainDocumentRequestMapper();
+
         self::expectException(InvalidArgumentException::class);
 
-        DraftDecisionMainDocumentRequestMapper::update($draftDecision, $draftDecisionMainDocumentRequestDto);
+        $draftDecisionMainDocumentRequestMapper->update($draftDecision, $draftDecisionMainDocumentRequestDto);
     }
 }

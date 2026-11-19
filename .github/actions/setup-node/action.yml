@@ -1,5 +1,5 @@
 name: Setup node
-description: Compose action that sets up node
+description: Composite action that sets up node
 
 inputs:
   node-version:

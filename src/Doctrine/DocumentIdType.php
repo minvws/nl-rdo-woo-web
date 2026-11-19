@@ -42,7 +42,7 @@ final class DocumentIdType extends Type
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
         Assert::nullOrIsInstanceOf($value, DocumentId::class);
-        if ($value === null) {
+        if (! $value instanceof DocumentId) {
             return null;
         }
 

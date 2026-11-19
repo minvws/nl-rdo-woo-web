@@ -54,11 +54,12 @@ final class IngestPdfHandlerTest extends UnitTestCase
     public function testInvoke(): void
     {
         $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('isUploaded')->andReturnTrue();
         $fileInfo->expects('isPaginatable')->andReturnTrue();
         $fileInfo->expects('getPageCount')->times(2)->andReturnNull();
 
         $entity = Mockery::mock(Document::class);
-        $entity->expects('getFileInfo')->times(4)->andReturn($fileInfo);
+        $entity->expects('getFileInfo')->times(5)->andReturn($fileInfo);
 
         $entityClass = $entity::class;
         $message = new IngestPdfCommand(Uuid::v6(), $entityClass, false);
@@ -86,11 +87,12 @@ final class IngestPdfHandlerTest extends UnitTestCase
     public function testInvokeSkipsPageCountExtractWhenPageCountIsAlreadyAvailable(): void
     {
         $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('isUploaded')->andReturnTrue();
         $fileInfo->expects('isPaginatable')->andReturnTrue();
         $fileInfo->expects('getPageCount')->times(4)->andReturn(2);
 
         $entity = Mockery::mock(Document::class);
-        $entity->expects('getFileInfo')->times(5)->andReturn($fileInfo);
+        $entity->expects('getFileInfo')->times(6)->andReturn($fileInfo);
 
         $message = new IngestPdfCommand(
             $id = Uuid::v6(),
@@ -107,6 +109,42 @@ final class IngestPdfHandlerTest extends UnitTestCase
         $this->ingestDispatcher->expects('dispatchIngestPdfPageCommand')->with($id, $entityClass, 2);
 
         $this->handler->__invoke($message);
+    }
+
+    public function testInvokeLogsWarningAndReturnsEarlyWhenFileIsNotUploaded(): void
+    {
+        $doctrine = Mockery::mock(EntityManagerInterface::class);
+        $pagecountExtractor = Mockery::mock(PagecountExtractor::class);
+        $pdfProcessor = Mockery::mock(PdfProcessor::class);
+        $logger = Mockery::mock(LoggerInterface::class);
+        $ingestDispatcher = Mockery::mock(IngestDispatcher::class);
+        $entityRepository = Mockery::mock(EntityRepository::class);
+
+        $entityId = Uuid::v6();
+        $message = new IngestPdfCommand($entityId, Document::class, false);
+
+        $fileInfo = new FileInfo();
+        $fileInfo->setUploaded(false);
+
+        $entity = Mockery::mock(Document::class);
+        $entity->expects('getFileInfo')->andReturn($fileInfo);
+
+        $doctrine->expects('getRepository')->with(Document::class)->andReturn($entityRepository);
+        $entityRepository->expects('find')->with($entityId)->andReturn($entity);
+
+        $logger->expects('warning')->with('No uploaded file found in IngestPdfHandler', [
+            'id' => $entityId->toRfc4122(),
+            'class' => Document::class,
+        ]);
+
+        $handler = new IngestPdfHandler(
+            $doctrine,
+            $pagecountExtractor,
+            $pdfProcessor,
+            $logger,
+            $ingestDispatcher,
+        );
+        $handler->__invoke($message);
     }
 
     public function testInvokeWhenEntityCannotBeFound(): void

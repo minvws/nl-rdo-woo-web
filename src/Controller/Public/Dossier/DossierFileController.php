@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace Shared\Controller\Public\Dossier;
 
+use Shared\Controller\Public\Dossier\WooDecision\DocumentController;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileProviderManager;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Service\DownloadResponseHelper;
 use Shared\Service\Storage\ThumbnailStorageService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\HttpKernel\Attribute\ValueResolver;
@@ -40,8 +44,16 @@ class DossierFileController extends AbstractController
         #[ValueResolver('dossierWithAccessCheck')] AbstractDossier $dossier,
         DossierFileType $type,
         string $id,
-    ): StreamedResponse {
+    ): StreamedResponse|RedirectResponse {
         $entity = $this->fileProviderManager->getEntityForPublicUse($type, $dossier, $id);
+
+        if ($entity instanceof Document) {
+            return $this->redirectToRoute(
+                DocumentController::ROUTE_NAME_DOCUMENT_DOWNLOAD,
+                ['documentNumber' => $entity->getDocumentNumber()->toString()],
+                Response::HTTP_MOVED_PERMANENTLY,
+            );
+        }
 
         return $this->downloadHelper->getResponseForEntityWithFileInfo($entity);
     }

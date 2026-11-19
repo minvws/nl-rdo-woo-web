@@ -6,6 +6,7 @@ namespace Shared\Domain\Publication\Dossier\Type;
 
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 
@@ -80,7 +81,7 @@ class DossierTypeManager
     {
         $expression = $config->getSecurityExpression();
 
-        return $expression === null || $this->authorizationChecker->isGranted($expression);
+        return ! $expression instanceof Expression || $this->authorizationChecker->isGranted($expression);
     }
 
     /**

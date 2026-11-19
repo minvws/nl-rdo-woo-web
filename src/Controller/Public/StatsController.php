@@ -7,6 +7,7 @@ namespace Shared\Controller\Public;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Predis\Client;
+use SensitiveParameter;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Service\Search\Query\Definition\BrowseMainAggregationsQueryDefinition;
@@ -28,7 +29,7 @@ class StatsController extends AbstractController
         private readonly EntityManagerInterface $doctrine,
         private readonly Client $redis,
         private readonly SearchService $searchService,
-        private readonly string $rabbitMqStatUrl,
+        #[SensitiveParameter] private readonly string $rabbitMqStatUrl,
         private readonly EntityStorageService $entityStorageService,
         private readonly ThumbnailStorageService $thumbnailStorageService,
         private readonly BrowseMainAggregationsQueryDefinition $aggregationsQueryDefinition,

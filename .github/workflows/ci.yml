@@ -12,21 +12,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  db_requirements_check:
-    name: Check .db_requirements
-    if: github.event_name == 'pull_request'
-    uses: ./.github/workflows/db-requirements-check.yml
-    secrets: inherit
-
-  migration_check:
-    name: Check for missing migrations
-    if: github.event_name == 'pull_request'
-    uses: ./.github/workflows/migration-check.yml
-    secrets: inherit
-
   setup-pnpm-cache:
     name: Setup pnpm cache
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -37,7 +25,7 @@ jobs:
 
   setup-composer-cache:
     name: Setup Composer cache
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -49,7 +37,7 @@ jobs:
   audit-composer:
     name: Dependency Audit Composer
     if: github.event_name != 'pull_request'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [setup-composer-cache]
     steps:
       - name: Checkout
@@ -64,7 +52,7 @@ jobs:
   audit-pnpm:
     name: Dependency Audit pnpm
     if: github.event_name != 'pull_request'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [setup-pnpm-cache]
     steps:
       - name: Checkout
@@ -78,16 +66,20 @@ jobs:
 
   markdown:
     name: Check Markdown files
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+      - name: Install Task
+        uses: go-task/setup-task@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Linting Markdown
-        uses: DavidAnson/markdownlint-cli2-action@v24
+        run: task docs:lint
 
   reuse-compliance:
     name: Check REUSE compliance
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -96,7 +88,7 @@ jobs:
 
   fe-linting:
     name: Check front-end linting
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [setup-pnpm-cache]
     steps:
       - name: Checkout
@@ -113,9 +105,23 @@ jobs:
           name: eslint-report
           path: reports/eslint
 
+  fe-type-check:
+    name: Check front-end types
+    runs-on: ubuntu-26.04
+    needs: [setup-pnpm-cache]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Type-checking TypeScript and Vue files
+        run: pnpm run vue-tsc
+
   fe-unit-tests:
     name: Check front-end Unit tests
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [setup-pnpm-cache]
     steps:
       - name: Checkout
@@ -134,7 +140,7 @@ jobs:
 
   be-linting-php-cs-fixer:
     name: Check back-end PHP-CS-Fixer
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [setup-composer-cache]
     steps:
       - name: Checkout
@@ -154,7 +160,7 @@ jobs:
 
   be-linting-codesniffer:
     name: Check back-end CodeSniffer
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [setup-composer-cache]
     steps:
       - name: Checkout
@@ -174,7 +180,7 @@ jobs:
 
   be-linting-twig:
     name: Check back-end Twig template files
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [setup-composer-cache]
     steps:
       - name: Checkout
@@ -188,7 +194,7 @@ jobs:
 
   be-linting-yaml-translations:
     name: Check YAML translation files
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [setup-composer-cache]
     steps:
       - name: Checkout
@@ -202,9 +208,9 @@ jobs:
 
   api-lint:
     name: Lint OpenAPI specification
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     continue-on-error: true # non-blocking for now
-    needs: [ setup-composer-cache ]
+    needs: [setup-composer-cache]
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -223,7 +229,7 @@ jobs:
 
   be-static-code-analysis:
     name: Check back-end Static Code Analysis
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [setup-composer-cache]
     steps:
       - name: Checkout
@@ -255,7 +261,7 @@ jobs:
 
   be-check-architecture:
     name: Check back-end Architecture
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [setup-composer-cache]
     steps:
       - name: Checkout
@@ -269,7 +275,7 @@ jobs:
 
   be-migrations:
     name: Check back-end migrations
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [setup-composer-cache]
     services:
       postgres:
@@ -296,7 +302,7 @@ jobs:
 
   be-unit-tests:
     name: Check back-end Unit tests
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [setup-pnpm-cache, setup-composer-cache]
     env:
       CR_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -315,7 +321,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Start Docker compose services
-        run: task up
+        run: task ci:up
       - name: Run tests
         run: task ci:test
       - name: Fix file paths in PHPUnit reports
@@ -330,7 +336,7 @@ jobs:
 
   sonarcloud:
     name: Run SonarQube scanner
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     if: ${{ github.actor != 'dependabot[bot]' }}
     needs:
       - fe-unit-tests
@@ -380,8 +386,8 @@ jobs:
     secrets: inherit
     with:
       test_tag: ci
-      app_runner: ubuntu-latest-l
-      api_runner: ubuntu-latest-m
+      app_runner: ubuntu-26.04-l
+      api_runner: ubuntu-26.04-m
 
   package:
     name: Package
@@ -389,6 +395,7 @@ jobs:
       - markdown
       - reuse-compliance
       - fe-linting
+      - fe-type-check
       - fe-unit-tests
       - be-linting-php-cs-fixer
       - be-linting-codesniffer

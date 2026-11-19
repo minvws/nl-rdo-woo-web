@@ -127,7 +127,7 @@ class InventoryUpdaterTest extends UnitTestCase
         $this->batchDownloadService
             ->expects('refresh')
             ->with(Mockery::on(
-                static fn (BatchDownloadScope $scope): bool => $scope->wooDecision === $dossier && $scope->inquiry === null,
+                static fn (BatchDownloadScope $scope): bool => $scope->wooDecision === $dossier && ! $scope->inquiry instanceof Inquiry,
             ));
 
         $this->searchDispatcher->expects('dispatchIndexDossierCommand')->with($dossierId);

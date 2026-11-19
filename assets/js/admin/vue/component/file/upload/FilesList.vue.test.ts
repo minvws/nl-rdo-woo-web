@@ -24,7 +24,7 @@ describe('The "FilesList" component', () => {
     ];
     const listItemElements = getListItemElements(createComponent(testFiles));
 
-    expect(listItemElements.length).toBe(2);
+    expect(listItemElements).toHaveLength(2);
     expect(listItemElements[0].text()).toBe(
       `1.txt (${formatFileSize(testFiles[0].size)})`,
     );

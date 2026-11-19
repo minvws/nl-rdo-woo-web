@@ -19,3 +19,16 @@ tasks:
             --log-junit=reports/phpunit/report-phpunit.xml
             --coverage-clover=reports/phpunit/coverage-phpunit.xml
             -- {{ .CLI_ARGS }}
+
+  up:
+    desc: Start ci environment
+    cmds:
+      - task: :d:create-cache-volumes
+      - task: :composer:install
+      - task: :dc
+        vars: { SUB_CMD: 'up -d admin postgres' }
+      - task: :dc:exec:admin
+        vars: { SUB_CMD: 'bash -c "wait-for-it postgres:5432 --timeout=60 --strict -- echo \"Done waiting\""' }
+      - task: :console:migrate:test
+        vars: { TENANT: '{{ .ITEM }}' }
+        for: { var: LOCAL_TENANTS }

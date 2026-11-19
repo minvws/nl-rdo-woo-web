@@ -115,6 +115,10 @@ class WooDecisionDocumentMapperTest extends UnitTestCase
         $document->expects('getDocumentId')->andReturn(DocumentId::create('abc123'));
         $document->expects('getThreadId')->andReturn(567);
         $document->expects('getJudgement')->andReturn(Judgement::PARTIAL_PUBLIC);
+        $document->expects('getLinks')->andReturn([
+            'https://example.nl/reeds-openbaar',
+            'https://example.nl/alternatieve-bron',
+        ]);
         $document->expects('getGrounds')->andReturn(['x', 'y']);
         $document->expects('getPeriod')->andReturn('foo-bar');
 

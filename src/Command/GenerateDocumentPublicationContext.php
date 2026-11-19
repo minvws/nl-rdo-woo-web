@@ -103,7 +103,7 @@ class GenerateDocumentPublicationContext extends Command
             $processed++;
 
             $publicationContext = $this->getPublicationContext($io, $document);
-            if ($publicationContext === null) {
+            if (! $publicationContext instanceof PublicationContext) {
                 $skipped++;
             } else {
                 $document->setPublicationContext($publicationContext);

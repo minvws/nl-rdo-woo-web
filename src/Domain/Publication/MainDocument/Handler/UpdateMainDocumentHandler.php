@@ -6,6 +6,8 @@ namespace Shared\Domain\Publication\MainDocument\Handler;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
@@ -18,6 +20,7 @@ use Shared\Domain\Publication\MainDocument\Event\MainDocumentUpdatedEvent;
 use Shared\Domain\Publication\MainDocument\MainDocumentNotFoundException;
 use Shared\Domain\Publication\MainDocument\MainDocumentRepositoryInterface;
 use Shared\Domain\Upload\Process\EntityUploadStorer;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
@@ -49,7 +52,7 @@ readonly class UpdateMainDocumentHandler
         Assert::isInstanceOf($mainDocumentRepository, MainDocumentRepositoryInterface::class);
 
         $mainDocument = $mainDocumentRepository->findOneByDossierId($dossier->getId());
-        if ($mainDocument === null) {
+        if (! $mainDocument instanceof AbstractMainDocument) {
             throw new MainDocumentNotFoundException();
         }
 
@@ -85,11 +88,11 @@ readonly class UpdateMainDocumentHandler
 
     private function mapProperties(UpdateMainDocumentCommand $command, AbstractMainDocument $mainDocument): void
     {
-        if ($command->formalDate !== null) {
+        if ($command->formalDate instanceof PlainDate) {
             $mainDocument->setFormalDate($command->formalDate);
         }
 
-        if ($command->language !== null) {
+        if ($command->language instanceof AttachmentLanguage) {
             $mainDocument->setLanguage($command->language);
         }
 
@@ -97,7 +100,7 @@ readonly class UpdateMainDocumentHandler
             $mainDocument->setInternalReference($command->internalReference);
         }
 
-        if ($command->type !== null) {
+        if ($command->type instanceof AttachmentType) {
             $mainDocument->setType($command->type);
         }
 

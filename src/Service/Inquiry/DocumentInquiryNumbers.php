@@ -19,7 +19,7 @@ class DocumentInquiryNumbers
 
     public function isDocumentNotFound(): bool
     {
-        return $this->documentId === null;
+        return ! $this->documentId instanceof Uuid;
     }
 
     /**

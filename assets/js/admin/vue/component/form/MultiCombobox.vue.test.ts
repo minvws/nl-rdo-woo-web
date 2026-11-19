@@ -121,7 +121,7 @@ describe('The "<MultiCombobox />" component', () => {
 
     const comboboxComponents = getComboboxComponents(component);
 
-    expect(comboboxComponents.length).toBe(2);
+    expect(comboboxComponents).toHaveLength(2);
     expect(comboboxComponents[0].props()).toMatchObject({
       forbiddenValues: ['mocked_option-2'],
       label: 'mocked_label 1',

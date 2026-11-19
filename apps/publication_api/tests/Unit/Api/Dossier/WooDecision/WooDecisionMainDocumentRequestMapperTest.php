@@ -32,7 +32,8 @@ final class WooDecisionMainDocumentRequestMapperTest extends UnitTestCase
             grounds: array_map(Ground::from(...), $grounds),
         );
 
-        $mainDocument = WooDecisionMainDocumentRequestMapper::create($wooDecision, $wooDecisionMainDocumentRequestDto);
+        $wooDecisionMainDocumentRequestMapper = new WooDecisionMainDocumentRequestMapper();
+        $mainDocument = $wooDecisionMainDocumentRequestMapper->create($wooDecision, $wooDecisionMainDocumentRequestDto);
 
         self::assertSame($wooDecision, $mainDocument->getDossier());
         self::assertSame($fileName->toString(), $mainDocument->getFileInfo()->getName());
@@ -60,7 +61,8 @@ final class WooDecisionMainDocumentRequestMapperTest extends UnitTestCase
             grounds: array_map(Ground::from(...), $grounds),
         );
 
-        $mainDocument = WooDecisionMainDocumentRequestMapper::update($wooDecision, $wooDecisionMainDocumentRequestDto);
+        $wooDecisionMainDocumentRequestMapper = new WooDecisionMainDocumentRequestMapper();
+        $mainDocument = $wooDecisionMainDocumentRequestMapper->update($wooDecision, $wooDecisionMainDocumentRequestDto);
 
         self::assertSame($existingMainDocument, $mainDocument);
         self::assertSame($fileName->toString(), $mainDocument->getFileInfo()->getName());
@@ -79,8 +81,10 @@ final class WooDecisionMainDocumentRequestMapperTest extends UnitTestCase
             $this->getFaker()->attachmentLanguage(),
         );
 
+        $wooDecisionMainDocumentRequestMapper = new WooDecisionMainDocumentRequestMapper();
+
         self::expectException(InvalidArgumentException::class);
 
-        WooDecisionMainDocumentRequestMapper::update($wooDecision, $wooDecisionMainDocumentRequestDto);
+        $wooDecisionMainDocumentRequestMapper->update($wooDecision, $wooDecisionMainDocumentRequestDto);
     }
 }

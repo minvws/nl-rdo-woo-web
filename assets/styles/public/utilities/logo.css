@@ -4,10 +4,10 @@
 }
 
 @utility woo-logo__img {
-  @apply -mt-[20px] w-[40px] h-[80px] sm:mt-0 sm:w-[50px] sm:h-[100px];
+  @apply -mt-5 w-10 h-20 sm:mt-0 sm:w-12.5 sm:h-25;
 }
 
 @utility woo-logo__text {
-  @apply bottom-8 font-serif leading-4 left-1/2 text-left text-sm absolute ml-[calc(calc(50px/2)+theme(space.4))];
-  @apply sm:text-lg sm:bottom-9 sm:leading-none;
+  @apply top-5 font-serif leading-4 left-1/2 text-left text-sm absolute ml-[calc(25px+theme(space.4))];
+  @apply sm:text-lg sm:top-12.5 sm:leading-none;
 }

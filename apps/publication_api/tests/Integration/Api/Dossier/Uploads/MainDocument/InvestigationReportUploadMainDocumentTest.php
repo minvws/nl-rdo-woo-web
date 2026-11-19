@@ -46,7 +46,7 @@ final class InvestigationReportUploadMainDocumentTest extends ApiPublicationV1Up
         );
     }
 
-    public function testUploadOnPublishedDossierReturnsValidationError(): void
+    public function testUploadOnPublishedDossier(): void
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
@@ -56,21 +56,22 @@ final class InvestigationReportUploadMainDocumentTest extends ApiPublicationV1Up
             'departments' => [$department],
             'status' => DossierStatus::PUBLISHED,
         ]);
-
-        $client = self::createPublicationApiClient();
-        $client->request(Request::METHOD_PUT, sprintf(
-            '/api/publication/v1/organisation/%s/dossiers/investigation-report/external/%s/uploads/main-document',
-            $organisation->getId(),
-            $investigationReport->getExternalId(),
-        ), [
-            'headers' => [
-                'Content-Type' => 'application/octet-stream',
-            ],
-            'body' => $this->getTestFileContent('1008.pdf'),
+        $mainDocument = InvestigationReportMainDocumentFactory::createOne([
+            'dossier' => $investigationReport,
         ]);
 
-        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
-        self::assertJsonContains(['violations' => [['message' => 'document upload is not allowed for a published dossier']]]);
+        $this->assertUpload(
+            url: sprintf(
+                '/api/publication/v1/organisation/%s/dossiers/investigation-report/external/%s/uploads/main-document',
+                $organisation->getId(),
+                $investigationReport->getExternalId(),
+            ),
+            dossierId: $investigationReport->getId()->toRfc4122(),
+            entityId: $mainDocument->getId()->toRfc4122(),
+            entityFileName: $mainDocument->getFileInfo()->getName(),
+            uploadGroupId: UploadGroupId::MAIN_DOCUMENTS,
+            entityParameterKey: 'mainDocumentId',
+        );
     }
 
     public function testUploadWithTooLongDossierExternalId(): void

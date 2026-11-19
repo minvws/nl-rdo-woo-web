@@ -28,6 +28,10 @@ config:
       type: pem
       certificateFilePath: ../../certs/acc/client-minfin-combined.pem
       privateKeyFilePath: ../../certs/acc/client-minfin.key
+    - domain: "{{process.env.DOMAIN_ACC_MINOCW}}"
+      type: pem
+      certificateFilePath: ../../certs/acc/client-minocw-combined.pem
+      privateKeyFilePath: ../../certs/acc/client-minocw.key
 
 request:
   scripts:

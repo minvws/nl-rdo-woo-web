@@ -46,10 +46,10 @@ abstract readonly class AbstractMainDocumentProvider implements ProviderInterfac
         $document = $this->getRepository()->findOneByDossierId($dossierId);
 
         if ($operation instanceof CollectionOperationInterface) {
-            return $document ? [$this->fromEntityToDto($document)] : [];
+            return $document instanceof AbstractMainDocument ? [$this->fromEntityToDto($document)] : [];
         }
 
-        return $document ? $this->fromEntityToDto($document) : null;
+        return $document instanceof AbstractMainDocument ? $this->fromEntityToDto($document) : null;
     }
 
     private function getRepository(): MainDocumentRepositoryInterface

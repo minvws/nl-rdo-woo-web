@@ -71,6 +71,26 @@
                                             }
                                         ]
                                     }
+                                },
+                                {
+                                    "bool": {
+                                        "filter": [
+                                            {
+                                                "terms": {
+                                                    "type": [
+                                                        "subject"
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "term": {
+                                                    "status": {
+                                                        "value": "published"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
                                 }
                             ]
                         }
@@ -150,6 +170,9 @@
                 "terms": {
                     "field": "toplevel_type",
                     "size": 10,
+                    "exclude": [
+                        "subject"
+                    ],
                     "min_doc_count": 1
                 },
                 "aggs": {

@@ -7,6 +7,7 @@ namespace Shared\Command;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use RuntimeException;
+use SensitiveParameter;
 use Shared\Domain\Publication\BatchDownload\BatchDownload;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
@@ -39,7 +40,7 @@ class CleanSheet extends Command
      * @param array<array-key, string> $queueDsns
      */
     public function __construct(
-        private readonly array $queueDsns,
+        #[SensitiveParameter] private readonly array $queueDsns,
         private readonly EntityManagerInterface $entityManager,
         private readonly ElasticIndexManager $indexService,
         private readonly HttpClientInterface $httpClient,

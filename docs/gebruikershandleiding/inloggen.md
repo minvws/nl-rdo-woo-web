@@ -1,10 +1,10 @@
 # Inloggen
 
-Om in te kunnen loggen in het uploadportaal van het Woo Publicatieplatform heb je een account nodig. De organisatie-beheerder
+Om in te kunnen loggen in de Balie van het Woo Publicatieplatform heb je een account nodig. De organisatiebeheerder
 van jouw organisatie kan dit account voor je aanmaken. Aan een account zijn één of meerdere gebruikersrollen gekoppeld,
 die bepalen welke informatie je mag inzien en welke acties je mag uitvoeren.
 
-Wanneer de organisatie-beheerder een account heeft aangemaakt, ontvang je een PDF-bestand met ‘Login instructies’.
+Wanneer de organisatiebeheerder een account heeft aangemaakt, ontvang je een PDF-bestand met ‘Login instructies’.
 Hierin vind je onder andere een tijdelijk wachtwoord, een QR-code waarmee je een authenticator app kan instellen en herstelcodes.
 Bewaar de herstelcodes goed, deze kan je gebruiken als de authenticator app niet meer werkt doordat je bijvoorbeeld een nieuw toestel hebt.
 
@@ -21,7 +21,7 @@ te krijgen tot een account.
 
 ## Eerste keer inloggen
 
-Om in te loggen in het uploadportaal volg je onderstaande stappen:
+Om in te loggen in de Balie volg je onderstaande stappen:
 
 - Ga naar {{ balie_link }}
 - Het inlogscherm opent, je vult hier jouw e-mailadres in en het tijdelijke wachtwoord dat in het PDF-bestand staat en kiest voor ‘Inloggen’.
@@ -31,7 +31,7 @@ Om in te loggen in het uploadportaal volg je onderstaande stappen:
 
 - Eenmalig opent een scherm om het wachtwoord bij te werken. Je voert het tijdelijke wachtwoord in, tweemaal een nieuw
 wachtwoord en je kiest voor ‘Wachtwoord aanpassen’
-- Je bent nu ingelogd in het uploadportaal.
+- Je bent nu ingelogd in de Balie.
 
 ## Inlogproblemen
 

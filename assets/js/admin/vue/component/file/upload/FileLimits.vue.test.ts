@@ -50,6 +50,15 @@ describe('The "FileLimits" component', () => {
       );
     });
 
+    test('should sort file types sharing a max size alphabetically regardless of letter case', () => {
+      const component = createComponent([
+        { label: 'PDF', mimeTypes: ['application/pdf'], size: 1024 * 1024 },
+        { label: 'PNG', mimeTypes: ['image/png'], size: 1024 * 1024 * 3 },
+        { label: 'jpg', mimeTypes: ['image/jpeg'], size: 1024 * 1024 * 3 },
+      ]);
+      expect(component.text()).toContain('jpg, PNG (max 3 MB)');
+    });
+
     test('should display a list of only allowed file types (without their max size) when there is only one max file size defined', () => {
       const component = createComponent(mockedFileLimits.slice(-2));
       expect(component.text()).toContain('Bestand van het type JPG of PNG');

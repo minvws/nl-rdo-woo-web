@@ -34,7 +34,8 @@ final class RequestForAdviceMainDocumentRequestMapperTest extends UnitTestCase
             array_map(Ground::from(...), $grounds),
         );
 
-        $mainDocument = RequestForAdviceMainDocumentRequestMapper::create($requestForAdvice, $requestForAdviceMainDocumentRequestDto);
+        $requestForAdviceMainDocumentRequestMapper = new RequestForAdviceMainDocumentRequestMapper();
+        $mainDocument = $requestForAdviceMainDocumentRequestMapper->create($requestForAdvice, $requestForAdviceMainDocumentRequestDto);
 
         self::assertSame($requestForAdvice, $mainDocument->getDossier());
         self::assertSame($fileName->toString(), $mainDocument->getFileInfo()->getName());
@@ -71,7 +72,8 @@ final class RequestForAdviceMainDocumentRequestMapperTest extends UnitTestCase
             array_map(Ground::from(...), $grounds),
         );
 
-        $mainDocument = RequestForAdviceMainDocumentRequestMapper::update($requestForAdvice, $requestForAdviceMainDocumentRequestDto);
+        $requestForAdviceMainDocumentRequestMapper = new RequestForAdviceMainDocumentRequestMapper();
+        $mainDocument = $requestForAdviceMainDocumentRequestMapper->update($requestForAdvice, $requestForAdviceMainDocumentRequestDto);
 
         self::assertSame($existingMainDocument, $mainDocument);
         self::assertSame($fileName->toString(), $mainDocument->getFileInfo()->getName());
@@ -92,8 +94,10 @@ final class RequestForAdviceMainDocumentRequestMapperTest extends UnitTestCase
             $this->getFaker()->attachmentType(RequestForAdviceMainDocument::getAllowedTypes()),
         );
 
+        $requestForAdviceMainDocumentRequestMapper = new RequestForAdviceMainDocumentRequestMapper();
+
         self::expectException(InvalidArgumentException::class);
 
-        RequestForAdviceMainDocumentRequestMapper::update($requestForAdvice, $requestForAdviceMainDocumentRequestDto);
+        $requestForAdviceMainDocumentRequestMapper->update($requestForAdvice, $requestForAdviceMainDocumentRequestDto);
     }
 }

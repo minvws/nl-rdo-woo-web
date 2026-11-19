@@ -23,7 +23,7 @@ final class ProvidesDiagnosticContextProcessor implements ProcessorInterface
 
         $extra = [];
 
-        for ($e = $throwable; $e !== null; $e = $e->getPrevious()) {
+        for ($e = $throwable; $e instanceof Throwable; $e = $e->getPrevious()) {
             if ($e instanceof ProvidesDiagnosticContext) {
                 $extra += $e->getDiagnosticContext(); // outermost wins on key collision
             }

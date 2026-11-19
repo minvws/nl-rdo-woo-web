@@ -6,8 +6,10 @@ namespace Shared\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
 
 use DateTimeImmutable;
 use DateTimeZone;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Service\Inventory\InventoryChangeset;
 
 readonly class ProductionReportStatus
 {
@@ -18,56 +20,56 @@ readonly class ProductionReportStatus
 
     public function needsUpload(): bool
     {
-        return $this->dossier->getProductionReport() === null;
+        return ! $this->dossier->getProductionReport() instanceof ProductionReport;
     }
 
     public function isReadyForDocumentUpload(): bool
     {
         $run = $this->dossier->getProcessRun();
 
-        return $run && $run->isFinal() && $this->dossier->getProductionReport() !== null;
+        return $run instanceof ProductionReportProcessRun && $run->isFinal() && $this->dossier->getProductionReport() instanceof ProductionReport;
     }
 
     public function needsUpdate(): bool
     {
         $run = $this->dossier->getProcessRun();
 
-        return $run && $run->isNotFinal() && ! $run->needsConfirmation();
+        return $run instanceof ProductionReportProcessRun && $run->isNotFinal() && ! $run->needsConfirmation();
     }
 
     public function isQueued(): bool
     {
         $run = $this->dossier->getProcessRun();
 
-        return $run && ($run->isPending() || $run->isConfirmed());
+        return $run instanceof ProductionReportProcessRun && ($run->isPending() || $run->isConfirmed());
     }
 
     public function isRunning(): bool
     {
         $run = $this->dossier->getProcessRun();
 
-        return $run && ($run->isComparing() || $run->isUpdating());
+        return $run instanceof ProductionReportProcessRun && ($run->isComparing() || $run->isUpdating());
     }
 
     public function isComparing(): bool
     {
         $run = $this->dossier->getProcessRun();
 
-        return $run && $run->isComparing();
+        return $run instanceof ProductionReportProcessRun && $run->isComparing();
     }
 
     public function isUpdating(): bool
     {
         $run = $this->dossier->getProcessRun();
 
-        return $run && $run->isUpdating();
+        return $run instanceof ProductionReportProcessRun && $run->isUpdating();
     }
 
     public function needsConfirmation(): bool
     {
         $run = $this->dossier->getProcessRun();
 
-        return $run && $run->needsConfirmation();
+        return $run instanceof ProductionReportProcessRun && $run->needsConfirmation();
     }
 
     /**
@@ -77,7 +79,7 @@ readonly class ProductionReportStatus
     {
         $changeset = $this->dossier->getProcessRun()?->getChangeset();
 
-        return $changeset ? $changeset->getCounts() : [];
+        return $changeset instanceof InventoryChangeset ? $changeset->getCounts() : [];
     }
 
     public function hasErrors(): bool

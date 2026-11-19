@@ -1,11 +1,16 @@
 import { mount, VueWrapper } from '@vue/test-utils';
 import { describe, expect, test } from 'vitest';
+import type { SelectOptions } from '@admin-fe/form/interface';
 import RemovableSelect from './RemovableSelect.vue';
 
 describe('The "RemovableSelect" component', () => {
   const mockedErrors = ['mocked-error'];
   const mockedForbiddenValues = ['mocked-forbidden-value'];
-  const mockedOptions = ['mocked_value-1', 'mocked_value-2'];
+  const createOption = (value: string) => ({ label: value, value });
+  const mockedOptions = [
+    createOption('mocked_value-1'),
+    createOption('mocked_value-2'),
+  ];
   const mockedOptGroups = [
     { label: 'mocked_optgroup_label', options: mockedOptions },
   ];
@@ -13,7 +18,7 @@ describe('The "RemovableSelect" component', () => {
   interface Properties {
     autoFocus: boolean;
     forbiddenValues: string[];
-    options: string[] | { label: string; value: string }[];
+    options: SelectOptions;
     value: string;
   }
 
@@ -64,18 +69,18 @@ describe('The "RemovableSelect" component', () => {
     const component = createComponent();
 
     const options = component.findAll('select > option');
-    expect(options.length).toBe(1 + mockedOptions.length);
+    expect(options).toHaveLength(1 + mockedOptions.length);
     expect(options[0].text()).toBe('Mocked emtpy label');
-    expect(options[1].attributes('value')).toBe(mockedOptions[0]);
+    expect(options[1].attributes('value')).toBe(mockedOptions[0].value);
   });
 
   test('should display a dropdown with the provided opt groups', async () => {
     const component = createComponent({ value: '' });
 
     const optGroups = component.findAll('optgroup');
-    expect(optGroups.length).toBe(mockedOptGroups.length);
+    expect(optGroups).toHaveLength(mockedOptGroups.length);
     expect(optGroups[0].attributes('label')).toBe('mocked_optgroup_label');
-    expect(component.findAll('optgroup option').length).toBe(
+    expect(component.findAll('optgroup option')).toHaveLength(
       mockedOptGroups[0].options.length,
     );
   });
@@ -90,7 +95,7 @@ describe('The "RemovableSelect" component', () => {
     test('should equal the first provided option is there is only one', async () => {
       const component = createComponent({
         value: '',
-        options: ['some_mocked_value'],
+        options: [createOption('some_mocked_value')],
       });
 
       expect(getDropdownElement(component).value).toBe('some_mocked_value');
@@ -131,15 +136,17 @@ describe('The "RemovableSelect" component', () => {
       expect(getDropdownElement(component).value).toBe('');
 
       await (component as any).setProps({
-        options: [...mockedOptions, 'another_mocked_option'],
+        options: [...mockedOptions, createOption('another_mocked_option')],
       });
       expect(getDropdownElement(component).value).toBe('');
 
-      await (component as any).setProps({ options: ['mocked_option'] });
+      await (component as any).setProps({
+        options: [createOption('mocked_option')],
+      });
       expect(getDropdownElement(component).value).toBe('mocked_option');
 
       await (component as any).setProps({
-        options: [...mockedOptions, 'mocked_option'],
+        options: [...mockedOptions, createOption('mocked_option')],
       });
       expect(getDropdownElement(component).value).toBe('mocked_option');
     });

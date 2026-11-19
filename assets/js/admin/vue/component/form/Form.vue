@@ -61,14 +61,15 @@ const onSubmit = async () => {
     }
 
     if (response.status === 422) {
-      (data.violations || []).forEach(
-        (violation: { propertyPath: string; message: string }) => {
-          props.store.addSubmitValidationError(
-            violation.message,
-            violation.propertyPath,
-          );
-        },
-      );
+      const { violations } = data as {
+        violations?: { propertyPath: string; message: string }[];
+      };
+      (violations || []).forEach((violation) => {
+        props.store.addSubmitValidationError(
+          violation.message,
+          violation.propertyPath,
+        );
+      });
       return;
     }
 

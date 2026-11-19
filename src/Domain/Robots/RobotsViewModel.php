@@ -16,6 +16,6 @@ final readonly class RobotsViewModel
 
     public function hasWooIndexSitemap(): bool
     {
-        return $this->wooIndexSitemap !== null;
+        return $this->wooIndexSitemap instanceof Url;
     }
 }

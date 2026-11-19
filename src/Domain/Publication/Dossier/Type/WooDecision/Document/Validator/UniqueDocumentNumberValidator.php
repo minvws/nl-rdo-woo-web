@@ -28,7 +28,7 @@ class UniqueDocumentNumberValidator extends ConstraintValidator
         }
 
         $conflicting = $this->documentRepository->findByDocumentNumber($value->getDocumentNumber());
-        if ($conflicting === null) {
+        if (! $conflicting instanceof Document) {
             return;
         }
 

@@ -53,7 +53,7 @@ final readonly class DateFacetInput extends FacetInput implements DateFacetInput
         public ?DateTimeImmutable $from,
         public ?DateTimeImmutable $to,
     ) {
-        $this->isActive = $withoutDate || $from !== null || $to !== null;
+        $this->isActive = $withoutDate || $from instanceof DateTimeImmutable || $to instanceof DateTimeImmutable;
     }
 
     public function isActive(): bool
@@ -68,7 +68,7 @@ final readonly class DateFacetInput extends FacetInput implements DateFacetInput
 
     public function hasAnyPeriodFilterDates(): bool
     {
-        return $this->from !== null || $this->to !== null;
+        return $this->from instanceof DateTimeImmutable || $this->to instanceof DateTimeImmutable;
     }
 
     public function getPeriodFilterFrom(): ?string
@@ -112,12 +112,12 @@ final readonly class DateFacetInput extends FacetInput implements DateFacetInput
 
     public function hasFromDate(): bool
     {
-        return $this->from !== null;
+        return $this->from instanceof DateTimeImmutable;
     }
 
     public function hasToDate(): bool
     {
-        return $this->to !== null;
+        return $this->to instanceof DateTimeImmutable;
     }
 
     public function without(int|string $key, string $value): self

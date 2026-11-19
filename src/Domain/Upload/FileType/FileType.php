@@ -44,14 +44,10 @@ enum FileType: string
         return null;
     }
 
-    public static function fromExtension(string $extension): ?self
+    public static function fromExtension(FileExtension $fileExtension): ?self
     {
-        if ($extension === '') {
-            return null;
-        }
-
         foreach (self::cases() as $fileType) {
-            if (in_array($extension, $fileType->getExtensions(), true)) {
+            if (in_array($fileExtension, $fileType->getExtensions(), true)) {
                 return $fileType;
             }
         }
@@ -69,20 +65,59 @@ enum FileType: string
     }
 
     /**
-     * @return list<string>
+     * @return list<FileExtension>
      */
     public function getExtensions(): array
     {
         return match ($this) {
-            self::PDF => ['pdf'],
-            self::XLS => ['xls', 'xlsx', 'ods', 'odf', 'csv'],
-            self::DOC => ['doc', 'docx', 'odt'],
-            self::TXT => ['txt', 'rtf'],
-            self::PPT => ['pps', 'ppsx', 'ppt', 'pptx', 'odp'],
-            self::ZIP => ['zip', '7z'],
-            self::AUDIO => ['aac', 'mp3', 'wav', 'opus'],
-            self::VIDEO => ['wmv', 'avi', 'mp4', 'mov', 'm4a', 'mpg', 'asf'],
-            self::VECTOR_IMAGE => ['svg'],
+            self::PDF => [
+                FileExtension::PDF,
+            ],
+            self::XLS => [
+                FileExtension::XLS,
+                FileExtension::XLSX,
+                FileExtension::ODS,
+                FileExtension::ODF,
+                FileExtension::CSV,
+            ],
+            self::DOC => [
+                FileExtension::DOC,
+                FileExtension::DOCX,
+                FileExtension::ODT,
+            ],
+            self::TXT => [
+                FileExtension::TXT,
+                FileExtension::RTF,
+            ],
+            self::PPT => [
+                FileExtension::PPS,
+                FileExtension::PPSX,
+                FileExtension::PPT,
+                FileExtension::PPTX,
+                FileExtension::ODP,
+            ],
+            self::ZIP => [
+                FileExtension::ZIP,
+                FileExtension::SEVEN_ZIP,
+            ],
+            self::AUDIO => [
+                FileExtension::AAC,
+                FileExtension::MP3,
+                FileExtension::WAV,
+                FileExtension::OPUS,
+            ],
+            self::VIDEO => [
+                FileExtension::WMV,
+                FileExtension::AVI,
+                FileExtension::MP4,
+                FileExtension::MOV,
+                FileExtension::M4A,
+                FileExtension::MPG,
+                FileExtension::ASF,
+            ],
+            self::VECTOR_IMAGE => [
+                FileExtension::SVG,
+            ],
         };
     }
 
@@ -109,8 +144,8 @@ enum FileType: string
         $mimeTypeGuesser = MimeTypes::getDefault();
 
         $mimeTypes = $this->getExtraMimeTypes();
-        foreach ($this->getExtensions() as $ext) {
-            $mimeTypes = array_merge($mimeTypes, $mimeTypeGuesser->getMimeTypes($ext));
+        foreach ($this->getExtensions() as $fileExtension) {
+            $mimeTypes = array_merge($mimeTypes, $mimeTypeGuesser->getMimeTypes($fileExtension->value));
         }
 
         return array_values(array_unique($mimeTypes));

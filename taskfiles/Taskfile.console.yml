@@ -70,6 +70,35 @@ tasks:
     requires:
       vars: [TENANT]
 
+  loaddemodata:
+    desc: Clear all dossiers, documents and inquiries and load demo data. Use DOSSIERS=<0-100000> for another amount (default 95)
+    aliases: [app:loaddemodata]
+    prompt: >-
+      This clears ALL dossiers, documents and inquiries of tenant "{{ .TENANT | default "minvws" }}", including the search index,
+      the queues and the file storage, and loads the demo data. Continue?
+    vars:
+      TENANT: '{{ .TENANT | default "minvws" }}'
+      DOSSIERS: '{{ .DOSSIERS | default "95" }}'
+    preconditions:
+      - sh: 'printf "%s" "{{ .DOSSIERS }}" | grep -Eq "^[0-9]{1,6}$" && [ "{{ .DOSSIERS }}" -le 100000 ]'
+        msg: DOSSIERS must be a whole number between 0 and 100000
+    cmds:
+      # Busy workers would recreate the search index as a plain index while it is being replaced.
+      - task: :dc
+        vars:
+          SUB_CMD: 'stop worker_{{ .TENANT }}'
+      - defer:
+          task: :dc
+          vars:
+            SUB_CMD: 'start worker_{{ .TENANT }}'
+      - task: :cleansheet
+        vars:
+          TENANT: '{{ .TENANT }}'
+          CLI_ARGS: '--keep-subjects'
+      - task: :dc:exec:admin
+        vars:
+          SUB_CMD: 'env XDEBUG_MODE=off DEMO_DATA_DOSSIERS={{ .DOSSIERS }} php -d memory_limit=-1 bin/console --tenant={{ .TENANT }} --id=admin foundry:load-fixtures demo --append --no-interaction --no-debug --no-transaction'
+
   cmd:*:
     vars:
       CMD: '{{ index .MATCH 0 }}'

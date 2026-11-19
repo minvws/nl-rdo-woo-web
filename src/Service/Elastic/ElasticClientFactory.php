@@ -7,6 +7,7 @@ namespace Shared\Service\Elastic;
 use Elastic\Elasticsearch\ClientBuilder;
 use Elastic\Elasticsearch\ClientInterface;
 use GuzzleHttp\Client;
+use SensitiveParameter;
 
 use function explode;
 
@@ -18,7 +19,7 @@ class ElasticClientFactory
     public static function create(
         string $host,
         ?string $username = null,
-        ?string $password = null,
+        #[SensitiveParameter] ?string $password = null,
         ?string $mtlsCertPath = null,
         ?string $mtlsKeyPath = null,
         ?string $mtlsCAPath = null,

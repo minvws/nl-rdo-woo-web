@@ -130,7 +130,7 @@ readonly class InventoryUpdater
         }
 
         $document = $this->documentRepository->findByDocumentNumber($documentNumber);
-        if ($documentChangeStatus === InventoryChangeset::ADDED && $document === null) {
+        if ($documentChangeStatus === InventoryChangeset::ADDED && ! $document instanceof Document) {
             $document = new Document();
             $document->setDocumentNumber($documentNumber);
 

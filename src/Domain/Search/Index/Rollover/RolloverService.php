@@ -15,7 +15,6 @@ readonly class RolloverService
 {
     public function __construct(
         private MessageBusInterface $messageBus,
-        private MappingService $mappingService,
         private RolloverCounter $counter,
         private ElasticConfig $elasticConfig,
     ) {
@@ -66,22 +65,12 @@ readonly class RolloverService
         );
     }
 
-    public function initiateRollover(RolloverParameters $rollover): void
+    public function initiateRollover(): void
     {
         $this->messageBus->dispatch(
             new InitiateElasticRolloverCommand(
-                mappingVersion: $rollover->getMappingVersion(),
                 indexName: $this->elasticConfig->indexPrefix . date('Ymd-His'),
             ),
-        );
-    }
-
-    public function getDefaultRolloverParameters(): RolloverParameters
-    {
-        $latestMappingVersion = $this->mappingService->getLatestMappingVersion();
-
-        return new RolloverParameters(
-            mappingVersion: $latestMappingVersion,
         );
     }
 }

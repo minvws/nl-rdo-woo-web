@@ -6,6 +6,7 @@ namespace Shared\Domain\Publication\MainDocument\Handler;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublicAlreadyExistsException;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublicRepository;
 use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
@@ -43,11 +44,11 @@ readonly class CreateMainDocumentHandler
         $dossier = $this->dossierRepository->findOneByDossierId($dossierId);
         Assert::isInstanceOf($dossier, EntityWithMainDocument::class);
 
-        if ($dossier->getMainDocument() !== null) {
+        if ($dossier->getMainDocument() instanceof AbstractMainDocument) {
             throw new MainDocumentAlreadyExistsException();
         }
 
-        if ($this->noticeNotPublicRepository->findOneByDossierId($dossierId) !== null) {
+        if ($this->noticeNotPublicRepository->findOneByDossierId($dossierId) instanceof NoticeNotPublic) {
             throw new NoticeNotPublicAlreadyExistsException();
         }
 

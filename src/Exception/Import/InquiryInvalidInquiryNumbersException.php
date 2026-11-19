@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Shared\Exception\Import;
 
 use function implode;
-use function strval;
 
-final class InquiryInvalidInquiryNumbersException extends ImportException
+final class InquiryInvalidInquiryNumbersException extends RowImportException
 {
     public const string MESSAGE_KEY = 'publication.inquiry.error.inquiry_numbers_invalid';
 
@@ -15,10 +14,10 @@ final class InquiryInvalidInquiryNumbersException extends ImportException
      * @param array<array-key, string> $inquiryNumbers
      */
     public function __construct(
-        public readonly int $rowNumber,
+        int $rowIndex,
         public readonly array $inquiryNumbers,
     ) {
-        parent::__construct('Invalid inquiry numbers');
+        parent::__construct($rowIndex, 'Invalid inquiry numbers');
     }
 
     public function getMessageKey(): string
@@ -32,7 +31,6 @@ final class InquiryInvalidInquiryNumbersException extends ImportException
     public function getMessageData(): array
     {
         return [
-            '{rownumber}' => strval($this->rowNumber),
             '{inquiryNumbers}' => implode(', ', $this->inquiryNumbers),
         ];
     }

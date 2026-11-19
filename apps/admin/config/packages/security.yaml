@@ -34,6 +34,7 @@ security:
         ROLE_ORGANISATION_ADMIN: ROLE_BALIE
         ROLE_DOSSIER_ADMIN: ROLE_BALIE
         ROLE_VIEW_ACCESS: ROLE_BALIE
+        ROLE_CONTENT_ADMIN: ROLE_BALIE
 
     access_control:
         - { path: ^/balie/login, roles: PUBLIC_ACCESS }

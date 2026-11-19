@@ -29,7 +29,10 @@
         </twig:Public:Alert>
     {% else %}
         {% if document.isDownloadable %}
-            {% if file.hasPages %}
+
+            {% if file.spreadsheet %}
+                <twig:Public:FilePreview:Spreadsheet fileName="{{ document.name }}" isTruncated="{{ file.spreadsheet.isTruncated }}" table="{{ file.spreadsheet.table }}" />
+            {% elseif file.hasPages %}
                 <twig:Public:PdfViewer file="{{ file }}" />
             {% endif %}
 

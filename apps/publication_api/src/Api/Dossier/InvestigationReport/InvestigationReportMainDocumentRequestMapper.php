@@ -4,19 +4,28 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\InvestigationReport;
 
+use PublicationApi\Api\Dossier\MainDocumentRequestMapperInterface;
+use PublicationApi\Api\MainDocument\MainDocumentRequestDtoInterface;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
 use Shared\Service\EnumHelper;
 use Webmozart\Assert\Assert;
 
-class InvestigationReportMainDocumentRequestMapper
+/**
+ * @implements MainDocumentRequestMapperInterface<InvestigationReport,InvestigationReportMainDocumentRequestDto>
+ */
+class InvestigationReportMainDocumentRequestMapper implements MainDocumentRequestMapperInterface
 {
-    public static function create(
-        InvestigationReport $investigationReport,
-        InvestigationReportMainDocumentRequestDto $mainDocumentRequestDto,
+    public function create(
+        AbstractDossier $dossier,
+        MainDocumentRequestDtoInterface $mainDocumentRequestDto,
     ): InvestigationReportMainDocument {
+        Assert::isInstanceOf($dossier, InvestigationReport::class);
+        Assert::isInstanceOf($mainDocumentRequestDto, InvestigationReportMainDocumentRequestDto::class);
+
         $mainDocument = new InvestigationReportMainDocument(
-            $investigationReport,
+            $dossier,
             $mainDocumentRequestDto->formalDate,
             $mainDocumentRequestDto->type,
             $mainDocumentRequestDto->language,
@@ -28,11 +37,14 @@ class InvestigationReportMainDocumentRequestMapper
         return $mainDocument;
     }
 
-    public static function update(
-        InvestigationReport $investigationReport,
-        InvestigationReportMainDocumentRequestDto $mainDocumentRequestDto,
+    public function update(
+        AbstractDossier $dossier,
+        MainDocumentRequestDtoInterface $mainDocumentRequestDto,
     ): InvestigationReportMainDocument {
-        $mainDocument = $investigationReport->getMainDocument();
+        Assert::isInstanceOf($dossier, InvestigationReport::class);
+        Assert::isInstanceOf($mainDocumentRequestDto, InvestigationReportMainDocumentRequestDto::class);
+
+        $mainDocument = $dossier->getMainDocument();
         Assert::notNull($mainDocument);
 
         $mainDocument->getFileInfo()->setName($mainDocumentRequestDto->fileName->toString());

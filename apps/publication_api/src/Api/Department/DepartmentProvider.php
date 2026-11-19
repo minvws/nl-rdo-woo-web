@@ -71,7 +71,7 @@ final readonly class DepartmentProvider implements ProviderInterface
     {
         $department = $this->departmentRepository->find($departmentId);
         if ($department === null) {
-            throw EntityNotFoundException::for('Department', $departmentId);
+            throw EntityNotFoundException::for('Department', $departmentId->toString());
         }
 
         return $this->departmentMapper->fromEntityWithDetail($department);

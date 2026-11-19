@@ -6,6 +6,7 @@ namespace Shared\Command;
 
 use Exception;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Shared\ValueObject\DocumentNumber;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -65,7 +66,7 @@ class Where extends Command
         }
 
         $dossier = $this->wooDecisionRepository->findOneBy(['dossierNumber' => $match['dossierNumber']]);
-        if (! $dossier) {
+        if (! $dossier instanceof WooDecision) {
             $output->writeln("<error>Dossier {$match['dossierNumber']} not found</error>");
 
             return self::FAILURE;

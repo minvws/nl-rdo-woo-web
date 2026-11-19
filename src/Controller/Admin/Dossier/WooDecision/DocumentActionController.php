@@ -6,6 +6,7 @@ namespace Shared\Controller\Admin\Dossier\WooDecision;
 
 use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Shared\Domain\Publication\Dossier\DossierBreadcrumbFactory;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentDispatcher;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
@@ -53,7 +54,7 @@ class DocumentActionController extends AbstractController
             $documentNumber,
         );
 
-        if ($document === null) {
+        if (! $document instanceof Document) {
             throw $this->createNotFoundException();
         }
 

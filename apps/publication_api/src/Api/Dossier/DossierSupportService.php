@@ -15,6 +15,7 @@ use Shared\Domain\Publication\Attachment\Event\AbstractAttachmentEvent;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\DossierDispatcher;
 use Shared\Domain\Publication\Dossier\Event\DossierCreatedEvent;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Domain\Publication\MainDocument\Event\MainDocumentUpdatedEvent;
 use Shared\Domain\Publication\Subject\Subject;
@@ -37,7 +38,7 @@ readonly class DossierSupportService
 
     public function getSubject(DossierRequestDtoInterface $data, Organisation $organisation): ?Subject
     {
-        if ($data->subjectId === null) {
+        if (! $data->subjectId instanceof Uuid) {
             return null;
         }
 
@@ -99,8 +100,8 @@ readonly class DossierSupportService
 
         $mainDocument = $dossier instanceof EntityWithMainDocument ? $dossier->getMainDocument() : null;
         if (
-            $mainDocument !== null
-            && $mainDocumentSnapshot !== null
+            $mainDocument instanceof AbstractMainDocument
+            && $mainDocumentSnapshot instanceof MetadataSnapshot
             && ! $mainDocumentSnapshot->equalTo(MetadataSnapshot::of($mainDocument))
         ) {
             $events[] = MainDocumentUpdatedEvent::forDocument($mainDocument, metadataUpdated: true);

@@ -9,6 +9,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Orx;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use SensitiveParameter;
 use Shared\Domain\Organisation\Organisation;
 use SortDirection;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
@@ -48,8 +49,10 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     /**
      * Used to upgrade (rehash) the user's password automatically over time.
      */
-    public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
-    {
+    public function upgradePassword(
+        PasswordAuthenticatedUserInterface $user,
+        #[SensitiveParameter] string $newHashedPassword,
+    ): void {
         if (! $user instanceof User) {
             throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', $user::class));
         }
@@ -69,6 +72,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                 Roles::ROLE_VIEW_ACCESS,
                 Roles::ROLE_DOSSIER_ADMIN,
                 Roles::ROLE_ORGANISATION_ADMIN,
+                Roles::ROLE_CONTENT_ADMIN,
             ]))
             ->setParameter('val', $organisation->getId())
             ->orderBy('u.id', SortDirection::Ascending);
@@ -86,6 +90,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                 Roles::ROLE_VIEW_ACCESS,
                 Roles::ROLE_DOSSIER_ADMIN,
                 Roles::ROLE_ORGANISATION_ADMIN,
+                Roles::ROLE_CONTENT_ADMIN,
             ]))
             ->setParameter('val', $organisation->getId())
             ->orderBy('u.id', SortDirection::Ascending);

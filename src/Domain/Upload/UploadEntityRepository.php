@@ -45,7 +45,7 @@ class UploadEntityRepository extends ServiceEntityRepository
     {
         $entity = $this->findOneBy(['uploadId' => $uploadId]);
 
-        if (! $entity) {
+        if (! $entity instanceof UploadEntity) {
             $entity = new UploadEntity($uploadId, $groupId, $user, $context);
             $this->save($entity, true);
         }

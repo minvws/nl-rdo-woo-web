@@ -74,14 +74,14 @@ let uploadSuccessData: UploadSuccessData;
 let uploadId: string;
 let uploadResultTimeoutId: ReturnType<typeof setTimeout>;
 
-const triggerFileUpload = async () => {
+const triggerFileUpload = async (uploadEndpoint: string) => {
   // Upload the file in the next tick to prevent an issue with icons not showing up
   await nextTick();
 
   emit('uploading', props.fileId, props.file);
 
   cleanupUpload = uploadFile({
-    endpoint,
+    endpoint: uploadEndpoint,
     file: props.file,
     payload: props.payload,
     onProgress: async (fileProgress) => {
@@ -122,7 +122,11 @@ const triggerFileUpload = async () => {
 };
 
 if (props.enableAutoUpload) {
-  triggerFileUpload();
+  if (!endpoint) {
+    throw new Error('No upload endpoint provided');
+  }
+
+  void triggerFileUpload(endpoint);
 }
 
 const onDelete = () => {

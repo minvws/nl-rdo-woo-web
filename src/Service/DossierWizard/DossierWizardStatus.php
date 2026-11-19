@@ -148,7 +148,7 @@ readonly class DossierWizardStatus
         }
 
         $step = $this->getFirstOpenStep();
-        if (! $step) {
+        if (! $step instanceof StepStatus) {
             throw new OutOfBoundsException('Cannot determine next dossier workflow step');
         }
 
@@ -187,7 +187,7 @@ readonly class DossierWizardStatus
 
     public function getAttachmentStep(): StepStatus
     {
-        if ($this->attachmentStepName === null) {
+        if (! $this->attachmentStepName instanceof StepName) {
             throw new OutOfBoundsException('No attachment step defined');
         }
 

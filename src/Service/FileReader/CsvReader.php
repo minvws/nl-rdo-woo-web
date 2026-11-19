@@ -13,9 +13,7 @@ use Webmozart\Assert\Assert;
 
 use function array_filter;
 use function count;
-use function fclose;
 use function fgetcsv;
-use function fopen;
 use function intval;
 use function strval;
 
@@ -27,19 +25,18 @@ class CsvReader implements FileReaderInterface
     /** @var array<int, array<array-key,mixed>> */
     protected array $rows = [];
 
-    public function __construct(protected readonly string $filepath, protected readonly HeaderMap $mapping)
+    /**
+     * @param resource $stream
+     */
+    public function __construct($stream, protected readonly HeaderMap $mapping)
     {
-        $handle = fopen($this->filepath, 'r');
-        if (! $handle) {
-            throw new CsvFileCannotBeOpenedException($this->filepath);
-        }
         // read/skip the header row
-        fgetcsv($handle, escape: '\\');
+        fgetcsv($stream, escape: '\\');
 
         // Ensure a 1-indexed array
         $this->rows[0] = [];
 
-        while (($data = fgetcsv($handle, escape: '\\')) !== false) {
+        while (($data = fgetcsv($stream, escape: '\\')) !== false) {
             $tmp = array_filter($data);
             if (count($tmp) == 0) {
                 // Skip if all fields are empty
@@ -47,7 +44,6 @@ class CsvReader implements FileReaderInterface
             }
             $this->rows[] = $data;
         }
-        fclose($handle);
 
         // Remove the dummy entry that was only there to create a 1-indexed array
         unset($this->rows[0]);

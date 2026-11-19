@@ -46,7 +46,7 @@ class UserView extends Command
         Assert::string($email);
 
         $user = $this->userRepository->findOneBy(['email' => $email]);
-        if (! $user) {
+        if (! $user instanceof User) {
             $output->writeln("User <info>{$email}</info> not found.");
 
             return self::FAILURE;

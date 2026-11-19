@@ -6,6 +6,7 @@ namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Handler;
 
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\GenerateInquiryInventoryCommand;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
 use Shared\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderFactory;
 use Shared\Service\Inventory\Sanitizer\InventorySanitizer;
@@ -25,7 +26,7 @@ readonly class GenerateInquiryInventoryHandler
     public function __invoke(GenerateInquiryInventoryCommand $message): void
     {
         $inquiry = $this->inquiryRepository->find($message->getUuid());
-        if (! $inquiry) {
+        if (! $inquiry instanceof Inquiry) {
             $this->logger->warning('No inquiry found for this message', [
                 'uuid' => $message->getUuid(),
             ]);

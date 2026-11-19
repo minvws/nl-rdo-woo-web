@@ -6,7 +6,6 @@ import { ref } from 'vue';
 import UploadDocuments from './UploadDocuments.vue';
 
 interface Props {
-  dossierId: string;
   fileLimits: FileUploadLimit[];
   isComplete: boolean;
   confirmEndpoint: string;
@@ -44,7 +43,6 @@ const onComplete = () => {
 <template>
   <UploadDocuments
     @on-complete="onComplete"
-    :dossier-id="props.dossierId"
     :is-complete="props.isComplete"
     :file-limits="props.fileLimits"
     mode="add"

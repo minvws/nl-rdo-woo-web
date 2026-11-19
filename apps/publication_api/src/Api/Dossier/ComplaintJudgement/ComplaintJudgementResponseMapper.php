@@ -19,7 +19,9 @@ use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\ValueObject\PlainDate;
 use Webmozart\Assert\Assert;
 
@@ -82,7 +84,7 @@ readonly class ComplaintJudgementResponseMapper implements DossierResponseMapper
     private function mainDocument(ComplaintJudgement $complaintJudgement): ?ComplaintJudgementMainDocumentResponseDto
     {
         $mainDocument = $complaintJudgement->getMainDocument();
-        if ($mainDocument === null) {
+        if (! $mainDocument instanceof AbstractMainDocument) {
             return null;
         }
 
@@ -96,7 +98,7 @@ readonly class ComplaintJudgementResponseMapper implements DossierResponseMapper
     private function noticeNotPublic(ComplaintJudgement $complaintJudgement): ?NoticeNotPublicResponseDto
     {
         $noticeNotPublic = $complaintJudgement->getNoticeNotPublic();
-        if ($noticeNotPublic === null) {
+        if (! $noticeNotPublic instanceof NoticeNotPublic) {
             return null;
         }
 

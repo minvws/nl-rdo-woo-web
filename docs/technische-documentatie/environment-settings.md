@@ -167,12 +167,9 @@ settings can cause.
 
 ### Feature flags
 
-| Variable                                               | Description                                                            | Default value |
-|--------------------------------------------------------|------------------------------------------------------------------------|---------------|
-| `HAS_FEATURE_PUBLICATION_V1_API`                       | Enables the Publication API (`apps/publication_api`).                  | `false`       |
-| `HAS_FEATURE_WOO_GPT`                                  | Enables the `/woo-gpt` pages on the public site.                       | `false`       |
-| `ENABLE_UPDATE_PUBLISHED_DOSSIER_VIA_API`              | Allows the Publication API to update already-published dossiers.       | `false`       |
-| `ENABLE_UPLOAD_DOCUMENT_FOR_PUBLISHED_DOSSIER_VIA_API` | Allows the Publication API to upload documents for published dossiers. | `false`       |
+| Variable              | Description                                      | Default value |
+|-----------------------|--------------------------------------------------|---------------|
+| `HAS_FEATURE_WOO_GPT` | Enables the `/woo-gpt` pages on the public site. | `false`       |
 
 See [dossier-types.md](dossier-types.md) for how a new publication type is developed behind a feature flag.
 
@@ -230,7 +227,8 @@ The following settings are available:
 | `CLAM_AV_MAX_FILESIZE`                  | Max filesize to be scanned in bytes                                                                                    | `1073741824` (1GiB)                  |
 | `DOCUMENT_PAGE_LIMIT`                   | Maximum number of pages to process per document. `0` means no limit.                                                   | `0`                                  |
 | `LIMIT_TOTAL_DOCUMENT_FILE_SIZE_IN_GIB` | Maximum combined size of the document files in one dossier, in GiB.                                                    | `50`                                 |
-| `LOG_LEVEL`                             | Minimum Monolog level to record.                                                                                       | `debug`                              |
+| `LOG_LEVEL`                             | Minimum Monolog level written to the log file in `dev`.                                                                | `debug`                              |
+| `LOG_OUTPUT`                            | Where the Monolog `main` handler writes in `prod`: `syslog`, or `stderr` (JSON lines) when running in a container.     | `syslog`                             |
 | `MAILER_DSN`                            | Symfony Mailer DSN, used for two-factor codes sent by email.                                                           | `null`                               |
 
 ### Development settings
@@ -241,6 +239,7 @@ These only apply when `APP_ENV=dev` and are set through `.env.dev.local`.
 |---------------------|--------------------------------------------------------------------------------------------------|---------------|
 | `ENABLE_TOOLBAR`    | Whether the Symfony debug toolbar is rendered. The E2E tasks set this to `false`.                | `true`        |
 | `VAR_DUMPER_SERVER` | Address of a `server:dump` listener, so `dump()` output goes there instead of into the response. | `null`        |
+| `LOG_STDERR_LEVEL`  | Minimum Monolog level written to stderr, next to the log file.                                   | `notice`      |
 
 Host ports for the docker setup are also configurable, so a second checkout can run alongside the first. They are
 defined with defaults in `compose.yml`: `DOCKER_MINVWS_PUBLIC_PORT`, `DOCKER_MINVWS_ADMIN_PORT`,

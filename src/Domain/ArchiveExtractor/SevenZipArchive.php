@@ -23,7 +23,7 @@ final class SevenZipArchive implements ArchiveInterface
 
     public function open(SplFileInfo $file): void
     {
-        if ($this->archive !== null) {
+        if ($this->archive instanceof Archive7z) {
             throw ArchiveLogicException::forArchiveIsAlreadyOpen($file);
         }
 
@@ -32,7 +32,7 @@ final class SevenZipArchive implements ArchiveInterface
 
     public function close(): void
     {
-        if ($this->archive === null) {
+        if (! $this->archive instanceof Archive7z) {
             throw ArchiveLogicException::forNoOpenArchive();
         }
 
@@ -41,7 +41,7 @@ final class SevenZipArchive implements ArchiveInterface
 
     public function extract(string $destination): void
     {
-        if ($this->archive === null) {
+        if (! $this->archive instanceof Archive7z) {
             throw ArchiveLogicException::forNoOpenArchive();
         }
 

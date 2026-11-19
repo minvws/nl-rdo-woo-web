@@ -46,7 +46,7 @@ final class CovenantUploadMainDocumentTest extends ApiPublicationV1UploadTestCas
         );
     }
 
-    public function testUploadOnPublishedDossierReturnsValidationError(): void
+    public function testUploadOnPublishedDossier(): void
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
@@ -56,21 +56,22 @@ final class CovenantUploadMainDocumentTest extends ApiPublicationV1UploadTestCas
             'departments' => [$department],
             'status' => DossierStatus::PUBLISHED,
         ]);
-
-        $client = self::createPublicationApiClient();
-        $client->request(Request::METHOD_PUT, sprintf(
-            '/api/publication/v1/organisation/%s/dossiers/covenant/external/%s/uploads/main-document',
-            $organisation->getId(),
-            $covenant->getExternalId(),
-        ), [
-            'headers' => [
-                'Content-Type' => 'application/octet-stream',
-            ],
-            'body' => $this->getTestFileContent('1008.pdf'),
+        $covenantMainDocument = CovenantMainDocumentFactory::createOne([
+            'dossier' => $covenant,
         ]);
 
-        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
-        self::assertJsonContains(['violations' => [['message' => 'document upload is not allowed for a published dossier']]]);
+        $this->assertUpload(
+            url: sprintf(
+                '/api/publication/v1/organisation/%s/dossiers/covenant/external/%s/uploads/main-document',
+                $organisation->getId(),
+                $covenant->getExternalId(),
+            ),
+            dossierId: $covenant->getId()->toRfc4122(),
+            entityId: $covenantMainDocument->getId()->toRfc4122(),
+            entityFileName: $covenantMainDocument->getFileInfo()->getName(),
+            uploadGroupId: UploadGroupId::MAIN_DOCUMENTS,
+            entityParameterKey: 'mainDocumentId',
+        );
     }
 
     public function testUploadWithoutFile(): void

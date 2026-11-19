@@ -7,6 +7,7 @@ namespace Shared\Domain\Ingest\Process\Dossier\Strategy;
 use Shared\Domain\Ingest\Process\Dossier\DossierIngestStrategyInterface;
 use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Domain\Search\SearchDispatcher;
 
@@ -21,7 +22,7 @@ readonly class DefaultDossierIngestStrategy implements DossierIngestStrategyInte
     {
         $this->searchDispatcher->dispatchIndexDossierCommand($dossier->getId(), $refresh);
 
-        if ($dossier instanceof EntityWithMainDocument && $dossier->getMainDocument() !== null) {
+        if ($dossier instanceof EntityWithMainDocument && $dossier->getMainDocument() instanceof AbstractMainDocument) {
             $this->searchDispatcher->dispatchIndexMainDocumentCommand($dossier->getMainDocument()->getId());
         }
 

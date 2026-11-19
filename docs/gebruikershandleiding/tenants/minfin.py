@@ -17,4 +17,3 @@ extlinks = {
     "public": (f"{myst_substitutions['portal_url']}/%s", f"{_portal_name}/%s"),
     "balie": (f"{myst_substitutions['balie_url']}/%s", f"{_balie_name}/balie/%s"),
 }
-

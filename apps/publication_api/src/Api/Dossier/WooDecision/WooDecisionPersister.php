@@ -46,7 +46,7 @@ readonly class WooDecisionPersister
 
         $requestDocuments = $wooDecisionRequestDto->documents;
 
-        if ($wooDecisionSnapshot === null) {
+        if (! $wooDecisionSnapshot instanceof WooDecisionSnapshot) {
             $this->dossierSupportService->dispatchDossierCreatedEvent($wooDecision);
             $this->wooDecisionInquirySynchronizer->apply($wooDecision, $requestDocuments);
         } else {

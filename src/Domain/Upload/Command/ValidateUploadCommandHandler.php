@@ -9,6 +9,7 @@ use Psr\Log\LoggerInterface;
 use Shared\Domain\Upload\AntiVirus\ClamAvFileScanner;
 use Shared\Domain\Upload\Exception\UploadException;
 use Shared\Domain\Upload\Exception\UploadValidationException;
+use Shared\Domain\Upload\FileType\FileExtension;
 use Shared\Domain\Upload\FileType\FileType;
 use Shared\Domain\Upload\FileType\MimeTypeHelper;
 use Shared\Domain\Upload\FileType\MimeTypeHelperResult;
@@ -16,12 +17,14 @@ use Shared\Domain\Upload\Preprocessor\Strategy\SevenZipFileStrategy;
 use Shared\Domain\Upload\UploadEntity;
 use Shared\Domain\Upload\UploadEntityRepository;
 use Shared\Domain\Upload\UploadService;
+use Shared\Domain\Upload\Validation\SpreadsheetUploadValidator;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 
 use function pathinfo;
+use function strtolower;
 
 use const PATHINFO_EXTENSION;
 
@@ -36,6 +39,7 @@ readonly class ValidateUploadCommandHandler
         private ClamAvFileScanner $clamAvFileScanner,
         private MimeTypeHelper $mimeTypeHelper,
         private SevenZipFileStrategy $sevenZipFileStrategy,
+        private SpreadsheetUploadValidator $spreadsheetUploadValidator,
         private LoggerInterface $logger,
     ) {
     }
@@ -61,6 +65,10 @@ readonly class ValidateUploadCommandHandler
             $this->validateUploadSize($uploadEntity, $mimeType);
 
             $this->scanFileContents($uploadEntity, $mimeType, $scanSizeExceeded);
+
+            if ($this->spreadsheetUploadValidator->supports($uploadEntity)) {
+                $this->spreadsheetUploadValidator->validate($uploadEntity);
+            }
         } catch (UploadValidationException $exception) {
             $this->uploadService->failValidation($uploadEntity, $exception);
 
@@ -73,7 +81,7 @@ readonly class ValidateUploadCommandHandler
     private function loadUploadEntity(Uuid $uuid): UploadEntity
     {
         $uploadEntity = $this->repository->find($uuid);
-        if (! $uploadEntity) {
+        if (! $uploadEntity instanceof UploadEntity) {
             throw UploadException::forEntityNotFound($uuid);
         }
 
@@ -96,7 +104,12 @@ readonly class ValidateUploadCommandHandler
         }
 
         Assert::string($uploadEntity->getFilename());
-        $fileExtension = pathinfo($uploadEntity->getFilename(), PATHINFO_EXTENSION);
+        $extension = pathinfo($uploadEntity->getFilename(), PATHINFO_EXTENSION);
+
+        $fileExtension = FileExtension::tryFrom(strtolower($extension));
+        if ($fileExtension === null) {
+            throw UploadValidationException::forInvalidExtension($uploadEntity, $extension);
+        }
 
         $mimeTypeHelperResult = $this->mimeTypeHelper->isValidForUploadGroup(
             $fileExtension,
@@ -108,7 +121,7 @@ readonly class ValidateUploadCommandHandler
             MimeTypeHelperResult::VALID
                 => $mimeType,
             MimeTypeHelperResult::INVALID_EXTENSION
-                => throw UploadValidationException::forInvalidExtension($uploadEntity, $fileExtension),
+                => throw UploadValidationException::forInvalidExtension($uploadEntity, $extension),
             MimeTypeHelperResult::INVALID_MIME_TYPE
                 => throw UploadValidationException::forInvalidMimetype($uploadEntity, $mimeType),
             MimeTypeHelperResult::MISMATCH_BETWEEN_EXTENSION_AND_MIME_TYPE
@@ -148,8 +161,8 @@ readonly class ValidateUploadCommandHandler
 
     private function isZipFile(UploadEntity $uploadEntity, string $mimeType): bool
     {
-        $extension = pathinfo($uploadEntity->getFilename() ?? '', PATHINFO_EXTENSION);
+        $fileExtension = FileExtension::tryFrom(pathinfo($uploadEntity->getFilename() ?? '', PATHINFO_EXTENSION));
 
-        return $this->sevenZipFileStrategy->supports($extension, $mimeType);
+        return $this->sevenZipFileStrategy->supports($fileExtension, $mimeType);
     }
 }

@@ -3,6 +3,7 @@ export * from './date';
 export * from './debounce';
 export * from './element';
 export * from './focus';
+export * from './icon';
 export * from './id';
 export * from './js-enabled';
 export * from './number';

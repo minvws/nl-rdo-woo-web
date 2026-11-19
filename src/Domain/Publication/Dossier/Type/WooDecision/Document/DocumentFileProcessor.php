@@ -8,9 +8,9 @@ use Psr\Log\LoggerInterface;
 use Shared\Domain\Ingest\Process\IngestProcessOptions;
 use Shared\Domain\Ingest\Process\SubType\SubTypeIngester;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Publication\History\History;
 use Shared\Domain\Upload\Process\FileStorer;
-use Shared\Domain\Upload\UploadedFile;
 use Shared\Service\HistoryService;
 use Shared\Service\Utils\Utils;
 use Shared\ValueObject\DocumentId;
@@ -28,12 +28,12 @@ readonly class DocumentFileProcessor
     ) {
     }
 
-    public function process(UploadedFile $file, WooDecision $dossier, DocumentId $documentId): void
+    public function process(EntityWithFileInfo $source, WooDecision $dossier, DocumentId $documentId): void
     {
         $document = $this->documentRepository->findOneByDossierAndDocumentId($dossier, $documentId);
-        if ($document === null) {
+        if (! $document instanceof Document) {
             $this->logger->info('Could not find document, skipping processing file', [
-                'filename' => $file->getOriginalFilename(),
+                'filename' => $source->getFileInfo()->getName(),
                 'documentId' => $documentId,
                 'dossierId' => $dossier->getId(),
             ]);
@@ -45,7 +45,7 @@ readonly class DocumentFileProcessor
             $this->logger->warning(
                 sprintf('Document with id "%s" should not be uploaded, skipping it', $documentId),
                 [
-                    'filename' => $file->getOriginalFilename(),
+                    'filename' => $source->getFileInfo()->getName(),
                     'documentId' => $documentId->toString(),
                     'dossierId' => $dossier->getId(),
                 ],
@@ -55,7 +55,7 @@ readonly class DocumentFileProcessor
         }
 
         $wasUploaded = $document->getFileInfo()->isUploaded();
-        $this->fileStorer->storeForDocument($file, $document, $documentId);
+        $this->fileStorer->storeForDocument($source, $document, $documentId);
 
         if ($document->isWithdrawn() && $dossier->getStatus()->isPubliclyAvailable()) {
             $document->removeWithdrawn();

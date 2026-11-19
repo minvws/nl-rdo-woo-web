@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Shared\Validator\MarkdownAllowedNodeTypes;
 
 use League\CommonMark\Node\Node;
+use League\CommonMark\Node\NodeWalkerEvent;
 use ReflectionClass;
-use Shared\Domain\Content\Markdown\MarkdownConverter;
+use Shared\Domain\Content\Markdown\MarkdownFormatter;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -18,7 +19,7 @@ use function is_string;
 class MarkdownAllowedNodeTypesValidator extends ConstraintValidator
 {
     public function __construct(
-        private readonly MarkdownConverter $markdownConverter,
+        private readonly MarkdownFormatter $markdownFormatter,
     ) {
     }
 
@@ -36,9 +37,9 @@ class MarkdownAllowedNodeTypesValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, 'string');
         }
 
-        $walker = $this->markdownConverter->getParser()->parse($value)->walker();
+        $walker = $this->markdownFormatter->parse($value)->walker();
 
-        while (($event = $walker->next()) !== null) {
+        while (($event = $walker->next()) instanceof NodeWalkerEvent) {
             if (! $event->isEntering()) {
                 continue;
             }

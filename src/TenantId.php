@@ -18,6 +18,8 @@ enum TenantId: string
 
     case MINOCW = 'minocw';
 
+    case MINIENW = 'minienw';
+
     public static function fromString(string $value): self
     {
         return self::from(strtolower($value));

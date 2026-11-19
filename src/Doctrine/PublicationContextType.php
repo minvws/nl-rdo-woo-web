@@ -42,7 +42,7 @@ final class PublicationContextType extends Type
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
         Assert::nullOrIsInstanceOf($value, PublicationContext::class);
-        if ($value === null) {
+        if (! $value instanceof PublicationContext) {
             return null;
         }
 

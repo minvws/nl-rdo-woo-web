@@ -13,7 +13,7 @@ Test Tags           ci  documentation
 Validate Documentation
   Click Documentation Link In Footer
   Get Text  //section//h1  contains  Welkom bij de documentatie van het Woo Publicatieplatform
-  Verify Index Item  Publiceren
+  Verify Index Item  Publicaties aanmaken
   Verify Image  (//section//img)[1]
 
 Validate Link In WooDecision Upload Step
@@ -30,7 +30,7 @@ Validate Minfin Documentation Styling
   Go To  ${TENANT_CONFIGS}[minfin][URL_PUBLIC]/documentatie
   Get Text  //section//h1  contains  Welkom bij de documentatie van het Woo Publicatieplatform
   Get Text  //header//a[contains(@class,'logo')]  contains  Ministerie van Financiën
-  Verify Index Item  Publiceren
+  Verify Index Item  Publicaties aanmaken
   Verify Image  (//section//img)[1]
 
 

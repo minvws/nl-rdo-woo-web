@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Domain\Publication\BatchDownload\Handler;
 
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\BatchDownload\BatchDownload;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadRepository;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadZipGenerator;
 use Shared\Domain\Publication\BatchDownload\Command\GenerateBatchDownloadCommand;
@@ -23,7 +24,7 @@ readonly class GenerateBatchDownloadHandler
     public function __invoke(GenerateBatchDownloadCommand $message): void
     {
         $batch = $this->repository->find($message->uuid);
-        if (! $batch) {
+        if (! $batch instanceof BatchDownload) {
             $this->logger->error('Cannot find batch download entity', [
                 'id' => $message->uuid->toRfc4122(),
             ]);

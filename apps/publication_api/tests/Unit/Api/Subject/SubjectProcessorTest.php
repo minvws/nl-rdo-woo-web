@@ -165,7 +165,7 @@ class SubjectProcessorTest extends UnitTestCase
         $this->organisationResolver
             ->expects('resolve')
             ->with($uriVariables)
-            ->andThrow(EntityNotFoundException::for('Organisation', $organisationId));
+            ->andThrow(EntityNotFoundException::for('Organisation', $organisationId->toString()));
 
         $this->expectException(EntityNotFoundException::class);
 

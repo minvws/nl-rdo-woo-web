@@ -1,4 +1,5 @@
 import { VueWrapper, mount } from '@vue/test-utils';
+import { UploadValidationErrorReason } from '@js/admin/utils';
 import { describe, expect, test } from 'vitest';
 import UploadArea from './UploadArea.vue';
 
@@ -13,11 +14,11 @@ describe('The "UploadArea" component', () => {
     },
   ];
 
-  const createComponent = () =>
+  const createComponent = ({ enableAutoUpload = false } = {}) =>
     mount(UploadArea, {
       props: {
         allowMultiple: true,
-        enableAutoUpload: false,
+        enableAutoUpload,
         endpoint: 'mocked-upload-endpoint',
         groupId: 'mocked-group-id',
         fileLimits: mockedFileLimits,
@@ -60,6 +61,68 @@ describe('The "UploadArea" component', () => {
 
     expect(childComponent.exists()).toBe(true);
     expect(childComponent.props('allowMultiple')).toBe(true);
+  });
+
+  describe('when an upload fails', () => {
+    const emitUploadError = (
+      component: VueWrapper,
+      validationErrorReason: string | null,
+    ) => {
+      const file = new File(['content'], 'mocked-file.pdf');
+      component
+        .findComponent({ name: 'SelectedFiles' })
+        .vm.$emit('uploadError', 'mocked-file-id', file, {
+          validationErrorReason,
+        });
+
+      return file;
+    };
+
+    const getDangerousFiles = (component: VueWrapper) =>
+      component.findComponent({ name: 'DangerousFiles' }).props('files');
+
+    test('should list the file as dangerous when the reason is an unsafe file', async () => {
+      const component = createComponent({ enableAutoUpload: true });
+
+      const file = emitUploadError(
+        component,
+        UploadValidationErrorReason.UnsafeFile,
+      );
+      await component.vm.$nextTick();
+
+      expect(getDangerousFiles(component)).toEqual([file]);
+    });
+
+    test('should list the file as mismatched when the type of file does not match its extension', async () => {
+      const component = createComponent({ enableAutoUpload: true });
+
+      const file = emitUploadError(
+        component,
+        UploadValidationErrorReason.ExtensionMimeTypeMismatch,
+      );
+      await component.vm.$nextTick();
+
+      expect(
+        component.findComponent({ name: 'MismatchedFiles' }).props('files'),
+      ).toEqual([file]);
+      expect(getDangerousFiles(component)).toEqual([]);
+    });
+
+    test.each([
+      UploadValidationErrorReason.InvalidExtension,
+      UploadValidationErrorReason.FileSizeExceeded,
+      null,
+    ])(
+      'should not list the file as dangerous when the reason is %s',
+      async (validationErrorReason) => {
+        const component = createComponent({ enableAutoUpload: true });
+
+        emitUploadError(component, validationErrorReason);
+        await component.vm.$nextTick();
+
+        expect(getDangerousFiles(component)).toEqual([]);
+      },
+    );
   });
 
   test('should display the provided tip', () => {

@@ -9,6 +9,7 @@ use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\RemoveInventoryCommand;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Shared\Service\DossierService;
 use Shared\Service\Inventory\InventoryService;
@@ -30,7 +31,7 @@ class RemoveInventoryHandler
     {
         try {
             $dossier = $this->wooDecisionRepository->find($message->getUuid());
-            if (! $dossier) {
+            if (! $dossier instanceof WooDecision) {
                 $this->logger->warning('No dossier found for this message', [
                     'uuid' => $message->getUuid(),
                 ]);

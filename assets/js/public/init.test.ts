@@ -15,6 +15,7 @@ let collapsiblesInitializeSpy: MockInstance;
 let detailsComponentsInitializeSpy: MockInstance;
 let mainNavInitializeSpy: MockInstance;
 let searchResultsInitializeSpy: MockInstance;
+let searchSpreadsheetFileInitializeSpy: MockInstance;
 let tabsInitializeSpy: MockInstance;
 
 vi.mock('@utils', async (importOriginal) => {
@@ -56,6 +57,12 @@ vi.mock('./search-results', () => ({
   }),
 }));
 
+vi.mock('./search-spreadsheet-file', () => ({
+  searchSpreadsheetFile: () => ({
+    initialize: searchSpreadsheetFileInitializeSpy,
+  }),
+}));
+
 describe('the main "init" function for the admin', () => {
   beforeEach(() => {
     autoSubmitFormInitializeSpy = vi.fn();
@@ -63,6 +70,7 @@ describe('the main "init" function for the admin', () => {
     detailsComponentsInitializeSpy = vi.fn();
     mainNavInitializeSpy = vi.fn();
     searchResultsInitializeSpy = vi.fn();
+    searchSpreadsheetFileInitializeSpy = vi.fn();
     tabsInitializeSpy = vi.fn();
   });
 
@@ -83,6 +91,7 @@ describe('the main "init" function for the admin', () => {
     expect(detailsComponentsInitializeSpy).not.toHaveBeenCalled();
     expect(mainNavInitializeSpy).not.toHaveBeenCalled();
     expect(searchResultsInitializeSpy).not.toHaveBeenCalled();
+    expect(searchSpreadsheetFileInitializeSpy).not.toHaveBeenCalled();
     expect(tabsInitializeSpy).not.toHaveBeenCalled();
 
     init();
@@ -91,6 +100,7 @@ describe('the main "init" function for the admin', () => {
     expect(detailsComponentsInitializeSpy).toHaveBeenCalled();
     expect(mainNavInitializeSpy).toHaveBeenCalled();
     expect(searchResultsInitializeSpy).toHaveBeenCalled();
+    expect(searchSpreadsheetFileInitializeSpy).toHaveBeenCalled();
     expect(tabsInitializeSpy).toHaveBeenCalled();
   });
 });

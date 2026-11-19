@@ -1,0 +1,57 @@
+<div class="pt-8 js-search-spreadsheet-file" data-e2e-name="spreadsheet-preview">
+    {% set numberOfRows = table.rows | length %}
+    {% if numberOfRows > 1 %}
+        <form aria-labelledby="search-document-label" class="no-js:hidden" role="search">
+            <label class="woo-label" id="search-document-label" for="search-document-input">{{ 'public.document.search_in_document' | trans }}</label>
+            <div class="flex">
+                <input class="woo-input-text focus:-outline-offset-4" id="search-document-input" name="q" type="search" />
+                <button class="woo-btn-filled-pink px-3 h-auto" type="submit">
+                    <span class="sr-only">{{ 'public.document.search_in_document' | trans }}</span>
+                    <twig:Public:Icon name="magnifier" />
+                </button>
+            </div>
+        </form>
+
+        <output
+            class="block js:pt-2 break-all leading-tight"
+            data-e2e-name="spreadsheet-search-result"
+            data-message-none="{{ 'public.document.search_rows_found_none' | trans({ term: '{term}' }) }}"
+            data-message-shown="{{ 'public.document.search_rows_shown' | trans({ count: '{count}', term: '{term}', total: '{total}' }) }}"
+        ></output>
+    {% endif %}
+
+    <div class="max-h-180 overflow-auto">
+        <table
+            class="woo-table js-sortable-table -mb-1"
+            data-message-sort-asc="{{ 'global.sort.direction.sort_asc' | trans }}"
+            data-message-sort-desc="{{ 'global.sort.direction.sort_desc' | trans }}"
+        >
+            <caption class="sr-only">
+                <span>{{ fileName }}</span>
+                <span>{{ 'public.table.sortable_columns' | trans }}</span>
+            </caption>
+            <thead>
+                <tr>
+                    {% for column in table.columns %}
+                        <th class="js-sortable-column sticky top-0 bg-white" scope="col">{{ column }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in table.rows %}
+                    <tr>
+                        {% for cell in row %}
+                            <td>{{ cell }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if isTruncated %}
+        <p class="border-t border-woo-gray-200 pt-4 woo-muted leading-tight" data-e2e-name="spreadsheet-truncated">
+            {{ 'public.document.spreadsheet_limited' | trans({ number_of_rows: numberOfRows, number_of_columns: table.columns | length }) }}
+        </p>
+    {% endif %}
+</div>

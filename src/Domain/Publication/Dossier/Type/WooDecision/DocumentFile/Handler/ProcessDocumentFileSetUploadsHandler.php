@@ -7,6 +7,7 @@ namespace Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Handle
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileSetUploadsCommand;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileDispatcher;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileSet;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository\DocumentFileSetRepository;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -23,7 +24,7 @@ readonly class ProcessDocumentFileSetUploadsHandler
     public function __invoke(ProcessDocumentFileSetUploadsCommand $message): void
     {
         $documentFileSet = $this->repository->find($message->documentFileSetId);
-        if (! $documentFileSet) {
+        if (! $documentFileSet instanceof DocumentFileSet) {
             $this->logger->warning('No DocumentFileSet found for this message', [
                 'id' => $message->documentFileSetId->toRfc4122(),
             ]);

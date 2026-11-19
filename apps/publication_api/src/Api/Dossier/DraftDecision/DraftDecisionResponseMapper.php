@@ -20,6 +20,7 @@ use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecision;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\ValueObject\PlainDate;
 use Webmozart\Assert\Assert;
 
@@ -82,7 +83,7 @@ readonly class DraftDecisionResponseMapper implements DossierResponseMapper
     private function mainDocument(DraftDecision $draftDecision): ?DraftDecisionMainDocumentResponseDto
     {
         $mainDocument = $draftDecision->getMainDocument();
-        if ($mainDocument === null) {
+        if (! $mainDocument instanceof AbstractMainDocument) {
             return null;
         }
 

@@ -6,6 +6,7 @@ namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Handler;
 
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Command\WithDrawDocumentCommand;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawService;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\LinkedWooDecisionUpdater;
@@ -36,7 +37,7 @@ readonly class WithDrawDocumentHandler
         }
 
         $document = $this->documentRepository->findOneByDossierAndId($wooDecision, $command->documentId);
-        if ($document === null) {
+        if (! $document instanceof Document) {
             $this->logger->warning('No document found for this message', [
                 'dossierId' => $command->dossierId,
                 'documentId' => $command->documentId,

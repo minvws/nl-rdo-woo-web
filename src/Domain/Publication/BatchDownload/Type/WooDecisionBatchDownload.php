@@ -6,6 +6,7 @@ namespace Shared\Domain\Publication\BatchDownload\Type;
 
 use Doctrine\ORM\QueryBuilder;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Webmozart\Assert\Assert;
@@ -22,7 +23,7 @@ readonly class WooDecisionBatchDownload implements BatchDownloadTypeInterface
     public function supports(BatchDownloadScope $scope): bool
     {
         return $scope->wooDecision instanceof WooDecision
-            && $scope->inquiry === null;
+            && ! $scope->inquiry instanceof Inquiry;
     }
 
     public function getFileBaseName(BatchDownloadScope $scope): string

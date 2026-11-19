@@ -57,7 +57,7 @@ class BatchDownload
             $this->inquiry = $scope->inquiry;
         }
 
-        if ($this->dossier === null && $this->inquiry === null) {
+        if (! $this->dossier instanceof WooDecision && ! $this->inquiry instanceof Inquiry) {
             throw new RuntimeException('A BatchDownload entity needs at least one dossier or inquiry relationship');
         }
     }

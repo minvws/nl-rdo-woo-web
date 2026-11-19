@@ -9,6 +9,7 @@ use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Log\NullLogger;
+use Shared\Domain\Upload\FileType\FileExtension;
 use Shared\Domain\Upload\FileType\MimeTypeHelper;
 use Shared\Domain\Upload\FileType\MimeTypeHelperResult;
 use Shared\Domain\Upload\UploadedFile;
@@ -31,7 +32,7 @@ class MimeTypeHelperTest extends UnitTestCase
     public function testIsValidForUploadGroupReturnsFalseWhenMimeTypeDoesNotMatchFileExtension(): void
     {
         self::assertSame(
-            $this->helper->isValidForUploadGroup('foo', 'application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS),
+            $this->helper->isValidForUploadGroup(FileExtension::SVG, 'application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS),
             MimeTypeHelperResult::INVALID_EXTENSION,
         );
     }
@@ -39,7 +40,7 @@ class MimeTypeHelperTest extends UnitTestCase
     public function testIsValidForUploadGroupReturnsFalseWhenMimeTypeIsNotAllowedBasedOnFileContents(): void
     {
         self::assertSame(
-            $this->helper->isValidForUploadGroup('pdf', 'foo/bar', UploadGroupId::WOO_DECISION_DOCUMENTS),
+            $this->helper->isValidForUploadGroup(FileExtension::PDF, 'foo/bar', UploadGroupId::WOO_DECISION_DOCUMENTS),
             MimeTypeHelperResult::INVALID_MIME_TYPE,
         );
     }
@@ -47,14 +48,14 @@ class MimeTypeHelperTest extends UnitTestCase
     public function testIsValidForUploadGroupReturnsFalseWhenMimeTypeDoesNotMatchExtension(): void
     {
         self::assertSame(
-            $this->helper->isValidForUploadGroup('xls', 'application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS),
+            $this->helper->isValidForUploadGroup(FileExtension::XLS, 'application/pdf', UploadGroupId::WOO_DECISION_DOCUMENTS),
             MimeTypeHelperResult::MISMATCH_BETWEEN_EXTENSION_AND_MIME_TYPE,
         );
     }
 
     #[DataProvider('validMimeTypeExtensionDataProvider')]
     public function testIsFileMimeTypeValidForUploadGroupReturnsTrueForValidMimeType(
-        string $fileExtension,
+        FileExtension $fileExtension,
         string $mimeType,
     ): void {
         self::assertSame(
@@ -64,17 +65,14 @@ class MimeTypeHelperTest extends UnitTestCase
     }
 
     /**
-     * @return array<array-key, array{fileExtension: string, mimeType: string}>
+     * @return array<array-key, array{fileExtension: FileExtension, mimeType: string}>
      */
     public static function validMimeTypeExtensionDataProvider(): array
     {
         return [
-            ['fileExtension' => 'pdf', 'mimeType' => 'application/pdf'],
-            ['fileExtension' => 'PDF', 'mimeType' => 'application/pdf'],
-            ['fileExtension' => 'xls', 'mimeType' => 'application/msexcel'],
-            ['fileExtension' => 'Xls', 'mimeType' => 'application/msexcel'],
-            ['fileExtension' => 'xlsx', 'mimeType' => 'application/msexcel'],
-            ['fileExtension' => 'xlsX', 'mimeType' => 'application/msexcel'],
+            ['fileExtension' => FileExtension::PDF, 'mimeType' => 'application/pdf'],
+            ['fileExtension' => FileExtension::XLS, 'mimeType' => 'application/msexcel'],
+            ['fileExtension' => FileExtension::XLSX, 'mimeType' => 'application/msexcel'],
         ];
     }
 

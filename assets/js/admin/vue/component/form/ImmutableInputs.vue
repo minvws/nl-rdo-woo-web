@@ -15,8 +15,9 @@ const props = withDefaults(defineProps<Props>(), {
   <input
     v-for="(value, index) in props.values"
     hidden
-    :key="value"
+    :key="createName(props.name, index)"
     :name="createName(props.name, index)"
     :value="value"
+    type="hidden"
   />
 </template>

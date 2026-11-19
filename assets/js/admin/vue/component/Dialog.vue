@@ -55,7 +55,11 @@ watch(isOpen, (value) => {
       <slot />
 
       <form method="dialog">
-        <button class="bhr-dialog__close-btn">
+        <button
+          class="bhr-dialog__close-btn"
+          data-e2e-name="close-dialog-button"
+          type="submit"
+        >
           <span class="sr-only">Sluit venster</span>
           <Icon name="cross" color="fill-current" />
         </button>

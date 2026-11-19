@@ -18,17 +18,17 @@ tasks:
         vars: { RCLONE_CMD: mkdir }
 
   clear-buckets:
-    desc: Clear the default buckets
+    desc: Clear the default buckets of all local tenants, or of one tenant when ONLY_TENANT is given
     cmds:
       - echo 'Clearing S3 buckets...'
       - task: rclone-each-bucket
-        vars: { RCLONE_CMD: delete }
+        vars: { RCLONE_CMD: delete, ONLY_TENANT: '{{ .ONLY_TENANT }}' }
       - echo 'Done clearing S3 buckets.'
 
   rclone-each-bucket:
     internal: true
     vars:
-      BUCKETS: '{{ range $tenant := .LOCAL_TENANTS }}{{ range $bucket := $.S3_BUCKETS }}{{ $.S3_REMOTE }}:{{ $tenant }}-{{ $bucket }} {{ end }}{{ end }}'
+      BUCKETS: '{{ $tenants := .LOCAL_TENANTS }}{{ if .ONLY_TENANT }}{{ $tenants = list .ONLY_TENANT }}{{ end }}{{ range $tenant := $tenants }}{{ range $bucket := $.S3_BUCKETS }}{{ $.S3_REMOTE }}:{{ $tenant }}-{{ $bucket }} {{ end }}{{ end }}'
     cmds:
       - task: :dc
         vars: { SUB_CMD: "run --rm --entrypoint sh rclone -c 'for bucket in {{ .BUCKETS }}; do rclone {{ .RCLONE_CMD }} $bucket || exit 1; done'" }

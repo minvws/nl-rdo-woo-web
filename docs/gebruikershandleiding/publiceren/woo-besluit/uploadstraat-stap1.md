@@ -1,4 +1,4 @@
-# Stap  1: Basisgegevens
+# Stap 1: Basisgegevens
 
 ![De figuur laat de eerste stap van de uploadstraat van de balie zien waar de basisgegevens worden ingevuld.](img/besluit_1.png)
 
@@ -9,12 +9,12 @@ Ook na publicatie kunnen de basisgegevens nog worden bijgewerkt. Het referentien
 ## Onderwerp van het besluit
 
 Het onderwerp van het besluit wordt als titel getoond op de website. In de omschrijving van het onderwerp gebruik je geen onnodige
-voorzetsels, lidwoorden of vanzelfsprekende inhoudelijke woorden zoals ‘Woo-besluit’  Dit veld is verplicht om in te vullen.
+voorzetsels, lidwoorden of vanzelfsprekende inhoudelijke woorden zoals **Woo-besluit**  Dit veld is verplicht om in te vullen.
 
 ## Periode waarop het verzoek betrekking heeft
 
-Voor de periode waarop het verzoek betrekking heeft, kun je kiezen binnen een bereik van de huidige maand ± 10 jaar. Als er geen
-periode is opgegeven, wordt standaard "alles" geselecteerd. Wanneer alleen een begindatum of einddatum wordt ingevoerd, wordt
+Voor de periode waarop het verzoek betrekking heeft, kies je een beginmaand en een eindmaand. Je kunt kiezen uit de maanden
+vanaf 10 jaar geleden tot en met vorige maand. Beide velden zijn optioneel. Als er geen periode is opgegeven, wordt standaard "alles" geselecteerd. Wanneer alleen een begindatum of einddatum wordt ingevoerd, wordt
 de status respectievelijk weergegeven als "vanaf ..." of "tot ...".
 
 ## Verantwoordelijk bestuursorgaan
@@ -30,13 +30,7 @@ aangemaakt door de organisatiebeheerder van je organisatie. Dit veld is optionee
 
 ## Type besluit
 
-Keuze uit: Wob-besluit en Woo-besluit. Standaard is het type Woo-besluit geselecteerd.
-
-## Prefix voor documenten
-
-De vaste prefix van je organisatie wordt automatisch gebruikt. Je hoeft geen prefix
-te selecteren of in te vullen. De combinatie van de prefix en het referentienummer
-moet uniek zijn binnen de organisatie.
+Keuze uit: Wob-besluit en **Woo-besluit**. Standaard is het type **Woo-besluit** geselecteerd.
 
 ## Interne referentie
 
@@ -53,4 +47,4 @@ De combinatie van het referentienummer en de prefix moet uniek zijn binnen de or
 Na het opslaan van deze stap kun je het referentienummer niet meer aanpassen, dus voer het zorgvuldig in.
 :::
 
-Om verder te gaan klik je op ‘opslaan en verder’. Als je terug naar het hoofdmenu wil, klik je op ‘Concept opslaan’.
+Om verder te gaan klik je op **opslaan en verder**. Als je terug naar het hoofdmenu wil, klik je op **Concept opslaan**.

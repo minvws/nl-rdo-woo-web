@@ -39,7 +39,7 @@ describe('The helper functions regarding checkbox filters', () => {
 
   describe('the "getCheckboxFilterElements" function', () => {
     test('should retrieve all checkbox filter elements available', () => {
-      expect(getCheckboxFilterElements().length).toBe(4);
+      expect(getCheckboxFilterElements()).toHaveLength(4);
     });
   });
 

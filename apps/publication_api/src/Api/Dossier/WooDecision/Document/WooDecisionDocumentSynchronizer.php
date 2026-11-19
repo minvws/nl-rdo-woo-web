@@ -75,7 +75,7 @@ readonly class WooDecisionDocumentSynchronizer
             }
 
             $document = $this->documentRepository->findByExternalId($wooDecisionDocumentRequestDto->externalId);
-            if ($document === null) {
+            if (! $document instanceof Document) {
                 continue;
             }
 

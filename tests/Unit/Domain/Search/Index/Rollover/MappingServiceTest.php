@@ -24,18 +24,23 @@ class MappingServiceTest extends UnitTestCase
 
     public function testGetMapping(): void
     {
-        $this->assertMatchesJsonSnapshot($this->mappingService->getMapping(1));
+        $mapping = $this->mappingService->getMapping();
+
+        Assert::keyExists($mapping, '_meta');
+        Assert::isArray($mapping['_meta']);
+        Assert::keyExists($mapping['_meta'], 'version');
+        self::assertSame(3, $mapping['_meta']['version']);
     }
 
     public function testSubjectMappingSupportsVisibleContentTreeMetadata(): void
     {
-        $mapping = new MappingService(dirname(__DIR__, 6))->getMapping(32);
+        $mapping = new MappingService(dirname(__DIR__, 6))->getMapping();
         Assert::keyExists($mapping, '_meta');
         Assert::isArray($mapping['_meta']);
         $metadata = $mapping['_meta'];
         Assert::keyExists($metadata, 'version');
 
-        self::assertSame(32, $metadata['version']);
+        self::assertSame(33, $metadata['version']);
 
         Assert::keyExists($mapping, 'properties');
         Assert::isArray($mapping['properties']);
@@ -56,60 +61,45 @@ class MappingServiceTest extends UnitTestCase
         );
     }
 
-    public function testGetMappingThrowsExceptionForNonExistingVersion(): void
+    public function testGetMappingThrowsExceptionForNonExistingRootDirectory(): void
     {
         $this->expectException(RuntimeException::class);
-        $this->mappingService->getMapping(999);
+        new MappingService('non-existing')->getMapping();
     }
 
     public function testSubjectMappingPreservesPreviousFieldsExceptRetiredReferenceName(): void
     {
         $mappingService = new MappingService(dirname(__DIR__, 6));
-        $previousMapping = $mappingService->getMapping(31);
-        $mapping = $mappingService->getMapping(32);
-        Assert::isArray($previousMapping['properties']);
+        $mapping = $mappingService->getMapping();
         Assert::isArray($mapping['properties']);
-        $previousProperties = $previousMapping['properties'];
         $properties = $mapping['properties'];
 
-        self::assertArrayNotHasKey('referred_document_nrs', $properties);
-        unset($previousProperties['referred_document_nrs']);
-        unset($properties['content_tree'], $properties['has_visible_content_tree']);
-
-        self::assertSame($previousProperties, $properties);
         foreach (['title', 'summary'] as $field) {
             Assert::isArray($properties[$field]);
             self::assertSame('content_for_suggestions', $properties[$field]['copy_to']);
         }
     }
 
-    public function testGetMappingThrowsExceptionForInvalidJson(): void
+    public function testMappingIncludesLinksAsKeywords(): void
     {
-        $this->expectException(RuntimeException::class);
-        $this->mappingService->getMapping(2);
+        $mapping = new MappingService(dirname(__DIR__, 6))->getMapping();
+        Assert::keyExists($mapping, 'properties');
+        Assert::isArray($mapping['properties']);
+        Assert::keyExists($mapping['properties'], 'links');
+
+        self::assertSame(
+            ['type' => 'keyword'],
+            $mapping['properties']['links'],
+        );
+    }
+
+    public function testGetMappingVersion(): void
+    {
+        self::assertSame(3, $this->mappingService->getMappingVersion());
     }
 
     public function testGetSettings(): void
     {
         $this->assertMatchesJsonSnapshot($this->mappingService->getSettings());
-    }
-
-    public function testGetLatestMappingVersion(): void
-    {
-        $this->assertEquals(3, $this->mappingService->getLatestMappingVersion());
-    }
-
-    public function testGetLatestMappingVersionWithNoMappings(): void
-    {
-        $mappingService = new MappingService('non-existing');
-        $this->assertEquals(-1, $mappingService->getLatestMappingVersion());
-    }
-
-    public function testIsValidMappingVersion(): void
-    {
-        $this->assertTrue($this->mappingService->isValidMappingVersion(1));
-        $this->assertTrue($this->mappingService->isValidMappingVersion(2));
-        $this->assertTrue($this->mappingService->isValidMappingVersion(3));
-        $this->assertFalse($this->mappingService->isValidMappingVersion(4));
     }
 }

@@ -143,7 +143,7 @@ final class YearMonthTypeTest extends TestCase
     #[DataProvider('transformToStringProvider')]
     public function testTransformPlainDateToString(?PlainDate $date, string $expected): void
     {
-        $result = $date ? $date->toString() : '';
+        $result = $date instanceof PlainDate ? $date->toString() : '';
 
         $this->assertSame($expected, $result);
     }

@@ -29,7 +29,6 @@ describe('The "AddDocuments" component', () => {
   const createComponent = () =>
     mount(AddDocuments, {
       props: {
-        dossierId: 'mocked-dossier-id',
         fileLimits: [
           {
             size: 1000000,
@@ -58,7 +57,6 @@ describe('The "AddDocuments" component', () => {
 
   test('should render the "UploadDocuments" component', () => {
     expect(getUploadDocumentsComponent(createComponent()).props()).toEqual({
-      dossierId: 'mocked-dossier-id',
       fileLimits: [
         {
           size: 1000000,

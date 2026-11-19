@@ -107,9 +107,8 @@ class CollectorClient implements ClientInterface, ElasticClientInterface
      *      ignore_throttled?: bool,
      *      allow_no_indices?: bool,
      *      expand_wildcards?: string,
-     *      min_score?: float,
+     *      min_score?: int,
      *      preference?: string,
-     *      project_routing?: string,
      *      routing?: string|array<array-key, string>,
      *      q?: string,
      *      analyzer?: string,
@@ -197,17 +196,5 @@ class CollectorClient implements ClientInterface, ElasticClientInterface
     public function updateAliases(array $params = []): Elasticsearch
     {
         return $this->collectData('updateAlias', $params);
-    }
-
-    public function setServerless(bool $value): self
-    {
-        $this->elastic->setServerless($value);
-
-        return $this;
-    }
-
-    public function getServerless(): bool
-    {
-        return $this->elastic->getServerless();
     }
 }

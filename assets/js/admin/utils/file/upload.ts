@@ -1,3 +1,4 @@
+import type { ValueOf } from '@js/admin/interface';
 import { isSuccessStatusCode } from '@js/admin/utils';
 import { uniqueId } from '@utils';
 
@@ -16,8 +17,6 @@ export interface Chunk {
   uploadUuid: string | undefined;
 }
 
-type UploadResponse = UploadResponseSuccess | UploadResponseError;
-
 interface UploadResponseSuccess extends Response {
   data: {
     groupId: string | null;
@@ -26,16 +25,6 @@ interface UploadResponseSuccess extends Response {
     size: number;
     uploadUuid: string;
   };
-}
-
-enum UploadError {
-  Techinal = 'error.technical',
-  Unsafe = 'error.unsafe',
-  WhiteList = 'error.whitelist',
-}
-
-interface UploadResponseError extends Response {
-  error: UploadError;
 }
 
 export const UploadStatus = {
@@ -47,28 +36,45 @@ export const UploadStatus = {
   ValidationPassed: 'validation_passed',
 } as const;
 
-type UploadStatusType = (typeof UploadStatus)[keyof typeof UploadStatus];
+export type UploadStatus = ValueOf<typeof UploadStatus>;
 
 export type UploadErrorType = Pick<
   typeof UploadStatus,
   'Aborted' | 'ValidationFailed'
 >;
 
+export const UploadValidationErrorReason = {
+  ExtensionMimeTypeMismatch: 'extension_mime_type_mismatch',
+  FileSizeExceeded: 'file_size_exceeded',
+  InvalidExtension: 'invalid_extension',
+  InvalidMimeType: 'invalid_mime_type',
+  MimeTypeNotDetected: 'mime_type_not_detected',
+  MissingHeaderRow: 'missing_header_row',
+  MultipleWorksheets: 'multiple_worksheets',
+  SpreadsheetTooLarge: 'spreadsheet_too_large',
+  UnreadableSpreadsheet: 'unreadable_spreadsheet',
+  UnsafeFile: 'unsafe_file',
+  UnsupportedSpreadsheetExtension: 'unsupported_spreadsheet_extension',
+} as const;
+
+export type UploadValidationErrorReason = ValueOf<
+  typeof UploadValidationErrorReason
+>;
+
 interface UploadStatusResponse {
+  errorReason?: UploadValidationErrorReason | null;
+  status: UploadStatus;
   uploadId: string;
-  status: UploadStatusType;
 }
 
 export interface OnUploadError {
-  isTechnialError: boolean;
-  isUnsafeError: boolean;
-  isWhiteListError: boolean;
+  validationErrorReason: UploadValidationErrorReason | null;
 }
 
 export type UploadSuccessData<T = Record<string, unknown>> = T;
 
 interface Options {
-  endpoint?: string;
+  endpoint: string;
   file: File;
   onError?: (error: OnUploadError) => void;
   onProgress?: (progress: number) => void;
@@ -81,7 +87,7 @@ interface Options {
 
 export const uploadFile = (options: Options) => {
   const {
-    endpoint = '/balie/upload',
+    endpoint,
     file,
     onError = () => {},
     onProgress = () => {},
@@ -91,9 +97,12 @@ export const uploadFile = (options: Options) => {
 
   let checkStatusTimeout: ReturnType<typeof setTimeout> | null = null;
   let cleanupUpload: () => void = () => {};
+  let statusRequestFailures = 0;
   let uploadProgress = 0;
   let responseSuccessData: UploadSuccessData = {};
 
+  const CHECK_STATUS_INTERVAL = 250;
+  const MAX_STATUS_REQUEST_FAILURES = 3;
   const CHUNK_SIZE = 16 * 1024 * 1024; // 16 Mb
   const fileId = uniqueId('file', 32);
   const store = new Map<number, Chunk>();
@@ -129,12 +138,12 @@ export const uploadFile = (options: Options) => {
     uploadNextChunk();
   };
 
-  const uploadNextChunk = async () => {
+  const uploadNextChunk = () => {
     const chunks = getChunks();
     const nextChunkToUpload = chunks.find((chunk) => !chunk.isUploaded);
 
     if (!nextChunkToUpload) {
-      checkStatus(
+      void checkStatus(
         chunks.find((chunk) => chunk.uploadUuid)?.uploadUuid as string,
       );
       return;
@@ -185,18 +194,16 @@ export const uploadFile = (options: Options) => {
   const updateChunkUploadResult = (
     chunkId: number,
     isUploadSuccess: boolean,
-    response: UploadResponse,
+    response: UploadResponseSuccess,
   ) => {
     const chunk = getChunk(chunkId);
     chunk.isUploaded = true;
     chunk.isUploadSuccess = isUploadSuccess;
-    chunk.uploadUuid = isUploadSuccess
-      ? (response as UploadResponseSuccess).data.uploadUuid
-      : undefined;
+    chunk.uploadUuid = isUploadSuccess ? response.data.uploadUuid : undefined;
     store.set(chunkId, chunk);
 
     if (isUploadSuccess) {
-      responseSuccessData = (response as UploadResponseSuccess).data;
+      responseSuccessData = response.data;
     }
 
     cleanupUpload();
@@ -205,12 +212,7 @@ export const uploadFile = (options: Options) => {
       (chunkItem) => chunkItem.isUploadSuccess === false,
     );
     if (haveChunksFailed) {
-      const { error } = response as UploadResponseError;
-      onError({
-        isTechnialError: error === UploadError.Techinal || !error,
-        isUnsafeError: error === UploadError.Unsafe,
-        isWhiteListError: error === UploadError.WhiteList,
-      });
+      onError({ validationErrorReason: null });
       return;
     }
 
@@ -244,21 +246,49 @@ export const uploadFile = (options: Options) => {
     checkStatusTimeout = null;
   };
 
+  const requestUploadStatus = async (
+    uploadUuid: string,
+  ): Promise<UploadStatusResponse | null> => {
+    try {
+      const response = await fetch(
+        `/balie/api/uploader/upload/${uploadUuid}/status`,
+      );
+      if (!isSuccessStatusCode(response.status)) {
+        return null;
+      }
+
+      return await response.json();
+    } catch {
+      return null;
+    }
+  };
+
+  const scheduleCheckStatus = (uploadUuid: string) => {
+    checkStatusTimeout = setTimeout(() => {
+      void checkStatus(uploadUuid);
+    }, CHECK_STATUS_INTERVAL);
+  };
+
   const checkStatus = async (uploadUuid: string) => {
     clearCheckStatusTimeout();
 
-    const response = await fetch(
-      `/balie/api/uploader/upload/${uploadUuid}/status`,
-    );
+    const data = await requestUploadStatus(uploadUuid);
 
-    if (!isSuccessStatusCode(response.status)) {
-      // This endpoint is not implemented yet. We can therefore assume that the file is uploaded successfully.
-      onSuccess(uploadUuid, responseSuccessData);
+    if (!data) {
+      statusRequestFailures += 1;
+
+      if (statusRequestFailures >= MAX_STATUS_REQUEST_FAILURES) {
+        onError({ validationErrorReason: null });
+        return;
+      }
+
+      scheduleCheckStatus(uploadUuid);
       return;
     }
 
-    const data: UploadStatusResponse = await response.json();
-    const { status } = data;
+    statusRequestFailures = 0;
+
+    const { errorReason, status } = data;
 
     if (
       status === UploadStatus.Stored ||
@@ -272,17 +302,11 @@ export const uploadFile = (options: Options) => {
       status === UploadStatus.Aborted ||
       status === UploadStatus.ValidationFailed
     ) {
-      onError({
-        isTechnialError: status === UploadStatus.Aborted,
-        isUnsafeError: status === UploadStatus.ValidationFailed,
-        isWhiteListError: false,
-      });
+      onError({ validationErrorReason: errorReason ?? null });
       return;
     }
 
-    checkStatusTimeout = setTimeout(() => {
-      checkStatus(uploadUuid);
-    }, 250);
+    scheduleCheckStatus(uploadUuid);
   };
 
   const getFileProgress = () => {

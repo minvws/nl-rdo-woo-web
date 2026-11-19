@@ -6,7 +6,6 @@ namespace Shared\Service\Inventory;
 
 use DateTimeImmutable;
 use RuntimeException;
-use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Webmozart\Assert\Assert;
 
 use function array_filter;
@@ -89,11 +88,6 @@ class InventoryDataHelper
         $values = array_map(trim(...), $values);
 
         return array_filter($values);
-    }
-
-    public static function judgement(string $value): Judgement
-    {
-        return Judgement::fromString($value);
     }
 
     /**

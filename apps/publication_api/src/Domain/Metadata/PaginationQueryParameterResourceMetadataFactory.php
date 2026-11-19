@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PublicationApi\Domain\Metadata;
 
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Operations;
 use ApiPlatform\Metadata\Parameters;
 use ApiPlatform\Metadata\QueryParameter;
 use ApiPlatform\Metadata\Resource\Factory\ResourceMetadataCollectionFactoryInterface;
@@ -35,7 +36,7 @@ final readonly class PaginationQueryParameterResourceMetadataFactory implements 
         $resources = [];
         foreach ($collection as $resource) {
             $operations = $resource->getOperations();
-            if ($operations === null) {
+            if (! $operations instanceof Operations) {
                 $resources[] = $resource;
                 continue;
             }

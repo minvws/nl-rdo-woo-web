@@ -383,3 +383,5 @@ examples:
 
 docs: |-
   Uploads the file for the dossier's main document, which must already be declared via `mainDocument`.
+
+  When an Excel file (xlsx or xls) is uploaded, its first row is used as the column names. Hidden columns are shown. Macros and formatting are not included. The file must contain one worksheet and a header row; invalid files return HTTP 422.

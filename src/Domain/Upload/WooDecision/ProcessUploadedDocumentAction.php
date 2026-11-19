@@ -7,8 +7,8 @@ namespace Shared\Domain\Upload\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileService;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Shared\Domain\Upload\Process\EntityUploadStorer;
+use Shared\Domain\Upload\UploadContextReader;
 use Shared\Domain\Upload\UploadEntity;
-use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 
 readonly class ProcessUploadedDocumentAction
@@ -17,14 +17,14 @@ readonly class ProcessUploadedDocumentAction
         private WooDecisionRepository $wooDecisionRepository,
         private DocumentFileService $documentFileService,
         private EntityUploadStorer $entityUploadStorer,
+        private UploadContextReader $uploadContextReader,
     ) {
     }
 
     public function execute(UploadEntity $uploadEntity): void
     {
-        $wooDecisionId = Uuid::fromString($uploadEntity->getContext()->getString('dossierId'));
-
-        $wooDecision = $this->wooDecisionRepository->findOneByDossierId($wooDecisionId);
+        $dossierId = $this->uploadContextReader->getDossierId($uploadEntity);
+        $wooDecision = $this->wooDecisionRepository->findOneByDossierId($dossierId);
 
         $fileName = $uploadEntity->getFilename();
         Assert::notNull($fileName);

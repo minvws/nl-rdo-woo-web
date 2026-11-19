@@ -8,6 +8,7 @@ use Doctrine\ORM\QueryBuilder;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Webmozart\Assert\Assert;
 
 readonly class InquiryBatchDownload implements BatchDownloadTypeInterface
@@ -20,7 +21,7 @@ readonly class InquiryBatchDownload implements BatchDownloadTypeInterface
     public function supports(BatchDownloadScope $scope): bool
     {
         return $scope->inquiry instanceof Inquiry
-            && $scope->wooDecision === null;
+            && ! $scope->wooDecision instanceof WooDecision;
     }
 
     public function getFileBaseName(BatchDownloadScope $scope): string

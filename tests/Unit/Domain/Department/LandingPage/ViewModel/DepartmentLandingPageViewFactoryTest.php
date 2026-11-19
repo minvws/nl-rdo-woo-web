@@ -7,6 +7,7 @@ namespace Shared\Tests\Unit\Domain\Department\LandingPage\ViewModel;
 use DateTimeImmutable;
 use Mockery;
 use Mockery\MockInterface;
+use Shared\Controller\Admin\Upload\DepartmentUploadController;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Department\LandingPage\ViewModel\DepartmentLandingPageViewFactory;
 use Shared\Domain\Publication\FileInfo;
@@ -32,7 +33,7 @@ final class DepartmentLandingPageViewFactoryTest extends UnitTestCase
 
         $department = Mockery::mock(Department::class);
         $department->expects('getName')->andReturn('my name');
-        $department->expects('getId')->times(3)->andReturn($expectedId = Uuid::fromRfc4122('1f040b49-271c-6a7c-9421-c9c7fcf0c37d'));
+        $department->expects('getId')->times(4)->andReturn($expectedId = Uuid::fromRfc4122('1f040b49-271c-6a7c-9421-c9c7fcf0c37d'));
         $department->expects('getFileInfo')->andReturn($fileInfo);
         $department->expects('getUpdatedAt')->andReturn($updatedAt = new DateTimeImmutable('2023-10-01 12:00:00'));
 
@@ -50,7 +51,7 @@ final class DepartmentLandingPageViewFactoryTest extends UnitTestCase
 
         $this->urlGenerator
             ->expects('generate')
-            ->with('app_admin_upload')
+            ->with(DepartmentUploadController::ROUTE_NAME_UPLOAD, ['departmentId' => $expectedId])
             ->andReturn('upload-logo-endpoint');
 
         $factory = new DepartmentLandingPageViewFactory($this->urlGenerator);

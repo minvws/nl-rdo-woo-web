@@ -19,6 +19,7 @@
         grounds="{{ grounds }}"
         hasNoticeNotPublic="{{ hasNoticeNotPublic }}"
         helpText="{{ 'admin.dossiers.disposition.form.content.document_help' | trans }}"
+        :shouldValidateExcelFiles="true"
         languages="{{ attachmentLanguages }}"
         title="{{ 'admin.dossiers.disposition.form.content.document_label' | trans }}"
         dossierId="{{ dossier.id }}"

@@ -6,6 +6,7 @@ namespace Shared\Domain\WooIndex\Producer\Mapper;
 
 use Shared\Controller\Public\Dossier\DossierFileController;
 use Shared\Domain\Publication\PublicUrlGenerator;
+use Shared\Domain\WooIndex\Producer\Repository\RawReferenceDto;
 use Shared\Domain\WooIndex\Producer\Repository\RawUrlDto;
 use Shared\Domain\WooIndex\Producer\UrlReference;
 use Shared\ValueObject\Url;
@@ -20,7 +21,7 @@ final readonly class IsPartOfMapper
 
     public function fromRawUrl(RawUrlDto $rawUrl): ?UrlReference
     {
-        if ($rawUrl->mainDocumentReference === null) {
+        if (! $rawUrl->mainDocumentReference instanceof RawReferenceDto) {
             return null;
         }
 

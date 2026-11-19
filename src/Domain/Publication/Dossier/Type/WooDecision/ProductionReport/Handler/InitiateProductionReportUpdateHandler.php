@@ -7,6 +7,7 @@ namespace Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Ha
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Command\InitiateProductionReportUpdateCommand;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportDispatcher;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRunRepository;
 use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
@@ -64,7 +65,7 @@ readonly class InitiateProductionReportUpdateHandler
     private function removeExistingProcessRun(InitiateProductionReportUpdateCommand $command): void
     {
         $existingRun = $command->dossier->getProcessRun();
-        if ($existingRun === null) {
+        if (! $existingRun instanceof ProductionReportProcessRun) {
             return;
         }
 

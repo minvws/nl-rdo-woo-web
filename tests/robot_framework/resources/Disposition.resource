@@ -23,7 +23,7 @@ Upload Disposition
   [Arguments]  ${disposition_location}
   ${_}  ${file_name} =  Split Path  ${disposition_location}
   Click  " Beschikking toevoegen... "
-  Upload File By Selector  //dialog[@open]//*[@data-e2e-name="uploadUuid-input"]  ${FILE_LOCATION}
+  Upload File By Selector  //dialog[@open]//*[@data-e2e-name="uploadUuid-input"]  ${disposition_location}
   Wait For Condition  Text  //*[@data-e2e-name="uploaded-file"]  contains  ${file_name}
   Select Options By  //dialog[@open]//*[@data-e2e-name="type-select"]  text  concessie
   Type Text  //dialog[@open]//*[@data-e2e-name="formalDate-input"]  01012022

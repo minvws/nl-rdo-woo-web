@@ -12,6 +12,7 @@ use Shared\Service\Security\User;
 use Stringable;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 use function array_merge;
 
@@ -91,7 +92,7 @@ class EnrichedPsrLogger implements LoggerInterface
         ];
 
         $token = $this->tokenStorage->getToken();
-        if ($token) {
+        if ($token instanceof TokenInterface) {
             $user = $token->getUser();
             if ($user instanceof User) {
                 $userInfo['id'] = (string) $user->getId();

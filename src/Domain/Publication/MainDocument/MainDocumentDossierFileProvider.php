@@ -29,7 +29,7 @@ readonly class MainDocumentDossierFileProvider implements DossierFileProviderInt
     public function getEntityForPublicUse(AbstractDossier $dossier, string $id): EntityWithFileInfo
     {
         $mainDocument = $this->mainDocumentRepository->findOneOrNullForDossier($dossier->getId(), Uuid::fromString($id));
-        if ($mainDocument === null) {
+        if (! $mainDocument instanceof AbstractMainDocument) {
             throw DossierFileNotFoundException::forEntity($this->getType(), $dossier, $id);
         }
 

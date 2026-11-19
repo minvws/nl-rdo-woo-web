@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Admin\Command;
 
 use Admin\Domain\Authentication\UserService;
+use Shared\Service\Security\User;
 use Shared\Service\Security\UserRepository;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -37,7 +38,7 @@ class UserReset extends Command
         Assert::string($email);
 
         $user = $this->userRepository->findOneBy(['email' => $email]);
-        if (! $user) {
+        if (! $user instanceof User) {
             $output->writeln("User <info>{$email}</info> not found.");
 
             return self::FAILURE;

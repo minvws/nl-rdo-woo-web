@@ -21,7 +21,9 @@ use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Webmozart\Assert\Assert;
 
 use function array_map;
@@ -85,7 +87,7 @@ readonly class AnnualReportResponseMapper implements DossierResponseMapper
     private function mainDocument(AnnualReport $annualReport): ?AnnualReportMainDocumentResponseDto
     {
         $mainDocument = $annualReport->getMainDocument();
-        if ($mainDocument === null) {
+        if (! $mainDocument instanceof AbstractMainDocument) {
             return null;
         }
 
@@ -99,7 +101,7 @@ readonly class AnnualReportResponseMapper implements DossierResponseMapper
     private function noticeNotPublic(AnnualReport $annualReport): ?NoticeNotPublicResponseDto
     {
         $noticeNotPublic = $annualReport->getNoticeNotPublic();
-        if ($noticeNotPublic === null) {
+        if (! $noticeNotPublic instanceof NoticeNotPublic) {
             return null;
         }
 

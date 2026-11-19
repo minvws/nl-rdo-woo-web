@@ -23,19 +23,20 @@ final class CovenantTest extends SharedWebTestCase
         $department = Mockery::mock(Department::class);
         $date = new DateTimeImmutable('2020-04-21');
 
-        $covenant = new Covenant();
-        $covenant->setDossierNumber('foo-123');
-        $covenant->setDepartments([$department]);
-        $covenant->setTitle(DossierTitle::create('bar'));
-        $covenant->setDocumentPrefix('FOO');
-        $covenant->setCreatedAt($date);
-        $covenant->setDateFrom(PlainDate::create($date->modify('-10 years')->format('Y-m-d')));
+        CarbonImmutable::withTestNow($date, static function () use ($department, $date) {
+            $covenant = new Covenant();
+            $covenant->setDossierNumber('foo-123');
+            $covenant->setDepartments([$department]);
+            $covenant->setTitle(DossierTitle::create('bar'));
+            $covenant->setDocumentPrefix('FOO');
+            $covenant->setDateFrom(PlainDate::create($date->modify('-10 years')->format('Y-m-d')));
 
-        $validator = self::fromContainer(ValidatorInterface::class);
+            $validator = self::fromContainer(ValidatorInterface::class);
 
-        /** @var ConstraintViolationListInterface $errors */
-        $errors = $validator->validate($covenant, null, [DossierValidationGroup::DETAILS->value]);
-        self::assertCount(0, $errors);
+            /** @var ConstraintViolationListInterface $errors */
+            $errors = $validator->validate($covenant, null, [DossierValidationGroup::DETAILS->value]);
+            self::assertCount(0, $errors);
+        });
     }
 
     public function testStartDateValidationWithoutACreatedAt(): void

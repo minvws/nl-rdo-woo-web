@@ -46,7 +46,6 @@ class InitiateElasticRolloverHandlerTest extends UnitTestCase
     public function testInvokeLogsExceptionAsError(): void
     {
         $message = new InitiateElasticRolloverCommand(
-            20,
             'foo',
         );
 
@@ -60,11 +59,10 @@ class InitiateElasticRolloverHandlerTest extends UnitTestCase
     public function testInvokeSuccessful(): void
     {
         $message = new InitiateElasticRolloverCommand(
-            $version = 20,
             $name = 'foo',
         );
 
-        $this->elasticIndexManager->expects('create')->with($name, $version);
+        $this->elasticIndexManager->expects('create')->with($name);
         $this->elasticIndexManager->expects('switch')->with(
             $this->elasticConfig->writeIndex,
             '*',

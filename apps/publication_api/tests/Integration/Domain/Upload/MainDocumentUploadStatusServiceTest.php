@@ -57,7 +57,7 @@ class MainDocumentUploadStatusServiceTest extends ApiPublicationV1TestCase
             ]),
         ]);
         $uploadEntity->finishUploading('filename', 1);
-        $uploadEntity->failValidation(new UploadValidationException());
+        $uploadEntity->failValidation(UploadValidationException::forUnsafeFile());
 
         $mainDocumentUploadStatusService = self::fromContainer(MainDocumentUploadStatusService::class);
         $uploadStatus = $mainDocumentUploadStatusService->getUploadStatus($mainDocument);

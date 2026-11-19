@@ -7,7 +7,6 @@ namespace PublicationApi\Tests\Integration\Api\Dossier\Uploads\Document;
 use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PublicationApi\Api\Dossier\WooDecision\Uploads\Document\DocumentFileName;
-use PublicationApi\FeatureFlag\DocumentUploadGuard;
 use PublicationApi\Tests\Integration\Api\ApiPublicationV1TestCase;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
@@ -48,10 +47,6 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
 
         $client = self::createPublicationApiClient();
         $fileContent = $this->getTestFileContent('1008.pdf');
-
-        $documentUploadGuard = Mockery::mock(DocumentUploadGuard::class);
-        $documentUploadGuard->expects('assertDocumentUploadIsAllowed')->once();
-        self::getContainer()->set(DocumentUploadGuard::class, $documentUploadGuard);
 
         $uploadService = Mockery::mock(UploadService::class);
         self::getContainer()->set(UploadService::class, $uploadService);
@@ -156,10 +151,6 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
 
         $fileContent = $this->getTestFileContent('1008.pdf');
 
-        $documentUploadGuard = Mockery::mock(DocumentUploadGuard::class);
-        $documentUploadGuard->expects('assertDocumentUploadIsAllowed')->once();
-        self::getContainer()->set(DocumentUploadGuard::class, $documentUploadGuard);
-
         $uploadService = Mockery::mock(UploadService::class);
         self::getContainer()->set(UploadService::class, $uploadService);
 
@@ -200,10 +191,6 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
         $client = self::createPublicationApiClient();
 
         $fileContent = $this->getTestFileContent('1008.pdf');
-
-        $documentUploadGuard = Mockery::mock(DocumentUploadGuard::class);
-        $documentUploadGuard->expects('assertDocumentUploadIsAllowed')->once();
-        self::getContainer()->set(DocumentUploadGuard::class, $documentUploadGuard);
 
         $uploadService = Mockery::mock(UploadService::class);
         self::getContainer()->set(UploadService::class, $uploadService);
@@ -248,10 +235,6 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
 
         $fileContent = $this->getTestFileContent('1008.pdf');
 
-        $documentUploadGuard = Mockery::mock(DocumentUploadGuard::class);
-        $documentUploadGuard->expects('assertDocumentUploadIsAllowed')->once();
-        self::getContainer()->set(DocumentUploadGuard::class, $documentUploadGuard);
-
         $uploadService = Mockery::mock(UploadService::class);
         if ($expectedResponseCode === Response::HTTP_NO_CONTENT) {
             $uploadService->expects('handleUpload');
@@ -276,7 +259,7 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
         self::assertResponseStatusCodeSame($expectedResponseCode);
     }
 
-    public function testUploadWooDecisionDocumentForPublishedDossierWhenUpdatesAreDisabled(): void
+    public function testUploadWooDecisionDocumentForPublishedDossier(): void
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
@@ -295,6 +278,9 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
         $client = self::createPublicationApiClient();
 
         $fileContent = $this->getTestFileContent('1008.pdf');
+        $uploadService = Mockery::mock(UploadService::class);
+        $uploadService->expects('handleUpload');
+        self::getContainer()->set(UploadService::class, $uploadService);
 
         $url = sprintf(
             '/api/publication/v1/organisation/%s/dossiers/woo-decision/external/%s/uploads/document/external/%s',
@@ -310,8 +296,7 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
             'body' => $fileContent,
         ]);
 
-        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
-        self::assertJsonContains(['violations' => [['message' => 'document upload is not allowed for a published dossier']]]);
+        self::assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
     }
 
     /**

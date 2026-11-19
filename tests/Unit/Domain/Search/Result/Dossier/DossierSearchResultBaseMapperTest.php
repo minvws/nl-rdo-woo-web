@@ -52,7 +52,6 @@ class DossierSearchResultBaseMapperTest extends UnitTestCase
                 $this->hit,
                 $this->repository,
                 ElasticDocumentType::ANNUAL_REPORT,
-                [],
                 ApplicationId::ADMIN,
             ),
         );

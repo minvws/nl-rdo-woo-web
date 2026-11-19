@@ -8,7 +8,6 @@ interface Props {
   deleteEndpoint: string;
   logoEndpoint: string;
   uploadEndpoint: string;
-  departmentId: string;
   hasLogo: boolean;
 }
 
@@ -17,10 +16,6 @@ const logoEndpoint = ref(props.logoEndpoint);
 const shouldDisplayLogoAddedMessage = ref(false);
 const shouldDisplayLogoRemovedMessage = ref(false);
 const hasLogo = ref(props.hasLogo);
-const payload: Record<string, string> = {
-  groupId: 'department',
-  departmentId: props.departmentId,
-};
 
 const removeLogo = async () => {
   await fetch(props.deleteEndpoint, {
@@ -93,7 +88,6 @@ const onUploaded = () => {
       ]"
       id="file"
       name="file"
-      :payload="payload"
     />
   </template>
 </template>

@@ -6,6 +6,7 @@ namespace Shared\Domain\Search\Index\Subject;
 
 use Exception;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\Subject\LandingPageSlug;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Domain\Publication\Subject\SubjectRepository;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -33,7 +34,7 @@ readonly class IndexSubjectHandler
                 return;
             }
 
-            if ($subject->getLandingPageSlug() === null) {
+            if (! $subject->getLandingPageSlug() instanceof LandingPageSlug) {
                 $this->logger->warning('Subject has no landing-page slug for IndexSubjectCommand', [
                     'uuid' => $command->getUuid(),
                 ]);

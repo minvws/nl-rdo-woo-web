@@ -32,7 +32,7 @@ readonly class AttachmentTypeBranch
         public ?AttachmentTypeBranch $branch = null,
         public array $attachmentTypes = [],
     ) {
-        if ($branch === null && count($attachmentTypes) === 0) {
+        if (! $branch instanceof AttachmentTypeBranch && count($attachmentTypes) === 0) {
             throw AttachmentTypeBranchException::mandatoryArguments();
         }
     }
@@ -76,7 +76,7 @@ readonly class AttachmentTypeBranch
             ));
         }
 
-        if ($branch === null && count($attachmentTypes) === 0) {
+        if (! $branch instanceof AttachmentTypeBranch && count($attachmentTypes) === 0) {
             return null;
         }
 

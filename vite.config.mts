@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 import { defineConfig } from 'vite';
 import symfonyPlugin from 'vite-plugin-symfony';
 import { execSync } from 'child_process';
-import tenants from './tenants/tenants.json';
+import tenants from './tenants/tenants.json' with { type: 'json' };
 
 const tenantEntries = Object.fromEntries(
   tenants.map((tenantId) => [
@@ -72,8 +72,8 @@ export default defineConfig({
       /**
        * The import aliases below are defined in multiple files. So remember to update them all if you change one.
        * - tsconfig.json
-       * - vitest.config.ts
-       * - vite.config.js
+       * - vitest.config.mts
+       * - vite.config.mts
        */
 
       '@js': path.resolve(__dirname, 'assets/js/'),

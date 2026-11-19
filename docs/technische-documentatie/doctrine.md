@@ -123,15 +123,20 @@ single `Organisation.prefix` value is captured by new dossiers. Most authorizati
 organisation only" (see
 [access-roles.md](access-roles.md)).
 
-The legacy `document_prefix` table remains represented by `Shared\Domain\Publication\Dossier\DocumentPrefix` as a
-schema-only Doctrine entity. It intentionally has no repository or inverse organisation relation; keep this mapping until
-the table is explicitly retired.
+The legacy prefix table and its schema-only entity have been retired. Each dossier keeps its own stored
+`dossier.document_prefix` snapshot, independent of `Organisation.prefix`. Existing dossier numbers, public URLs and
+search index fields therefore remain unchanged.
 
-| Entity           | Key fields                                                                                                                          |
-|------------------|-------------------------------------------------------------------------------------------------------------------------------------|
-| `Organisation`   | `name`, `prefix`; owns `users`, `dossiers`, `inquiries`, `subjects`; m:n `departments`                                              |
-| `Department`     | `name`, `shortTag`, `slug`, `public`, plus landing-page content (`landingPageTitle`, `feedbackContent`, `responsibilityContent`, …) |
-| `Subject`        | `name`, `organisation`, `dossiers`                                                                                                  |
+Migration `Version20261030080740` drops only the legacy table, including its indexes and foreign key. Its down migration
+restores the empty table structure, not the removed rows or archived-prefix history; restoring those requires a database
+backup from before the migration. Historical migrations and SQL dumps still create and read the legacy table so that
+new installations can replay the complete migration chain.
+
+| Entity         | Key fields                                                                                                                          |
+|----------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| `Organisation` | `name`, `prefix`; owns `users`, `dossiers`, `inquiries`, `subjects`; m:n `departments`                                              |
+| `Department`   | `name`, `shortTag`, `slug`, `public`, plus landing-page content (`landingPageTitle`, `feedbackContent`, `responsibilityContent`, …) |
+| `Subject`      | `name`, `organisation`, `dossiers`                                                                                                  |
 
 ## User
 

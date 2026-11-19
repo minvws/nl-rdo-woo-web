@@ -256,6 +256,7 @@ Generate Attachment
 
 Parse Text To Date
   [Arguments]  ${dict}  ${field}
+  IF  $dict[$field] is None  RETURN
   ${match} =  Get Regexp Matches  ${dict}[${field}]  <ROBOT DATE (?P<offset>[+-]+[0-9]+)>  offset
   IF  ${match}
     ${date} =  Get Current Date  result_format=%Y-%m-%d  increment=${match[0]} days
@@ -290,12 +291,13 @@ Set Random Grounds
 
 Upload Main Document
   [Arguments]  ${dossier_type}  ${file_location}  ${dossier_id}  ${expected_response_status}=204
-  Upload File
+  ${response} =  Upload File
   ...  file_location=${file_location}
   ...  dossier_type=${dossier_type}
   ...  dossier_id=${dossier_id}
   ...  document_type=main-document
   ...  expected_response_status=${expected_response_status}
+  RETURN  ${response}
 
 Upload Attachment Document
   [Arguments]  ${dossier_type}  ${file_location}  ${dossier_id}  ${attachment_id}  ${expected_response_status}=204

@@ -2,11 +2,11 @@
 
 :::{admonition} Note
 :class: note
-Deze pagina is alleen beschikbaar voor Super Beheerders.
+Deze pagina is alleen beschikbaar voor Superbeheerders.
 :::
 
 Je opent het overzicht van organisaties door in de zwarte menubalk bovenaan op 'Organisaties' te klikken. Dit opent een
-overzicht van alle organisaties in het uploadportaal, met per organisatie de gekoppelde bestuursorganen en de prefix.
+overzicht van alle organisaties in de Balie, met per organisatie de gekoppelde bestuursorganen en de prefix.
 
 ## Organisatie toevoegen
 

@@ -51,7 +51,7 @@ describe('The "<MissingDocuments />" component', () => {
   test('should display the first 12 missing documents by default', async () => {
     const listItems = getDocumentListItems(createComponent());
 
-    expect(listItems.length).toBe(12);
+    expect(listItems).toHaveLength(12);
     expect(listItems[0].text()).toContain('1.pdf');
     expect(listItems[1].text()).toContain('2.pdf');
   });
@@ -62,10 +62,10 @@ describe('The "<MissingDocuments />" component', () => {
       const toggleButton = getToggleButton(component);
 
       await toggleButton.trigger('click');
-      expect(getDocumentListItems(component).length).toBe(15);
+      expect(getDocumentListItems(component)).toHaveLength(15);
 
       await toggleButton.trigger('click');
-      expect(getDocumentListItems(component).length).toBe(12);
+      expect(getDocumentListItems(component)).toHaveLength(12);
     });
 
     test('should update its conntent when clicked', async () => {

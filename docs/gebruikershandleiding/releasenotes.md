@@ -2,7 +2,89 @@
 
 # Release notes
 
+## v3.9.0
+
+_November 2026_
+
+### Excel-bestanden van beschikkingen en klachtoordelen direct als tabel bekijken
+
+**Samenvatting:** Bij beschikkingen en klachtoordelen wordt een Excel-bestand dat als hoofddocument is geüpload nu als doorzoekbare en sorteerbare tabel op de documentpagina getoond.
+
+**Onderdeel:** Balie, Publieke website
+
+**Wat je nu kan doen:**
+
+Upload je in de Balie een Excel-bestand als hoofddocument bij een beschikking of klachtoordeel, dan worden de gegevens op de publieke documentpagina als tabel weergegeven.
+Bezoekers kunnen de gegevens bekijken zonder het bestand te downloaden, per kolom sorteren en met één zoekveld zoeken. Het bestand zelf blijft gewoon downloadbaar.
+
+![Tabelweergave Klachtoordeel](img/klachtentabel.png)
+
+Bij het uploaden geldt het volgende:
+
+- De eerste rij van het werkblad wordt gebruikt als kolomnamen. Ook verborgen kolommen worden getoond. Macro's en opmaak worden niet overgenomen.
+- Het bestand mag maar één werkblad bevatten en moet een rij met kolomnamen hebben. Is dat niet zo, dan krijg je een melding.
+- Vervang je het bestand, dan wordt de tabel opnieuw opgebouwd.
+
+**Start:** Open een beschikking of klachtoordeel in de Balie en upload een Excel-bestand als hoofddocument.
+
+Bij grote bestanden wordt alleen een maximaal 100 rijen en kolommen getoond. Bezoekers krijgen dan een melding en kunnen het bestand downloaden om alle gegevens te bekijken.
+
+### Content-pagina's beheren zonder superbeheerder te zijn
+
+**Samenvatting:** Met de nieuwe rol **Contentbeheerder** kan een gebruiker de content-pagina's van het platform beheren, zonder toegang tot andere beheerfunctionaliteit.
+
+**Onderdeel:** Balie
+
+**Wat je nu kan doen:**
+
+Voorheen kon alleen een superbeheerder de content-pagina's aanpassen, zoals Contact, Over dit platform en de teksten op de homepage.
+Een gebruiker met de rol **Contentbeheerder** kan deze pagina's nu bekijken en bewerken via het nieuwe onderdeel **Content** in het hoofdmenu, maar heeft geen toegang tot bijvoorbeeld Elasticsearch-beheer en datachecks.
+Content-pagina's gelden voor alle organisaties, daarom kan alleen een superbeheerder deze rol toekennen. Daarnaast zijn de namen van de rollen in het gebruikersbeheer gelijkgetrokken.
+
+Zie [Rollen](/organisatiebeheer/toegangsbeheer.md#rollen) en [Content paginabeheer](/contentbeheer/contentpaginas.md).
+
+**Start:** Als Contentbeheerder, selecteer in het menu de link **Content pagina's** om naar de lijst van aanpasbare content te gaan.
+Klik op **Bewerken** bij het item waarvan je de content wil aanpassen. Gebruik de velden om de tekst op te maken en sla deze na het bewerken op.
+
+![Contentbeheer](img/contact_content.png)
+
+### Onderwerpen en verhaallijnen vinden via de zoekfunctie
+
+**Samenvatting:** Op de publieke website verschijnen onderwerpen en verhaallijnen nu in de zoekresultaten, herkenbaar aan het label **Onderwerp**.
+
+**Onderdeel:** Publieke website
+
+**Wat je nu kan doen:**
+
+Zoek je op de publieke website op de titel of beschrijving van de landingspagina van een onderwerp, dan verschijnt dat onderwerp in de zoekresultaten met een link naar de landingspagina.
+Ook tekst uit een gepubliceerde verhaallijn van het onderwerp levert een zoekresultaat op. Alleen onderwerpen met een gepubliceerde landingspagina worden getoond.
+
+### Overige verbeteringen en bugfixes
+
+#### Balie
+
+- **Verbetering:** Op de documentpagina van een document in een Woo-besluit worden onder **Status** nu ook de publieke links uit het productierapport getoond. Bij een document dat al openbaar is, zie je zo waar het te vinden is.
+- **Verbetering:** Foutmeldingen bij het verwerken van een productierapport zijn specifieker. De melding noemt nu de rij waar mogelijk de ongeldige waarde staat, zodat je het productierapport zelf kunt corrigeren.
+- **Verbetering:** Bij het aanmaken van een nieuwe zoekindex kies je geen versie meer maar wordt altijd de nieuwste versie gebruikt.
+- **Fixed:** Bij een gepubliceerd Woo-besluit zonder documenten werd de optie getoond om alle documenten in te trekken. Deze optie wordt nu alleen getoond als er documenten zijn.
+
+#### Publieke website
+
+- **Verbetering:** Elk document heeft nu één vaste downloadlink, ook als het aan meerdere besluiten is gekoppeld. Bestaande downloadlinks blijven werken en verwijzen door naar de nieuwe link.
+- **Verbetering:** De inventaris bevat nu ook de kolommen **EmailThreadID**, **FamilyID**, **Source Type** en **Document Date**. Zo is in de inventaris te zien waar de gerelateerde documenten op de website vandaan komen.
+- **Fixed:** Na **Alle filters verwijderen** kwam je op een willekeurige pagina met zoekresultaten terecht. Je komt nu op de eerste pagina. Ook na het verwijderen van één filter ga je terug naar de eerste pagina.
+- **Fixed:** In de paginavoorvertoning van een PDF zorgden pagina's die nog niet verwerkt waren voor een verstoorde weergave. Deze pagina's tonen nu een melding dat ze nog worden verwerkt.
+- **Fixed:** Lange namen van filteropties braken de opmaak van de filters. Deze namen lopen nu door op een volgende regel.
+
+#### Publication API
+
+- **Verbetering:** De periode van een Woo-besluit is niet meer verplicht. Net als in de Balie mag deze leeg blijven.
+- **Fixed:** De uploadstatus van een document bleef op `processing` staan als het geüploade bestand uiteindelijk niet aan het document werd gekoppeld. De status wordt nu `processing_failed`, zodat duidelijk is dat de upload opnieuw moet.
+- **Fixed:** Bij een deel van de velden, zoals datums, bestandsnamen en uitzonderingsgronden, ontbrak de beschrijving in de API-specificatie. Deze beschrijvingen worden nu getoond.
+
 ## v3.8.0
+
+_Oktober 2026_
 
 ### Vernieuwd hoofdmenu in de Balie
 
@@ -17,11 +99,11 @@ Het hoofdmenu gebruikt nu de volledige breedte van het scherm. Daarnaast zijn tw
 - **Organisaties** heeft een eigen plek in het hoofdmenu. Voorheen was dit onderdeel bereikbaar via de organisatieselectie.
 - **Toegangsbeheer** heet voortaan **Gebruikers**.
 
-![Organisatie beheer](/img/org_beheer.png)
+![Organisatie beheer](img/org_beheer.png)
 
 **Start:** Open de Balie en selecteer **Organisaties** of **Gebruikers** in het hoofdmenu.
 
-## Overige verbeteringen en bugfixes
+### Overige verbeteringen en bugfixes
 
 ### Balie
 
@@ -37,40 +119,44 @@ Het hoofdmenu gebruikt nu de volledige breedte van het scherm. Daarnaast zijn tw
 
 ## v3.7.1
 
+_Oktober 2026_
+
 - **Fixed:** Een Document waarvan het documentnummer een streepje (-) of punt (.) bevat, kon bij een Woo besluit nooit een bestand gekoppeld krijgen.
 Dit is opgelost: documentnummers met deze tekens worden nu correct herkend, zodat het bestand wel aan het document gekoppeld wordt.
 
 ## v3.7.0
 
+_Oktober 2026_
+
 ### Verhaallijnen als concept beheren en vooraf bekijken
 
-**Samenvatting:**  
+**Samenvatting:**
 Verhaallijnen kunnen nu als **Concept** of **Gepubliceerd** worden beheerd en concepten zijn direct vanuit het onderwerpenoverzicht te openen en te bekijken.
 
-![Verhaallijn publiceren](/img/concept-verhaallijn.png)
+![Verhaallijn publiceren](img/concept-verhaallijn.png)
 
-**Onderdeel:**  
+**Onderdeel:**
 Balie, Publieke website
 
-**Wat je nu kan doen:**  
+**Wat je nu kan doen:**
 Bij een verhaallijn kies je nu de status **Concept** of **Gepubliceerd** in plaats van alleen aan te geven of de verhaallijn getoond moet worden.
 Een landingspagina of verhaallijn met conceptinhoud is vanuit het onderwerpenoverzicht nu ook direct te bewerken en via een preview te bekijken:
 
-![Onderwerpen bewerken](/img/onderwerpen-index-preview.png)
+![Onderwerpen bewerken](img/onderwerpen-index-preview.png)
 
 Op de **publieke landingspagina** wordt de inhoud van een gepubliceerde verhaallijn standaard uitgeklapt weergegeven. Ook is de uitlijning van de verschillende onderdelen verbeterd en zijn de kaders rond de onderdelen verwijderd.
 
-**Start:**  
+**Start:**
 Open **Onderwerpen** en bewerk de gewenste landingspagina of gebruik de previewlink om de conceptversie te bekijken.
 
 ### Waarschuwing bij het gebruik van Matter in bestanden
 
-**Samenvatting:**  
+**Samenvatting:**
 Bij het uploaden van bestanden met Matter-waarden geeft de Balie nu aan dat deze waarden worden vervangen door publicatiecontext.
 
-![Notificatie bij gebruik Matter](/img/gebruik-matter.png)
+![Notificatie bij gebruik Matter](img/gebruik-matter.png)
 
-**Onderdeel:**  
+**Onderdeel:**
 Balie
 
 **Wat er veranderd is:**
@@ -83,10 +169,10 @@ Hetzelfde geldt voor het koppelen van zaaknummers voortaan publicationContext in
 
 ### Duidelijkere informatie na het publiceren van een Woo-besluit
 
-**Samenvatting:**  
+**Samenvatting:**
 Na het publiceren van een Woo-besluit is duidelijker wanneer documenten openbaar beschikbaar worden en welke zaken bij feitelijke verstrekking horen.
 
-**Onderdeel:**  
+**Onderdeel:**
 Balie
 
 **Wat je nu kan doen:**
@@ -97,13 +183,13 @@ Wanneer sprake is van feitelijke verstrekking, worden de gekoppelde zaken met da
 
 ### Betere toetsenbordnavigatie in de Balie
 
-**Samenvatting:**  
+**Samenvatting:**
 Elementen met toetsenbordfocus zijn in de Balie duidelijker zichtbaar en de link **Ga naar inhoud** werkt nu op dezelfde manier als op de publieke website.
 
-**Onderdeel:**  
+**Onderdeel:**
 Balie
 
-**Wat je nu kan doen:**  
+**Wat je nu kan doen:**
 Wanneer je met de Tab-toets door de Balie navigeert, is beter zichtbaar welk element actief is. De link **Ga naar inhoud** verschijnt los van de hoofdnavigatie wanneer je er met het toetsenbord naartoe navigeert.
 
 ![Tab navigatie](img/ga-naar-inhoud.png)
@@ -117,6 +203,8 @@ Wanneer je met de Tab-toets door de Balie navigeert, is beter zichtbaar welk ele
 - **Verbetering:** Een superuser kan de prefix van een organisatie wijzigen zolang er nog geen dossiers aan die organisatie zijn gekoppeld.
 
 ## v3.6.0
+
+_September 2026_
 
 ### API specificatie updates
 
@@ -133,6 +221,8 @@ Kijk **[hier](https://open.minvws.nl/api/#publication-v1)** om de API specificat
 - **API responses bevatten geen landingspagina's meer:** De volledige landingPage van een onderwerp wordt niet meer opgenomen in de response van een metadata-PUT. Hierdoor bevat de response alleen de relevante onderwerpgegevens.
 
 ## v3.5.0
+
+_September 2026_
 
 ### Publieke website
 
@@ -162,6 +252,8 @@ Kijk **[hier](https://open.minvws.nl/api/#publication-v1)** om de API specificat
   maar het document zelf nog niet volledig was geüpload. Dit wordt nu ondervangen door een melding te tonen dat het document nog wordt geüpload.
 
 ## v3.4.0
+
+_Augustus 2026_
 
 ### Highlights
 
@@ -195,6 +287,8 @@ Kijk **[hier](https://open.minvws.nl/api/#publication-v1)** om de API specificat
 
 ## v3.3.0
 
+_Augustus 2026_
+
 ### Highlights
 
 - **Gepubliceerde dossiers zijn beter te beheren via de Publication API.** Aan bestaande gepubliceerde dossiers kunnen nu nieuwe documenten en bijlagen worden toegevoegd en bestaande documenten kunnen worden aangepast.
@@ -225,6 +319,8 @@ Kijk **[hier](https://open.minvws.nl/api/#publication-v1)** om de API specificat
 - **Gebruikersdocumentatie bijgewerkt**: Verschillende onderdelen van de technische en functionele documentatie zijn bijgewerkt om beter aan te sluiten op de huidige werking van het platform.
 
 ## v3.2.0
+
+_Augustus 2026_
 
 ### Publieke Website
 
@@ -278,6 +374,8 @@ Kijk **[hier](https://open.minvws.nl/api/#publication-v1)** om de API specificat
 
 ## v3.1.0
 
+_Juli 2026_
+
 ### Balie
 
 - **Adviesaanvraag weer beschikbaar voor alle gebruikers**: Het aanmaken van een publicatie van het type 'Adviesaanvraag' was beperkt tot slechts super-admins; dit is hersteld en is nu voor alle gebruikers toegestaan.
@@ -316,6 +414,8 @@ Kijk **[hier](https://open.minvws.nl/api/#publication-v1)** om de API specificat
 - **Sitemap-crash door ongeldige documentId's opgelost**: Documenten met komma's of regeleinden in het `document_id` veroorzaakten een crash bij het genereren van de sitemap; dit is verholpen.
 
 ## v3.0.0
+
+_Juni 2026_
 
 ### Publication API
 
@@ -419,13 +519,19 @@ _mei 2026_
 
 ## v2.5.0-hotfix.3
 
+_Mei 2026_
+
 - **Beveiligings updates** Deze hotfix bevat enkele beveiligings updates.
 
 ## v2.5.0-hotfix.2
 
+_April 2026_
+
 - **Inventaris bijwerken na vervanging productierapport**: De inventaris in een zaak wordt nu correct bijgewerkt nadat een productierapport is vervangen.
 
 ## v2.5.0-hotfix.1
+
+_April 2026_
 
 - **Verversen van inventaris lijst van een zaak** Bij het vervangen van een productierapport in de balie, wordt nu ook de inventarislijst van de zaak ververst.
 - **Multi tenancy elasticsearch** De elasticsearch instance is nu tenant-aware doordat je nu ook naar een andere instance kan verwijzen in de configuratie. Hierdoor kunnen we in de toekomst per tenant een eigen elasticsearch instance draaien.

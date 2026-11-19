@@ -23,7 +23,7 @@
 
         {{ vite_entry_script_tags('public', { attr: { defer: false } }) }}
 
-        {% include "shared/piwik-script.html.twig" %}
+        {% if PIWIK_ANALYTICS_ID %}{% include "shared/piwik-script.html.twig" %}{% endif %}
     </head>
 
     <!-- App versie: {{ app_version().version }} (Git referentie: {{ app_version().git_ref }}) -->
@@ -173,6 +173,6 @@
             </div>
         </footer>
 
-        {% include "shared/piwik-noscript.html.twig" %}
+        {% if PIWIK_ANALYTICS_ID %}{% include "shared/piwik-noscript.html.twig" %}{% endif %}
     </body>
 </html>

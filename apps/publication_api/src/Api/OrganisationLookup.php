@@ -20,7 +20,7 @@ readonly class OrganisationLookup
     {
         $organisation = $this->organisationRepository->find($organisationId);
         if (! $organisation instanceof Organisation) {
-            throw EntityNotFoundException::for('Organisation', $organisationId);
+            throw EntityNotFoundException::for('Organisation', $organisationId->toString());
         }
 
         return $organisation;

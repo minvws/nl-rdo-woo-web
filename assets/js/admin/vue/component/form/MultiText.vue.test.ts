@@ -125,7 +125,7 @@ describe('The "<MultiText />" component', () => {
     const removableInputTextComponents =
       getRemovableInputTextComponents(component);
 
-    expect(removableInputTextComponents.length).toBe(2);
+    expect(removableInputTextComponents).toHaveLength(2);
     expect(removableInputTextComponents[0].props()).toMatchObject({
       forbiddenValues: ['mocked_value-2', 'mocked-immutale-value-1'],
       label: 'mocked_label 2',

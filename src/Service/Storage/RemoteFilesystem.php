@@ -135,6 +135,23 @@ readonly class RemoteFilesystem
         return true;
     }
 
+    public function copy(string $source, string $destination): bool
+    {
+        try {
+            $this->documentStorage->copy($source, $destination);
+        } catch (FilesystemException $e) {
+            $this->logger->error('Could not copy file in storage adapter', [
+                'source' => $source,
+                'destination' => $destination,
+                'exception' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+
+        return true;
+    }
+
     public function write(string $location, string $contents): bool
     {
         try {

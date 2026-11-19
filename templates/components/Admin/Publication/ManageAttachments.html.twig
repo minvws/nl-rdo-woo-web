@@ -14,7 +14,6 @@
         componentName: 'PublicationFiles',
 
         canDelete: canDelete,
-        dossierId: dossierId | default(null),
         endpoint: endpoint,
         e2eName: e2eName | default('attachments'),
         fileLimits: fileLimits | default([]),
@@ -23,8 +22,7 @@
         languageOptions: languages,
         maxLength: maxLength | default(50),
         readableFileType: readableFileType | default(null),
-        uploadEndpoint: uploadEndpoint | default(null),
-        uploadGroupId: "attachments",
+        uploadEndpoint: this.uploadEndpoint,
     }) }}>
         <div class="min-h-14"></div>
     </div>

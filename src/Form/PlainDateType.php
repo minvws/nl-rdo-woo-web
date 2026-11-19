@@ -20,7 +20,7 @@ class PlainDateType extends AbstractType
     {
         $builder->addModelTransformer(new CallbackTransformer(
             static function (?PlainDate $date): string {
-                return $date ? $date->toString() : '';
+                return $date instanceof PlainDate ? $date->toString() : '';
             },
             static function (?string $value): ?PlainDate {
                 return is_string($value) && $value !== '' ? PlainDate::create($value) : null;

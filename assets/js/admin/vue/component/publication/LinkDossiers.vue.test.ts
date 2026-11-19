@@ -135,7 +135,7 @@ describe('The "LinkDossiers" component', () => {
     });
 
     const selectedDossiersList = getSelectedDossiersList(component);
-    expect(selectedDossiersList.findAll('li').length).toBe(2);
+    expect(selectedDossiersList.findAll('li')).toHaveLength(2);
     expect(selectedDossiersList.text()).toContain('Dossier 1');
     expect(selectedDossiersList.text()).toContain('Dossier 2');
   });
@@ -143,7 +143,7 @@ describe('The "LinkDossiers" component', () => {
   test('should add the selected dossiers to a hidden select input element', async () => {
     const component = createComponent();
 
-    expect(getSelectElementOptions(component).length).toBe(0);
+    expect(getSelectElementOptions(component)).toHaveLength(0);
 
     await addDossier(component, {
       id: 'id-1',
@@ -162,7 +162,7 @@ describe('The "LinkDossiers" component', () => {
 
     const options = getSelectElementOptions(component);
 
-    expect(options.length).toBe(2);
+    expect(options).toHaveLength(2);
     expect(options.at(1)?.element.getAttribute('value')).toBe('id-2');
   });
 

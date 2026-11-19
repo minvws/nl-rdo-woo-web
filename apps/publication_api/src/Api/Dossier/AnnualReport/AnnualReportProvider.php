@@ -4,81 +4,19 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\AnnualReport;
 
-use ApiPlatform\Metadata\CollectionOperationInterface;
-use ApiPlatform\Metadata\Operation;
-use ApiPlatform\State\ProviderInterface;
-use PublicationApi\Api\ExternalIdFactory;
-use PublicationApi\Api\Organisation\OrganisationResolver;
-use PublicationApi\Api\Pagination\CursorPage;
-use PublicationApi\Api\Pagination\CursorPageFactory;
-use PublicationApi\Domain\Exception\EntityNotFoundException;
-use PublicationApi\Domain\OpenApi\Exception\ValidationException;
-use Shared\Domain\Organisation\Organisation;
+use PublicationApi\Api\Dossier\DossierProvider;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportRepository;
-use Shared\Service\ApiPlatformService;
-use Shared\ValueObject\ExternalId;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 
-final readonly class AnnualReportProvider implements ProviderInterface
+/**
+ * @extends DossierProvider<AnnualReport,AnnualReportResponseDto>
+ */
+#[Autoconfigure(bind: [
+    '$abstractDossierRepository' => '@' . AnnualReportRepository::class,
+    '$dossierResponseMapper' => '@' . AnnualReportResponseMapper::class,
+    '$entityName' => 'AnnualReport',
+])]
+final readonly class AnnualReportProvider extends DossierProvider
 {
-    public function __construct(
-        private OrganisationResolver $organisationResolver,
-        private AnnualReportRepository $annualReportRepository,
-        private AnnualReportResponseMapper $annualReportResponseMapper,
-        private CursorPageFactory $cursorPageFactory,
-        private int $itemsPerPage,
-    ) {
-    }
-
-    /**
-     * @param array<array-key, string> $uriVariables
-     *
-     * @throws ValidationException
-     */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): CursorPage|AnnualReportResponseDto
-    {
-        $organisation = $this->organisationResolver->resolve($uriVariables);
-
-        if ($operation instanceof CollectionOperationInterface) {
-            return $this->provideCollection($organisation, $operation, $uriVariables, $context);
-        }
-
-        return $this->provideSingle($organisation, ExternalIdFactory::create($uriVariables['dossierExternalId']));
-    }
-
-    /**
-     * @param array<array-key,mixed> $context
-     * @param array<array-key, string> $uriVariables
-     */
-    private function provideCollection(
-        Organisation $organisation,
-        Operation $operation,
-        array $uriVariables,
-        array $context,
-    ): CursorPage {
-        $annualReports = $this->annualReportRepository->getByOrganisationAndContainsExternalId(
-            $organisation,
-            $this->itemsPerPage,
-            ApiPlatformService::getCursorFromContext($context),
-        );
-
-        $mappedDtos = $this->annualReportResponseMapper->fromEntities($annualReports);
-
-        return $this->cursorPageFactory->create(
-            $annualReports,
-            $mappedDtos,
-            $this->itemsPerPage,
-            $operation,
-            $uriVariables,
-        );
-    }
-
-    private function provideSingle(Organisation $organisation, ExternalId $dossierExternalId): AnnualReportResponseDto
-    {
-        $annualReport = $this->annualReportRepository->findByOrganisationAndExternalId($organisation, $dossierExternalId);
-        if ($annualReport === null) {
-            throw EntityNotFoundException::for('AnnualReport', $dossierExternalId);
-        }
-
-        return $this->annualReportResponseMapper->fromEntity($annualReport);
-    }
 }

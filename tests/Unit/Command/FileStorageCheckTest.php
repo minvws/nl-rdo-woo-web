@@ -15,6 +15,8 @@ use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
+use function substr_count;
+
 class FileStorageCheckTest extends UnitTestCase
 {
     public function testExecute(): void
@@ -37,5 +39,25 @@ class FileStorageCheckTest extends UnitTestCase
         $commandTester->execute([]);
 
         self::assertEquals(Command::SUCCESS, $commandTester->getStatusCode());
+    }
+
+    public function testExecuteWithEmptyStorage(): void
+    {
+        $checkResult = new FileStorageCheckResult(
+            new OrphanedPaths(),
+            [new PathSet($this->getFaker()->word(), FileStorageType::DOCUMENT, [])],
+        );
+
+        $fileStorageChecker = Mockery::mock(FileStorageChecker::class);
+        $fileStorageChecker->expects('check')
+            ->andReturn($checkResult);
+
+        $command = new FileStorageCheck($fileStorageChecker);
+
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([]);
+
+        self::assertEquals(Command::SUCCESS, $commandTester->getStatusCode());
+        self::assertSame(2, substr_count($commandTester->getDisplay(), ' 0% '));
     }
 }

@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/k3d-io/k3d/v5.9.0/pkg/config/v1alpha5/schema.json
+---
+apiVersion: k3d.io/v1alpha5
+kind: Simple
+# metadata:
+#   name: woo-cluster
+servers: 1
+agents: 0
+image: docker.io/rancher/k3s:v1.36.4-k3s1
+options:
+  kubeconfig:
+    updateDefaultKubeconfig: true
+    switchCurrentContext: true
+registries:
+  config: |
+    configs:
+      ghcr.io:
+        auth:
+          username: ${GHCR_USERNAME}
+          password: ${GHCR_TOKEN}
+

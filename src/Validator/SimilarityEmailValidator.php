@@ -6,6 +6,8 @@ namespace Shared\Validator;
 
 use Shared\Service\Security\User;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
@@ -29,12 +31,12 @@ class SimilarityEmailValidator extends ConstraintValidator
             return;
         }
 
-        if ($this->tokenStorage->getToken() === null) {
+        if (! $this->tokenStorage->getToken() instanceof TokenInterface) {
             return;
         }
 
         $user = $this->tokenStorage->getToken()->getUser();
-        if (! $user) {
+        if (! $user instanceof UserInterface) {
             return;
         }
 

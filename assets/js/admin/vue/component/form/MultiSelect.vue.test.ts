@@ -127,7 +127,7 @@ describe('The "MultiSelect" component', () => {
 
     const removableSelectComponents = getRemovableSelectComponents(component);
 
-    expect(removableSelectComponents.length).toBe(2);
+    expect(removableSelectComponents).toHaveLength(2);
     expect(removableSelectComponents[0].props('label')).toEqual(
       'mocked_label 1',
     );

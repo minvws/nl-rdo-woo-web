@@ -42,6 +42,10 @@ final class UserRepositoryTest extends SharedWebTestCase
                     'roles' => [Roles::ROLE_DOSSIER_ADMIN],
                     'enabled' => false,
                 ],
+                [
+                    'roles' => [Roles::ROLE_CONTENT_ADMIN],
+                    'enabled' => true,
+                ],
             ])
             ->create(['organisation' => $organisationOne]);
 
@@ -67,7 +71,7 @@ final class UserRepositoryTest extends SharedWebTestCase
             ->getResult();
         Assert::allIsInstanceOf($result, User::class);
 
-        $this->assertCount(1, $result);
+        $this->assertCount(2, $result);
     }
 
     public function testFindDeactivatedUsersForOrganisationQuery(): void
@@ -92,6 +96,10 @@ final class UserRepositoryTest extends SharedWebTestCase
                 [
                     'roles' => [Roles::ROLE_VIEW_ACCESS],
                     'enabled' => true,
+                ],
+                [
+                    'roles' => [Roles::ROLE_CONTENT_ADMIN],
+                    'enabled' => false,
                 ],
             ])
             ->create(['organisation' => $organisationOne]);
@@ -118,7 +126,7 @@ final class UserRepositoryTest extends SharedWebTestCase
             ->getResult();
         Assert::allIsInstanceOf($result, User::class);
 
-        $this->assertCount(2, $result);
+        $this->assertCount(3, $result);
     }
 
     public function testFindActiveAdminsQuery(): void

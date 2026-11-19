@@ -25,7 +25,6 @@ import MissingDocuments from './MissingDocuments.vue';
 import UploadedDocuments from './UploadedDocuments.vue';
 
 interface Props {
-  dossierId: string;
   fileLimits: FileUploadLimit[];
   isComplete: boolean;
   mode?: 'add' | 'replace';
@@ -273,10 +272,6 @@ onBeforeUnmount(() => stopCheckingStatus());
       :endpoint="props.uploadEndpoint"
       :file-limits="props.fileLimits"
       id="upload-area-dossier-files"
-      :payload="{
-        dossierId: props.dossierId,
-        groupId: 'woo-decision-documents',
-      }"
       ref="uploadAreaComponent"
     >
       <output class="block">

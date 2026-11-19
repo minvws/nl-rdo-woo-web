@@ -21,6 +21,9 @@ parameters:
     available_locales: ['en', 'nl']
     thumbnail_limit: 50
 
+    spreadsheet_table.max_rows: 100
+    spreadsheet_table.max_columns: 50
+
     elasticsearch.suggestions_search_input: 'search-input'
 
 imports:
@@ -80,6 +83,8 @@ services:
     Shared\Service\Encryption\EncryptionServiceInterface:
         alias: 'Shared\Service\Encryption\EncryptionService'
         public: true
+
+    GuzzleHttp\Psr7\HttpFactory: ~
 
     Shared\Service\Storage\EntityStorageService:
         arguments:
@@ -202,12 +207,4 @@ when@dev:
             resource: '../tests/Story'
 
 when@test:
-    services:
-        <<: *services_dev
-
-        markdown_converter.department:
-            class: Shared\Domain\Content\Markdown\MarkdownConverter
-            public: true
-
-        # Alias for backward compatibility
-        Shared\Domain\Department\Markdown\MarkdownConverter: '@markdown_converter.department'
+    services: *services_dev

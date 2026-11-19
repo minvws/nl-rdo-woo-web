@@ -1,8 +1,74 @@
-<!-- markdownlint-disable MD024 MD0036-->
+<!-- markdownlint-disable MD024 MD036 -->
 
 # Changelog
 
+## Release 3.9.0
+
+_November 2026_
+
+### Balie
+
+- **Excel-bestanden bij beschikkingen en klachtoordelen.** Bij het uploaden van een Excel-bestand als hoofddocument van een beschikking of klachtoordeel wordt uitgelegd hoe het bestand wordt verwerkt.
+Bevat het bestand meerdere werkbladen of geen header-rij, dan krijgt de gebruiker een melding om het bestand aan te passen.
+
+- **Aparte rol voor contentbeheer.** Content pagina's kunnen voortaan beheerd worden door gebruikers met de nieuwe rol Contentbeheerder,
+ zonder dat zij superbeheerder hoeven te zijn. Contentbeheer heeft een eigen menu-item gekregen en de namen van de rollen zijn consistenter gemaakt.
+
+- **Publieke links zichtbaar op de documentpagina.** Op de documentpagina van een document in een Woo-besluit worden nu de publieke links getoond die via het productierapport zijn aangeleverd.
+Dit is vooral van belang bij documenten die al openbaar zijn.
+
+- **Duidelijkere foutmeldingen bij het productierapport.** Als een rij in een productierapport niet verwerkt kan worden, toont de foutmelding nu wat er mis is, zoals de ongeldige waarde.
+Onverwachte fouten worden per rij gemeld in plaats van de hele verwerking te laten mislukken.
+
+- **Optie om alle documenten in te trekken alleen bij documenten.** De optie om alle documenten in te trekken wordt niet meer getoond bij een Woo-besluit zonder documenten.
+
+- **Elasticsearch-index altijd met de nieuwste mapping.** Bij het aanmaken van een nieuwe index of een rollover hoeft geen mappingversie meer gekozen te worden. Er wordt altijd de actuele mapping gebruikt.
+
+### Publication API
+
+- **Publication API altijd beschikbaar.** De Publication API, inclusief het bijwerken van gepubliceerde publicaties en het uploaden van documenten daarvoor, is voortaan voor alle organisaties beschikbaar. De featureflags hiervoor zijn verwijderd.
+
+- **Excel-bestanden bij beschikkingen en klachtoordelen.** Excel-bestanden die via de API worden aangeleverd bij beschikkingen en klachtoordelen worden net als in de Balie als tabel verwerkt.
+De API-documentatie beschrijft aan welke eisen het bestand moet voldoen.
+
+- **Periode van een Woo-besluit optioneel.** De periode van een Woo-besluit is in de API niet langer verplicht, net als in de Balie.
+
+- **Veldbeschrijvingen compleet in de API-documentatie.** Beschrijvingen van velden met een specifiek formaat of een vaste lijst waarden, zoals datums, bestandsnamen en `grounds`, worden nu ook getoond in de OpenAPI-specificatie.
+
+### Publieke website
+
+- **Excel-bestanden direct als tabel bekijken.** De inhoud van een Excel-bestand bij een beschikking of klachtoordeel wordt op de documentpagina als tabel getoond, met sorteren per kolom en een zoekveld.
+Bij grote bestanden worden alleen de eerste 100 rijen en kolommen getoond. Het bestand blijft downloadbaar.
+
+- **Onderwerpen en verhaallijnen vindbaar via de zoekfunctie.** Gepubliceerde onderwerpen verschijnen in de zoekresultaten met het label Onderwerp. Er wordt gezocht in de titel en beschrijving van de landingspagina en in de onderdelen van een zichtbare verhaallijn.
+
+- **Eén downloadlink per document.** Een document heeft voortaan één vaste download-URL, onafhankelijk van het besluit waaraan het gekoppeld is. Bestaande downloadlinks worden doorgestuurd naar deze nieuwe URL.
+
+### Backend
+
+- **Extra kolommen in de inventaris.** De inventaris bevat nu ook de kolommen EmailThreadID, FamilyID, Source Type en Document Date. Hierdoor zijn gerelateerde documenten ook in de inventaris terug te vinden.
+
+- **Publieke links beschikbaar in de zoekindex.** De publieke links van documenten in een Woo-besluit staan nu in Elasticsearch, zodat ook externe toepassingen naar de vindplaats van al openbare documenten kunnen verwijzen.
+
+### Fixes
+
+- **Uploadstatus in de Publication API.** Als een geüpload bestand niet aan een document gekoppeld kon worden, bleef de uploadstatus op `processing` staan. De status wordt nu `processing_failed`, zodat de API-client weet dat de upload mislukt is.
+
+- **Paginanummer na het verwijderen van filters.** Na het verwijderen van alle zoekfilters kwam de gebruiker op een willekeurige pagina terecht. Nu begint de gebruiker weer op pagina 1, ook na het verwijderen van een enkel filter.
+
+- **Lange filternamen breken de layout niet meer.** Lange labels in de zoekfilters lopen nu door op een volgende regel in plaats van buiten de layout te vallen.
+
+- **Paginavoorvertoning bij onverwerkte PDF-pagina's.** Pagina's van een PDF die nog niet verwerkt zijn, gaven een rommelige layout in de paginavoorvertoning. Nu wordt een melding getoond dat de pagina nog verwerkt wordt.
+
+- **Naam in bestandsnaam van login-instructies.** Bij het opslaan van de login-instructies als PDF ontbrak de naam van de gebruiker in de bestandsnaam en de tabtitel. Deze wordt nu wel getoond.
+
+- **Herberekenen van bestandshashes stopt niet meer bij een fout.** Het commando om bestandshashes te herberekenen stopte als een bestand niet gelezen kon worden. Het gaat nu door met de overige bestanden en meldt welke bestanden niet verwerkt konden worden.
+
+- **Opslagcontrole zonder bestanden.** De opslagcontrole crashte voor een organisatie zonder bestanden. Nu wordt een overzicht met 0 bestanden getoond.
+
 ## Release 3.8.0
+
+_Oktober 2026_
 
 ### Balie
 
@@ -30,10 +96,14 @@ Dit is opgelost door bij uploads een bestandshash toe te voegen. Daarnaast is ee
 
 ## Release 3.7.1
 
+_Oktober 2026_
+
 - **Fixed:** Een Document waarvan het documentnummer een streepje (-) of punt (.) bevat, kon bij een Woo besluit nooit een bestand gekoppeld krijgen.
 Dit is opgelost: documentnummers met deze tekens worden nu correct herkend, zodat het bestand wel aan het document gekoppeld wordt.
 
 ## Release 3.7.0
+
+_Oktober 2026_
 
 ### Balie
 
@@ -88,6 +158,8 @@ Dit is opgelost: documentnummers met deze tekens worden nu correct herkend, zoda
   De API retourneert hiervoor nu een 422-validatiefout in plaats van een 500-fout.
 
 ## Release 3.6.0
+
+_September 2026_
 
 ### Backend
 

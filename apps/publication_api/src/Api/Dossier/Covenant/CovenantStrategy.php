@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace PublicationApi\Api\Dossier\Covenant;
 
 use PublicationApi\Api\Dossier\DossierAttachmentSynchronizer;
+use PublicationApi\Api\Dossier\DossierMainDocumentOrNoticeSynchronizer;
+use PublicationApi\Api\Dossier\DossierPersister;
 use PublicationApi\Api\Dossier\DossierRequestDtoInterface;
 use PublicationApi\Api\Dossier\DossierStrategy;
-use PublicationApi\Api\Dossier\NoticeNotPublicSynchronizer;
-use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicRequestDto;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
@@ -23,11 +23,11 @@ use Webmozart\Assert\Assert;
 readonly class CovenantStrategy implements DossierStrategy
 {
     public function __construct(
-        private CovenantPersister $covenantPersister,
+        private DossierPersister $dossierPersister,
         private CovenantRequestMapper $covenantRequestMapper,
         private DossierAttachmentSynchronizer $dossierAttachmentSynchronizer,
-        private CovenantMainDocumentSynchronizer $covenantMainDocumentSynchronizer,
-        private NoticeNotPublicSynchronizer $noticeNotPublicSynchronizer,
+        private CovenantMainDocumentRequestMapper $covenantMainDocumentRequestMapper,
+        private DossierMainDocumentOrNoticeSynchronizer $dossierMainDocumentOrNoticeSynchronizer,
     ) {
     }
 
@@ -60,15 +60,16 @@ readonly class CovenantStrategy implements DossierStrategy
             $documentPrefix,
         );
 
-        if ($dossierRequestDto->mainDocument !== null) {
-            $this->covenantMainDocumentSynchronizer->create($covenant, $dossierRequestDto->mainDocument);
-        } else {
-            $this->noticeNotPublicSynchronizer->create($covenant, self::noticeNotPublic($dossierRequestDto));
-        }
+        $this->dossierMainDocumentOrNoticeSynchronizer->create(
+            $covenant,
+            $dossierRequestDto->mainDocument,
+            $dossierRequestDto->noticeNotPublic,
+            $this->covenantMainDocumentRequestMapper,
+        );
 
         $attachmentEvents = $this->dossierAttachmentSynchronizer->create($covenant, $dossierRequestDto->attachments);
 
-        $this->covenantPersister->persist($covenant, null, $attachmentEvents);
+        $this->dossierPersister->persist($covenant, null, $attachmentEvents);
 
         return $covenant;
     }
@@ -85,26 +86,17 @@ readonly class CovenantStrategy implements DossierStrategy
 
         $this->covenantRequestMapper->update($dossier, $dossierRequestDto, $organisation, $department, $subject);
 
-        $covenantSnapshot = $this->covenantPersister->snapshot($dossier);
+        $mainDocumentSnapshot = $this->dossierPersister->snapshot($dossier);
 
-        if ($dossierRequestDto->mainDocument !== null) {
-            $this->noticeNotPublicSynchronizer->delete($dossier);
-            $this->covenantMainDocumentSynchronizer->update($dossier, $dossierRequestDto->mainDocument);
-        } else {
-            $this->covenantMainDocumentSynchronizer->delete($dossier);
-            $this->noticeNotPublicSynchronizer->update($dossier, self::noticeNotPublic($dossierRequestDto));
-        }
+        $this->dossierMainDocumentOrNoticeSynchronizer->update(
+            $dossier,
+            $dossierRequestDto->mainDocument,
+            $dossierRequestDto->noticeNotPublic,
+            $this->covenantMainDocumentRequestMapper,
+        );
 
         $attachmentEvents = $this->dossierAttachmentSynchronizer->update($dossier, $dossierRequestDto->attachments);
 
-        $this->covenantPersister->persist($dossier, $covenantSnapshot, $attachmentEvents);
-    }
-
-    private static function noticeNotPublic(CovenantRequestDto $covenantRequestDto): NoticeNotPublicRequestDto
-    {
-        $noticeNotPublic = $covenantRequestDto->noticeNotPublic;
-        Assert::notNull($noticeNotPublic);
-
-        return $noticeNotPublic;
+        $this->dossierPersister->persist($dossier, $mainDocumentSnapshot, $attachmentEvents);
     }
 }

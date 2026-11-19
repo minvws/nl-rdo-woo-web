@@ -186,7 +186,6 @@ describe('The <GenericController /> component', () => {
     const component = createComponent({
       componentName: 'WooDecisionAddDocuments',
 
-      dossierId: 'mocked-dossier-id',
       fileLimits: [
         {
           mimeTypes: [
@@ -209,7 +208,6 @@ describe('The <GenericController /> component', () => {
     });
 
     expect(findComponent('AddDocuments', component).props()).toMatchObject({
-      dossierId: 'mocked-dossier-id',
       fileLimits: [
         {
           mimeTypes: [
@@ -234,7 +232,6 @@ describe('The <GenericController /> component', () => {
     const component = createComponent({
       componentName: 'WooDecisionUploadDocuments',
 
-      dossierId: 'mocked-dossier-id',
       fileLimits: [
         {
           mimeTypes: [
@@ -256,7 +253,6 @@ describe('The <GenericController /> component', () => {
     });
 
     expect(findComponent('UploadDocuments', component).props()).toMatchObject({
-      dossierId: 'mocked-dossier-id',
       fileLimits: [
         {
           mimeTypes: [
@@ -360,7 +356,6 @@ describe('The <GenericController /> component', () => {
       componentName: 'DepartmentLogoManager',
 
       deleteEndpoint: 'mocked-delete-endpoint',
-      departmentId: 'mocked-department-id',
       hasLogo: true,
       logoEndpoint: 'mocked-logo-endpoint',
       uploadEndpoint: 'mocked-upload-endpoint',
@@ -370,7 +365,6 @@ describe('The <GenericController /> component', () => {
       findComponent('DepartmentLogoManager', component).props(),
     ).toMatchObject({
       deleteEndpoint: 'mocked-delete-endpoint',
-      departmentId: 'mocked-department-id',
       hasLogo: true,
       logoEndpoint: 'mocked-logo-endpoint',
       uploadEndpoint: 'mocked-upload-endpoint',

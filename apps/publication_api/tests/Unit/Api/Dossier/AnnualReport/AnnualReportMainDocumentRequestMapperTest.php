@@ -35,7 +35,8 @@ final class AnnualReportMainDocumentRequestMapperTest extends UnitTestCase
             array_map(Ground::from(...), $grounds),
         );
 
-        $mainDocument = AnnualReportMainDocumentRequestMapper::create($annualReport, $annualReportMainDocumentRequestDto);
+        $annualReportMainDocumentRequestMapper = new AnnualReportMainDocumentRequestMapper();
+        $mainDocument = $annualReportMainDocumentRequestMapper->create($annualReport, $annualReportMainDocumentRequestDto);
 
         self::assertSame($annualReport, $mainDocument->getDossier());
         self::assertSame($fileName->toString(), $mainDocument->getFileInfo()->getName());
@@ -71,7 +72,8 @@ final class AnnualReportMainDocumentRequestMapperTest extends UnitTestCase
             array_map(Ground::from(...), $grounds),
         );
 
-        $mainDocument = AnnualReportMainDocumentRequestMapper::update($annualReport, $annualReportMainDocumentRequestDto);
+        $annualReportMainDocumentRequestMapper = new AnnualReportMainDocumentRequestMapper();
+        $mainDocument = $annualReportMainDocumentRequestMapper->update($annualReport, $annualReportMainDocumentRequestDto);
 
         self::assertSame($existingMainDocument, $mainDocument);
         self::assertSame($fileName->toString(), $mainDocument->getFileInfo()->getName());
@@ -92,8 +94,10 @@ final class AnnualReportMainDocumentRequestMapperTest extends UnitTestCase
             AttachmentType::ANNUAL_REPORT,
         );
 
+        $annualReportMainDocumentRequestMapper = new AnnualReportMainDocumentRequestMapper();
+
         self::expectException(InvalidArgumentException::class);
 
-        AnnualReportMainDocumentRequestMapper::update($annualReport, $annualReportMainDocumentRequestDto);
+        $annualReportMainDocumentRequestMapper->update($annualReport, $annualReportMainDocumentRequestDto);
     }
 }

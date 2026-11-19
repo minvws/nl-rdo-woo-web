@@ -4,19 +4,28 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\Advice;
 
+use PublicationApi\Api\Dossier\MainDocumentRequestMapperInterface;
+use PublicationApi\Api\MainDocument\MainDocumentRequestDtoInterface;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\Advice\Advice;
 use Shared\Domain\Publication\Dossier\Type\Advice\AdviceMainDocument;
 use Shared\Service\EnumHelper;
 use Webmozart\Assert\Assert;
 
-class AdviceMainDocumentRequestMapper
+/**
+ * @implements MainDocumentRequestMapperInterface<Advice,AdviceMainDocumentRequestDto>
+ */
+class AdviceMainDocumentRequestMapper implements MainDocumentRequestMapperInterface
 {
-    public static function create(
-        Advice $advice,
-        AdviceMainDocumentRequestDto $mainDocumentRequestDto,
+    public function create(
+        AbstractDossier $dossier,
+        MainDocumentRequestDtoInterface $mainDocumentRequestDto,
     ): AdviceMainDocument {
+        Assert::isInstanceOf($dossier, Advice::class);
+        Assert::isInstanceOf($mainDocumentRequestDto, AdviceMainDocumentRequestDto::class);
+
         $mainDocument = new AdviceMainDocument(
-            $advice,
+            $dossier,
             $mainDocumentRequestDto->formalDate,
             $mainDocumentRequestDto->type,
             $mainDocumentRequestDto->language,
@@ -28,11 +37,14 @@ class AdviceMainDocumentRequestMapper
         return $mainDocument;
     }
 
-    public static function update(
-        Advice $advice,
-        AdviceMainDocumentRequestDto $mainDocumentRequestDto,
+    public function update(
+        AbstractDossier $dossier,
+        MainDocumentRequestDtoInterface $mainDocumentRequestDto,
     ): AdviceMainDocument {
-        $mainDocument = $advice->getMainDocument();
+        Assert::isInstanceOf($dossier, Advice::class);
+        Assert::isInstanceOf($mainDocumentRequestDto, AdviceMainDocumentRequestDto::class);
+
+        $mainDocument = $dossier->getMainDocument();
         Assert::notNull($mainDocument);
 
         $mainDocument->getFileInfo()->setName($mainDocumentRequestDto->fileName->toString());

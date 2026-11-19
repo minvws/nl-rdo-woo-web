@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\Property\Factory\PropertyMetadataFactoryInterface;
 use BackedEnum;
 use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
+use Symfony\Component\TypeInfo\Type;
 use Symfony\Component\TypeInfo\Type\CollectionType;
 use Symfony\Component\TypeInfo\Type\EnumType;
 use Symfony\Component\TypeInfo\Type\NullableType;
@@ -34,7 +35,7 @@ final readonly class TranslatableEnumPropertyMetadataFactory implements Property
         $propertyMetadata = $this->decorated->create($resourceClass, $property, $options);
 
         $nativeType = $propertyMetadata->getNativeType();
-        if ($nativeType === null) {
+        if (! $nativeType instanceof Type) {
             return $propertyMetadata;
         }
 
@@ -48,6 +49,10 @@ final readonly class TranslatableEnumPropertyMetadataFactory implements Property
             }
 
             $openapiContext = $propertyMetadata->getOpenapiContext() ?? [];
+            if (array_key_exists('x-enum-varnames', $openapiContext)) {
+                return $propertyMetadata;
+            }
+
             $openapiContext['x-enum-varnames'] = $translations;
 
             return $propertyMetadata->withOpenapiContext($openapiContext);

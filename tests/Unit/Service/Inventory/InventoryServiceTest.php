@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Service\Inventory;
 
 use Doctrine\ORM\EntityManagerInterface;
+use GuzzleHttp\Psr7\Utils;
 use Mockery;
 use Mockery\MockInterface;
 use RuntimeException;
@@ -52,29 +53,27 @@ class InventoryServiceTest extends UnitTestCase
         $this->inventoryService->getReader($this->run);
     }
 
-    public function testGetReaderThrowsExceptionWhenFileCannotBeDownloaded(): void
+    public function testGetReaderThrowsExceptionWhenFileCannotBeRead(): void
     {
         $this->run->expects('getFileInfo->isUploaded')->andReturnTrue();
 
-        $this->entityStorageService->expects('downloadEntity')->with($this->run)->andReturnFalse();
+        $this->entityStorageService->expects('retrieveResourceEntity')->with($this->run)->andReturnNull();
 
         $this->expectExceptionObject(new InventoryCannotBeLoadedFromStorageException());
 
         $this->inventoryService->getReader($this->run);
     }
 
-    public function testGetReaderReturnsAnOpenReaderAndSetsTmpFilenameOnRun(): void
+    public function testGetReaderReturnsAnOpenReader(): void
     {
         $this->run->expects('getFileInfo->isUploaded')->andReturnTrue();
-        $this->run->expects('getFileInfo->getMimetype')->andReturn('text/csv');
+        $this->run->expects('getFileInfo->getMimetype')->andReturn($this->getFaker()->mimeType());
 
-        $filename = 'tst/123.csv';
-        $this->entityStorageService->expects('downloadEntity')->with($this->run)->andReturn($filename);
-
-        $this->run->expects('setTmpFilename')->with($filename);
+        $stream = Utils::tryFopen('php://memory', 'r');
+        $this->entityStorageService->expects('retrieveResourceEntity')->with($this->run)->andReturn($stream);
 
         $reader = Mockery::mock(InventoryReaderInterface::class);
-        $reader->expects('open')->with($filename);
+        $reader->expects('open')->with($stream);
 
         $this->readerFactory->expects('create')->andReturn($reader);
 
@@ -83,22 +82,63 @@ class InventoryServiceTest extends UnitTestCase
         self::assertSame($reader, $result);
     }
 
-    public function testCleanupTmpFileSkipsWhenThereIsNoTmpFile(): void
+    public function testStoreProductionReportCopiesTheRunFile(): void
     {
-        $this->run->expects('getTmpFilename')->andReturnNull();
+        $name = $this->getFaker()->word();
 
-        $this->inventoryService->cleanupTmpFile($this->run);
+        $dossier = Mockery::mock(WooDecision::class);
+        $dossier->expects('setProductionReport')->with(Mockery::type(ProductionReport::class));
+        $dossier->expects('getDossierNumber')->andReturn($this->getFaker()->word());
+
+        $run = Mockery::mock(ProductionReportProcessRun::class);
+        $run->expects('getDossier')->times(2)->andReturn($dossier);
+        $run->expects('getFileInfo->getName')->andReturn($name);
+
+        $entityManager = Mockery::mock(EntityManagerInterface::class);
+        $entityManager->expects('persist')->with(Mockery::type(ProductionReport::class));
+
+        $entityStorageService = Mockery::mock(EntityStorageService::class);
+        $entityStorageService
+            ->expects('copyEntity')
+            ->with($run, Mockery::on(static function (ProductionReport $productionReport) use ($name): bool {
+                return $productionReport->getFileInfo()->getName() === $name;
+            }))
+            ->andReturnTrue();
+
+        $inventoryService = new InventoryService(
+            $entityManager,
+            $entityStorageService,
+            Mockery::mock(InventoryReaderFactory::class),
+        );
+
+        $inventoryService->storeProductionReport($run);
     }
 
-    public function testCleanupTmpFileRemovesAndResetsTmpFile(): void
+    public function testStoreProductionReportThrowsExceptionWhenCopyFails(): void
     {
-        $filename = 'tst/123.csv';
-        $this->run->expects('getTmpFilename')->times(2)->andReturn($filename);
-        $this->run->expects('setTmpFilename')->with(null);
+        $dossier = Mockery::mock(WooDecision::class);
+        $dossier->expects('setProductionReport')->with(Mockery::type(ProductionReport::class));
+        $dossier->expects('getDossierNumber')->andReturn($this->getFaker()->word());
 
-        $this->entityStorageService->expects('removeDownload')->with($filename);
+        $run = Mockery::mock(ProductionReportProcessRun::class);
+        $run->expects('getDossier')->times(2)->andReturn($dossier);
+        $run->expects('getFileInfo->getName')->andReturn($this->getFaker()->word());
 
-        $this->inventoryService->cleanupTmpFile($this->run);
+        $entityManager = Mockery::mock(EntityManagerInterface::class);
+        $entityManager->expects('persist')->with(Mockery::type(ProductionReport::class));
+
+        $entityStorageService = Mockery::mock(EntityStorageService::class);
+        $entityStorageService->expects('copyEntity')->with($run, Mockery::type(ProductionReport::class))->andReturnFalse();
+
+        $inventoryService = new InventoryService(
+            $entityManager,
+            $entityStorageService,
+            Mockery::mock(InventoryReaderFactory::class),
+        );
+
+        $this->expectException(RuntimeException::class);
+
+        $inventoryService->storeProductionReport($run);
     }
 
     public function testRemoveInventoriesDoesNothingAndReturnsFalseWhenThereAreNoInventories(): void

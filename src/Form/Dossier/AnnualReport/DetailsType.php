@@ -8,6 +8,7 @@ use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use Shared\Form\Dossier\AbstractDossierStepType;
 use Shared\Form\Dossier\DossierFormFactory;
 use Shared\Form\YearType;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class DetailsType extends AbstractDossierStepType
@@ -38,7 +39,7 @@ class DetailsType extends AbstractDossierStepType
                     'data-required' => true,
                 ],
                 'required' => true,
-                'placeholder' => $dossier->getDateFrom() === null ? 'global.year.placeholder' : false,
+                'placeholder' => ! $dossier->getDateFrom() instanceof PlainDate ? 'global.year.placeholder' : false,
                 'property_path' => 'dateFrom',
                 'min_years' => 9,
                 'plus_years' => 2,

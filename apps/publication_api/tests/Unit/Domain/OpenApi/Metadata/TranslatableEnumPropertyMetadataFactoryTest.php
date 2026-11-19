@@ -109,6 +109,26 @@ final class TranslatableEnumPropertyMetadataFactoryTest extends UnitTestCase
         self::assertArrayHasKey('x-enum-varnames', $openapiContext);
     }
 
+    public function testItPreservesExistingEnumVarnames(): void
+    {
+        $existingVarnames = ['Annual report', 'Annual plan'];
+        $propertyMetadata = new ApiProperty()
+            ->withNativeType(new EnumType(AttachmentType::class))
+            ->withOpenapiContext(['x-enum-varnames' => $existingVarnames]);
+
+        $decorated = $this->createMockedPropertyMetadataFactory(
+            property: 'type',
+            propertyMetadata: $propertyMetadata,
+        );
+
+        $translator = $this->createMockedTranslator();
+        $factory = new TranslatableEnumPropertyMetadataFactory($decorated, $translator);
+
+        $result = $factory->create('TestClass', 'type');
+
+        self::assertSame(['x-enum-varnames' => $existingVarnames], $result->getOpenapiContext());
+    }
+
     public function testItAddsTranslationsToItemsForEnumCollectionProperty(): void
     {
         $resourceClass = $this->getFaker()->word();

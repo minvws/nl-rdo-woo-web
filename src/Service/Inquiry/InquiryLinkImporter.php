@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Shared\Service\Inquiry;
 
 use Exception;
+use Psr\Log\LoggerInterface;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use Shared\Exception\Import\ImportException;
 use Shared\Exception\Import\InquiryDocumentNotFoundException;
 use Shared\Exception\Import\InquiryInvalidInquiryNumbersException;
-use Shared\Exception\Import\SpreadsheetCannotBeOpenedException;
+use Shared\Exception\Import\InquiryUnexpectedProcessingException;
 use Shared\Service\Import\ImportError;
-use Shared\ValueObject\DocumentNumber;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Webmozart\Assert\InvalidArgumentException;
 
@@ -22,6 +22,7 @@ readonly class InquiryLinkImporter
         private InquiryService $inquiryService,
         private DocumentRepository $documentRepository,
         private InquiryLinkImportParser $parser,
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -45,7 +46,7 @@ readonly class InquiryLinkImporter
             $this->inquiryService->applyChangesetAsync($inquiryChangeset);
         } catch (Exception $exception) {
             if (! $exception instanceof ImportException) {
-                $exception = new SpreadsheetCannotBeOpenedException($exception);
+                $exception = $this->toUnexpectedProcessingException($exception);
             }
 
             $result->addGenericError(ImportError::fromException($exception));
@@ -60,26 +61,37 @@ readonly class InquiryLinkImporter
         InquiryChangeset $inquiryChangeset,
         InquiryLinkImportResult $result,
     ): void {
-        $rowNr = 0;
-        foreach ($this->parser->parse($uploadedFile, $prefix) as $documentNumberValue => $inquiryNumberValues) {
-            $rowNr++;
+        foreach ($this->parser->parse($uploadedFile, $prefix) as $rowNr => $row) {
             try {
-                $documentNumber = DocumentNumber::fromUnnormalizedString($documentNumberValue);
-                $documentInquiryNumbers = $this->documentRepository->getDocumentInquiryNumbers($documentNumber);
+                $documentInquiryNumbers = $this->documentRepository->getDocumentInquiryNumbers($row->documentNumber);
                 if ($documentInquiryNumbers->isDocumentNotFound()) {
-                    throw new InquiryDocumentNotFoundException($documentNumber->toString());
+                    throw new InquiryDocumentNotFoundException($row->documentNumber->toString());
                 }
 
                 try {
-                    $inquiryNumbers = new InquiryNumbers($inquiryNumberValues);
+                    $inquiryNumbers = new InquiryNumbers($row->inquiryNumbers);
                 } catch (InvalidArgumentException) {
-                    throw new InquiryInvalidInquiryNumbersException($rowNr, $inquiryNumberValues);
+                    throw new InquiryInvalidInquiryNumbersException($rowNr, $row->inquiryNumbers);
                 }
 
                 $inquiryChangeset->updateInquiryNumbersForDocument($documentInquiryNumbers, $inquiryNumbers);
             } catch (ImportException $importException) {
                 $result->addRowError($rowNr, ImportError::fromException($importException));
+            } catch (Exception $exception) {
+                $result->addRowError($rowNr, ImportError::fromException($this->toUnexpectedProcessingException($exception, $rowNr)));
             }
         }
+    }
+
+    private function toUnexpectedProcessingException(Exception $exception, ?int $rowNr = null): InquiryUnexpectedProcessingException
+    {
+        $unexpectedException = new InquiryUnexpectedProcessingException($exception);
+
+        $this->logger->error('Unexpected error during inquiry link import', [
+            'rowNumber' => $rowNr,
+            'exception' => $unexpectedException,
+        ]);
+
+        return $unexpectedException;
     }
 }

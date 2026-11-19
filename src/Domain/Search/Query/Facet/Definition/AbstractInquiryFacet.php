@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Query\Facet\Definition;
 
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
 use Shared\Domain\Search\Query\Facet\DisplayValue\FacetDisplayValueInterface;
 use Shared\Domain\Search\Query\Facet\DisplayValue\UntranslatedStringFacetDisplayValue;
@@ -63,7 +64,7 @@ abstract readonly class AbstractInquiryFacet implements FacetDefinitionInterface
     {
         $inquiry = $this->repository->find($value);
 
-        return UntranslatedStringFacetDisplayValue::fromString($inquiry ? $inquiry->getInquiryNumber() : '');
+        return UntranslatedStringFacetDisplayValue::fromString($inquiry instanceof Inquiry ? $inquiry->getInquiryNumber() : '');
     }
 
     public function getDescription(int|string $key, string $value): ?FacetDisplayValueInterface

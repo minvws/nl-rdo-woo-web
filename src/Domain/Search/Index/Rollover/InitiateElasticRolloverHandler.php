@@ -32,7 +32,6 @@ class InitiateElasticRolloverHandler
         try {
             $this->indexService->create(
                 $message->indexName,
-                $message->mappingVersion,
             );
 
             $this->indexService->switch(
@@ -46,7 +45,6 @@ class InitiateElasticRolloverHandler
         } catch (Exception $e) {
             $this->logger->error('Failed to initialize the elasticsearch rollover', [
                 'index_name' => $message->indexName,
-                'mapping_version' => $message->mappingVersion,
                 'exception' => $e->getMessage(),
             ]);
         }

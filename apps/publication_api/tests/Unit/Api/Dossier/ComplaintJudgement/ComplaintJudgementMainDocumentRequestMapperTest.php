@@ -34,7 +34,8 @@ final class ComplaintJudgementMainDocumentRequestMapperTest extends UnitTestCase
             array_map(Ground::from(...), $grounds),
         );
 
-        $mainDocument = ComplaintJudgementMainDocumentRequestMapper::create($complaintJudgement, $complaintJudgementMainDocumentRequestDto);
+        $complaintJudgementMainDocumentRequestMapper = new ComplaintJudgementMainDocumentRequestMapper();
+        $mainDocument = $complaintJudgementMainDocumentRequestMapper->create($complaintJudgement, $complaintJudgementMainDocumentRequestDto);
 
         self::assertSame($complaintJudgement, $mainDocument->getDossier());
         self::assertSame($fileName->toString(), $mainDocument->getFileInfo()->getName());
@@ -71,7 +72,8 @@ final class ComplaintJudgementMainDocumentRequestMapperTest extends UnitTestCase
             array_map(Ground::from(...), $grounds),
         );
 
-        $mainDocument = ComplaintJudgementMainDocumentRequestMapper::update($complaintJudgement, $complaintJudgementMainDocumentRequestDto);
+        $complaintJudgementMainDocumentRequestMapper = new ComplaintJudgementMainDocumentRequestMapper();
+        $mainDocument = $complaintJudgementMainDocumentRequestMapper->update($complaintJudgement, $complaintJudgementMainDocumentRequestDto);
 
         self::assertSame($existingMainDocument, $mainDocument);
         self::assertSame($fileName->toString(), $mainDocument->getFileInfo()->getName());
@@ -92,8 +94,10 @@ final class ComplaintJudgementMainDocumentRequestMapperTest extends UnitTestCase
             $this->getFaker()->attachmentType(ComplaintJudgementMainDocument::getAllowedTypes()),
         );
 
+        $complaintJudgementMainDocumentRequestMapper = new ComplaintJudgementMainDocumentRequestMapper();
+
         self::expectException(InvalidArgumentException::class);
 
-        ComplaintJudgementMainDocumentRequestMapper::update($complaintJudgement, $complaintJudgementMainDocumentRequestDto);
+        $complaintJudgementMainDocumentRequestMapper->update($complaintJudgement, $complaintJudgementMainDocumentRequestDto);
     }
 }

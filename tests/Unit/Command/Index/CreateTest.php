@@ -7,7 +7,6 @@ namespace Shared\Tests\Unit\Command\Index;
 use Mockery;
 use Shared\Command\Index\Create;
 use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
-use Shared\Domain\Search\Index\Rollover\MappingService;
 use Shared\Tests\ElasticConfigFactory;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Console\Application;
@@ -18,56 +17,50 @@ class CreateTest extends UnitTestCase
     public function testExecute(): void
     {
         $name = $this->getFaker()->word();
-        $version = $this->getFaker()->randomDigit();
 
         $elasticIndexManager = Mockery::mock(ElasticIndexManager::class);
         $elasticIndexManager->expects('exists')
             ->andReturn(false);
         $elasticIndexManager->expects('create')
-            ->with($name, $version)
+            ->with($name)
             ->andReturn(true);
-
-        $mappingService = Mockery::mock(MappingService::class);
-
         $application = new Application();
-        $application->addCommand(new Create($elasticIndexManager, $mappingService, ElasticConfigFactory::default()));
+        $application->addCommand(new Create($elasticIndexManager, ElasticConfigFactory::default()));
 
         $command = $application->find(Create::COMMAND_NAME);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute([
             'name' => $name,
-            'version' => (string) $version, // command always recieves a string when used in cli
         ]);
 
         self::assertEquals(Create::SUCCESS, $commandTester->getStatusCode());
     }
 
-    public function testExecuteWithLatestAsVersion(): void
+    public function testExecuteWithAliases(): void
     {
         $name = $this->getFaker()->word();
-        $latestMappingVersion = $this->getFaker()->randomDigit();
 
         $elasticIndexManager = Mockery::mock(ElasticIndexManager::class);
         $elasticIndexManager->expects('exists')
             ->andReturn(false);
         $elasticIndexManager->expects('create')
-            ->with($name, $latestMappingVersion)
+            ->with($name)
             ->andReturn(true);
-
-        $mappingService = Mockery::mock(MappingService::class);
-        $mappingService->expects('getLatestMappingVersion')
-            ->andReturn($latestMappingVersion);
+        $config = ElasticConfigFactory::default();
+        $elasticIndexManager->expects('switch')->with($config->readIndex, '*', $name);
+        $elasticIndexManager->expects('switch')->with($config->writeIndex, '*', $name);
 
         $application = new Application();
-        $application->addCommand(new Create($elasticIndexManager, $mappingService, ElasticConfigFactory::default()));
+        $application->addCommand(new Create($elasticIndexManager, $config));
 
         $command = $application->find(Create::COMMAND_NAME);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute([
             'name' => $name,
-            'version' => 'latest',
+            '--read' => true,
+            '--write' => true,
         ]);
 
         self::assertEquals(Create::SUCCESS, $commandTester->getStatusCode());

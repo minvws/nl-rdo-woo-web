@@ -43,6 +43,15 @@ final readonly class IngestTikaOnlyHandler
         /** @var EntityWithFileInfo $entity */
         Assert::isInstanceOf($entity, EntityWithFileInfo::class);
 
+        if (! $entity->getFileInfo()->isUploaded()) {
+            $this->logger->warning('No uploaded file found in IngestTikaOnlyHandler', [
+                'id' => $message->getEntityId()->toRfc4122(),
+                'class' => $message->getEntityClass(),
+            ]);
+
+            return;
+        }
+
         $extracts = $this->contentExtractCache->getCombinedExtracts(
             $entity,
             ContentExtractOptions::create()->withExtractor(ContentExtractorKey::TIKA),

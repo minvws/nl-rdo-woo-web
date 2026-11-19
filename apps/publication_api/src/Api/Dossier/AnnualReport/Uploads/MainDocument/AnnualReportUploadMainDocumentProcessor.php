@@ -4,29 +4,15 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\AnnualReport\Uploads\MainDocument;
 
-use ApiPlatform\Metadata\Operation;
-use ApiPlatform\State\ProcessorInterface;
-use ApiPlatform\Validator\Exception\ValidationException;
 use PublicationApi\Api\Uploads\MainDocument\UploadMainDocumentProcessor;
-use PublicationApi\Api\Uploads\MainDocument\UploadMainDocumentRequestInterface;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportRepository;
-use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 
-final readonly class AnnualReportUploadMainDocumentProcessor implements ProcessorInterface
+#[Autoconfigure(bind: [
+    '$dossierRepositoryWithExternalId' => '@' . AnnualReportRepository::class,
+    '$mainDocumentClass' => AnnualReportMainDocument::class,
+])]
+final readonly class AnnualReportUploadMainDocumentProcessor extends UploadMainDocumentProcessor
 {
-    public function __construct(
-        private AnnualReportRepository $annualReportRepository,
-        private UploadMainDocumentProcessor $uploadMainDocumentProcessor,
-    ) {
-    }
-
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): void
-    {
-        if (! $data instanceof UploadMainDocumentRequestInterface) {
-            throw new ValidationException(ConstraintViolationList::createFromMessage('Invalid main document request'));
-        }
-
-        $this->uploadMainDocumentProcessor->process($data, $this->annualReportRepository, AnnualReportMainDocument::class);
-    }
 }

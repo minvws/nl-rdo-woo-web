@@ -79,6 +79,7 @@ describe('The "PublicationFiles" component', () => {
     languageOptions: SelectOptions;
     maxLength: number;
     readableFileType?: string;
+    shouldValidateExcelFiles: boolean;
   }
 
   const createComponent = (options: Partial<CreateComponentOptions> = {}) => {
@@ -91,6 +92,7 @@ describe('The "PublicationFiles" component', () => {
       groundOptions = [],
       languageOptions = [],
       readableFileType,
+      shouldValidateExcelFiles,
     } = options;
 
     return mount(PublicationFiles, {
@@ -106,7 +108,7 @@ describe('The "PublicationFiles" component', () => {
         languageOptions,
         maxLength,
         readableFileType,
-        uploadGroupId: 'mocked-upload-group-id',
+        shouldValidateExcelFiles,
       },
       global: {
         stubs: { Teleport: false },
@@ -298,6 +300,22 @@ describe('The "PublicationFiles" component', () => {
       await mockCancel(component);
       await mockEdit(component);
       expect(dialogComponent.props('title')).toBe('Bijlage bewerken');
+    });
+
+    test('should not ask the form to display the Excel files info by default', () => {
+      expect(
+        getPublicationFileFormComponent().props('shouldValidateExcelFiles'),
+      ).toBe(false);
+    });
+
+    test('should pass "shouldValidateExcelFiles" on to the form', () => {
+      const component = createComponent({ shouldValidateExcelFiles: true });
+
+      expect(
+        getPublicationFileFormComponent(component).props(
+          'shouldValidateExcelFiles',
+        ),
+      ).toBe(true);
     });
 
     test('should have an attribute "data-e2e-name" with the value of the "e2eName" property', () => {

@@ -332,6 +332,45 @@ final class RemoteFilesystemTest extends UnitTestCase
         $this->assertFalse($result);
     }
 
+    public function testCopy(): void
+    {
+        $source = $this->getFaker()->slug();
+        $destination = $this->getFaker()->slug();
+
+        $documentStorage = Mockery::mock(FilesystemOperator::class);
+        $documentStorage->expects('copy')->with($source, $destination);
+
+        $remoteFilesystem = new RemoteFilesystem(Mockery::mock(LoggerInterface::class), $documentStorage);
+
+        self::assertTrue($remoteFilesystem->copy($source, $destination));
+    }
+
+    public function testFailedCopy(): void
+    {
+        $source = $this->getFaker()->slug();
+        $destination = $this->getFaker()->slug();
+        $exceptionMessage = $this->getFaker()->sentence();
+
+        $documentStorage = Mockery::mock(FilesystemOperator::class);
+        $documentStorage
+            ->expects('copy')
+            ->with($source, $destination)
+            ->andThrow(new UnreadableFileEncountered($exceptionMessage));
+
+        $logger = Mockery::mock(LoggerInterface::class);
+        $logger
+            ->expects('error')
+            ->with('Could not copy file in storage adapter', [
+                'source' => $source,
+                'destination' => $destination,
+                'exception' => $exceptionMessage,
+            ]);
+
+        $remoteFilesystem = new RemoteFilesystem($logger, $documentStorage);
+
+        self::assertFalse($remoteFilesystem->copy($source, $destination));
+    }
+
     private function getInstance(): RemoteFilesystem&MockInterface
     {
         return Mockery::mock(RemoteFilesystem::class, [$this->logger, $this->documentStorage])

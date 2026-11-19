@@ -30,9 +30,9 @@ readonly class ElasticIndexManager
     }
 
     /**
-     * Creates a new index with the given mapping version (as found in config/elastic/mapping-vXX.json).
+     * Creates a new index with the current mapping from config/elastic/mapping.json.
      */
-    public function create(string $indexName, int $version): void
+    public function create(string $indexName): void
     {
         // Create and close so we can set settings and mappings
         $this->elastic->indices()->create(['index' => $indexName]);
@@ -44,7 +44,7 @@ readonly class ElasticIndexManager
             'body' => $settings,
         ]);
 
-        $mapping = $this->mappingService->getMapping($version);
+        $mapping = $this->mappingService->getMapping();
         $this->elastic->indices()->putMapping([
             'index' => $indexName,
             'body' => $mapping,
@@ -56,7 +56,7 @@ readonly class ElasticIndexManager
 
     public function createLatestWithAliases(string $indexName): void
     {
-        $this->create($indexName, $this->mappingService->getLatestMappingVersion());
+        $this->create($indexName);
         $this->switch($this->elasticConfig->readIndex, '*', $indexName);
         $this->switch($this->elasticConfig->writeIndex, '*', $indexName);
     }

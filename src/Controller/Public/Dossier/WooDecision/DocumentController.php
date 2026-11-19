@@ -18,12 +18,14 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
 use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNumber;
 use Shared\Domain\Search\Query\Facet\FacetDefinitions;
+use Shared\Service\DownloadResponseHelper;
 use Shared\Service\Search\Model\FacetKey;
 use Shared\Service\Security\DossierVoter;
 use Shared\ValueObject\DocumentNumber;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\HttpKernel\Attribute\ValueResolver;
 use Symfony\Component\Routing\Attribute\Route;
@@ -34,6 +36,7 @@ class DocumentController extends AbstractController
 {
     public const string ROUTE_NAME_DOCUMENT_DETAIL = 'app_document_detail';
     public const string ROUTE_NAME_DOCUMENT_CANONICAL = 'app_document_canonical';
+    public const string ROUTE_NAME_DOCUMENT_DOWNLOAD = 'app_document_download';
 
     public function __construct(
         private readonly DocumentRepository $documentRepository,
@@ -44,6 +47,7 @@ class DocumentController extends AbstractController
         private readonly TranslatorInterface $translator,
         private readonly FacetDefinitions $facetDefinitions,
         private readonly DocumentUrlGenerator $documentUrlGenerator,
+        private readonly DownloadResponseHelper $downloadHelper,
     ) {
     }
 
@@ -61,14 +65,14 @@ class DocumentController extends AbstractController
             $documentNumber,
         );
 
-        if ($document === null) {
+        if (! $document instanceof Document) {
             throw $this->createNotFoundException();
         }
 
         $this->denyAccessUnlessGranted(DossierVoter::VIEW, $document);
 
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addRouteItem($this->getPublicationReason($wooDecision), 'app_woodecision_detail', [
+        $breadcrumbs->addRouteItem($this->getPublicationReason($wooDecision), WooDecisionController::ROUTE_NAME_DETAIL, [
             'documentPrefix' => $wooDecision->getDocumentPrefix(),
             'dossierNumber' => $wooDecision->getDossierNumber(),
         ]);
@@ -144,7 +148,7 @@ class DocumentController extends AbstractController
     {
         $document = $this->documentRepository->findByDocumentNumber($documentNumber);
 
-        if ($document === null) {
+        if (! $document instanceof Document) {
             throw $this->createNotFoundException();
         }
 
@@ -156,6 +160,19 @@ class DocumentController extends AbstractController
             'document' => $this->documentViewFactory->make($document),
             'canonical_url' => $this->documentUrlGenerator->canonicalUrl($document->getDocumentNumber()),
         ]);
+    }
+
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
+    #[Route('/document/{documentNumber}/download', self::ROUTE_NAME_DOCUMENT_DOWNLOAD, methods: ['GET'])]
+    public function download(DocumentNumber $documentNumber): StreamedResponse
+    {
+        $document = $this->documentRepository->findByDocumentNumber($documentNumber);
+
+        if (! $document instanceof Document || ! $document->shouldBeUploaded() || ! $this->isGranted(DossierVoter::VIEW, $document)) {
+            throw $this->createNotFoundException();
+        }
+
+        return $this->downloadHelper->getResponseForEntityWithFileInfo($document);
     }
 
     private function getPublicationReason(WooDecision $dossier): string

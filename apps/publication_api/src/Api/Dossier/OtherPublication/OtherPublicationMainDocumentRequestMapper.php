@@ -4,19 +4,28 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\OtherPublication;
 
+use PublicationApi\Api\Dossier\MainDocumentRequestMapperInterface;
+use PublicationApi\Api\MainDocument\MainDocumentRequestDtoInterface;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationMainDocument;
 use Shared\Service\EnumHelper;
 use Webmozart\Assert\Assert;
 
-class OtherPublicationMainDocumentRequestMapper
+/**
+ * @implements MainDocumentRequestMapperInterface<OtherPublication,OtherPublicationMainDocumentRequestDto>
+ */
+class OtherPublicationMainDocumentRequestMapper implements MainDocumentRequestMapperInterface
 {
-    public static function create(
-        OtherPublication $otherPublication,
-        OtherPublicationMainDocumentRequestDto $mainDocumentRequestDto,
+    public function create(
+        AbstractDossier $dossier,
+        MainDocumentRequestDtoInterface $mainDocumentRequestDto,
     ): OtherPublicationMainDocument {
+        Assert::isInstanceOf($dossier, OtherPublication::class);
+        Assert::isInstanceOf($mainDocumentRequestDto, OtherPublicationMainDocumentRequestDto::class);
+
         $mainDocument = new OtherPublicationMainDocument(
-            $otherPublication,
+            $dossier,
             $mainDocumentRequestDto->formalDate,
             $mainDocumentRequestDto->type,
             $mainDocumentRequestDto->language,
@@ -28,11 +37,14 @@ class OtherPublicationMainDocumentRequestMapper
         return $mainDocument;
     }
 
-    public static function update(
-        OtherPublication $otherPublication,
-        OtherPublicationMainDocumentRequestDto $mainDocumentRequestDto,
+    public function update(
+        AbstractDossier $dossier,
+        MainDocumentRequestDtoInterface $mainDocumentRequestDto,
     ): OtherPublicationMainDocument {
-        $mainDocument = $otherPublication->getMainDocument();
+        Assert::isInstanceOf($dossier, OtherPublication::class);
+        Assert::isInstanceOf($mainDocumentRequestDto, OtherPublicationMainDocumentRequestDto::class);
+
+        $mainDocument = $dossier->getMainDocument();
         Assert::notNull($mainDocument);
 
         $mainDocument->getFileInfo()->setName($mainDocumentRequestDto->fileName->toString());

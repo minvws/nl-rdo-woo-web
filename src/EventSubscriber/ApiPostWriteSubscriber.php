@@ -6,7 +6,7 @@ namespace Shared\EventSubscriber;
 
 use ApiPlatform\Symfony\EventListener\EventPriorities;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -14,20 +14,14 @@ use function get_debug_type;
 use function in_array;
 use function is_object;
 
-final readonly class ApiPostWriteSubscriber implements EventSubscriberInterface
+final readonly class ApiPostWriteSubscriber
 {
     public function __construct(
         private LoggerInterface $logger,
     ) {
     }
 
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            KernelEvents::VIEW => ['postWriteLog', EventPriorities::POST_WRITE],
-        ];
-    }
-
+    #[AsEventListener(event: KernelEvents::VIEW, priority: EventPriorities::POST_WRITE)]
     public function postWriteLog(ViewEvent $event): void
     {
         $request = $event->getRequest();

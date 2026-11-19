@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Service\FileReader;
 
 use DateTimeImmutable;
+use GuzzleHttp\Psr7\Utils;
 use Mockery;
 use Mockery\MockInterface;
 use Shared\Exception\Import\DateCannotBeParsedException;
@@ -15,6 +16,7 @@ use Shared\Tests\Unit\UnitTestCase;
 
 use function end;
 use function iterator_to_array;
+use function sprintf;
 
 use const DIRECTORY_SEPARATOR;
 
@@ -28,7 +30,7 @@ class CsvReaderTest extends UnitTestCase
         $this->headerMap = Mockery::mock(HeaderMap::class);
 
         $this->csvReader = new CsvReader(
-            __DIR__ . DIRECTORY_SEPARATOR . 'inventory-with-empty-row.csv',
+            Utils::tryFopen(sprintf('%s%sinventory-with-empty-row.csv', __DIR__, DIRECTORY_SEPARATOR), 'r'),
             $this->headerMap,
         );
     }

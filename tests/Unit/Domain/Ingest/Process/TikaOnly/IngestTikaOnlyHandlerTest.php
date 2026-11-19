@@ -16,6 +16,7 @@ use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
 use Shared\Domain\Ingest\Process\TikaOnly\IngestTikaOnlyCommand;
 use Shared\Domain\Ingest\Process\TikaOnly\IngestTikaOnlyHandler;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\FileInfo;
 use Shared\Domain\Search\Index\SubType\SubTypeIndexer;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
@@ -66,9 +67,51 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
         $this->handler->__invoke($command);
     }
 
+    public function testInvokeLogsWarningAndReturnsEarlyWhenFileIsNotUploaded(): void
+    {
+        $doctrine = Mockery::mock(EntityManagerInterface::class);
+        $logger = Mockery::mock(LoggerInterface::class);
+        $contentExtractCache = Mockery::mock(ContentExtractCache::class);
+        $subTypeIndexer = Mockery::mock(SubTypeIndexer::class);
+        $entityRepository = Mockery::mock(EntityRepository::class);
+
+        $entityId = Uuid::v6();
+        $command = new IngestTikaOnlyCommand(
+            $entityId,
+            Document::class,
+            false,
+        );
+
+        $fileInfo = new FileInfo();
+        $fileInfo->setUploaded(false);
+
+        $entity = Mockery::mock(Document::class);
+        $entity->expects('getFileInfo')->andReturn($fileInfo);
+
+        $doctrine->expects('getRepository')->with(Document::class)->andReturn($entityRepository);
+        $entityRepository->expects('find')->with($entityId)->andReturn($entity);
+
+        $logger->expects('warning')->with('No uploaded file found in IngestTikaOnlyHandler', [
+            'id' => $entityId->toRfc4122(),
+            'class' => Document::class,
+        ]);
+
+        $handler = new IngestTikaOnlyHandler(
+            $doctrine,
+            $logger,
+            $contentExtractCache,
+            $subTypeIndexer,
+        );
+        $handler->__invoke($command);
+    }
+
     public function testInvokeSuccessfully(): void
     {
+        $fileInfo = new FileInfo();
+        $fileInfo->setUploaded(true);
+
         $entity = Mockery::mock(Document::class);
+        $entity->expects('getFileInfo')->andReturn($fileInfo);
 
         $command = new IngestTikaOnlyCommand(
             Uuid::v6(),
@@ -111,7 +154,11 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
 
     public function testInvokeLogsErrorWhenElasticIndexFails(): void
     {
+        $fileInfo = new FileInfo();
+        $fileInfo->setUploaded(true);
+
         $entity = Mockery::mock(Document::class);
+        $entity->expects('getFileInfo')->andReturn($fileInfo);
         $entity
             ->expects('getId')
             ->andReturn($entityId = Mockery::mock(Uuid::class));

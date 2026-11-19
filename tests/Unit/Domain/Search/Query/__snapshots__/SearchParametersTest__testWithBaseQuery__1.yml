@@ -7,15 +7,15 @@ queryParameters:
     dsi: [doc1, doc2]
     sort: _score
     sortorder: desc
-    page: 13
+    page: 3
 facetInputs:
     dci: { key: { name: INQUIRY_DOCUMENTS, value: dci }, field: { name: INQUIRY_IDS, value: inquiry_ids }, requestParameter: dci, filter: null, aggregationStrategy: null }
     dsi: { key: { name: INQUIRY_DOSSIERS, value: dsi }, field: { name: INQUIRY_IDS, value: inquiry_ids }, requestParameter: dsi, filter: null, aggregationStrategy: null }
 operator:
     name: AND
     value: and
-limit: 0
-offset: 13
+limit: 10
+offset: 20
 pagination: true
 aggregations: true
 query: foo

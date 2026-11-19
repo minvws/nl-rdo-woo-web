@@ -6,6 +6,7 @@ namespace Shared\Domain\Publication\Dossier\ViewModel;
 
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\PublicUrlGenerator;
+use Shared\Domain\Publication\Subject\LandingPageSlug;
 use Shared\Domain\Publication\Subject\Subject as SubjectEntity;
 use Shared\Domain\Publication\Subject\SubjectPreviewUrlGenerator;
 use Shared\Domain\Search\Query\Facet\FacetDefinitions;
@@ -43,20 +44,20 @@ readonly class SubjectViewFactory
 
     public function getSubjectForDossier(AbstractDossier $dossier): ?Subject
     {
-        if ($dossier->getSubject() === null) {
+        if (! $dossier->getSubject() instanceof SubjectEntity) {
             return null;
         }
 
         return $this->make($dossier->getSubject());
     }
 
-    private function getLandingPageUrl(SubjectEntity $subject): ?string
+    public function getLandingPageUrl(SubjectEntity $subject): ?string
     {
         if (! $subject->hasPublishedLandingPage()) {
             return null;
         }
 
-        if ($subject->getLandingPageSlug() === null) {
+        if (! $subject->getLandingPageSlug() instanceof LandingPageSlug) {
             return null;
         }
 

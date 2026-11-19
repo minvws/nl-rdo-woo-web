@@ -32,7 +32,7 @@ class InquiryLinkImportParser
     }
 
     /**
-     * @return Generator<string, array<array-key, string>>
+     * @return Generator<int, InquiryLinkImportRow> keyed by the row number in the spreadsheet
      */
     public function parse(UploadedFile $uploadedFile, string $prefix): Generator
     {
@@ -66,9 +66,10 @@ class InquiryLinkImportParser
                 $publicationContext = sprintf('%s-%s', $prefix, $matter);
             }
 
-            $documentNumber = DocumentNumber::fromUnnormalizedString(sprintf('%s-%s', $publicationContext, $documentId));
-
-            yield $documentNumber->toString() => $inquiryNumbers;
+            yield $rowIdx => new InquiryLinkImportRow(
+                DocumentNumber::fromUnnormalizedString(sprintf('%s-%s', $publicationContext, $documentId)),
+                $inquiryNumbers,
+            );
         }
     }
 

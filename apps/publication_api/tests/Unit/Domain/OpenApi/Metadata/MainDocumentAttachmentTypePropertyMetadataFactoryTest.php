@@ -19,6 +19,8 @@ use Symfony\Component\TypeInfo\Type\NullableType;
 use Symfony\Component\TypeInfo\Type\ObjectType;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+use function array_map;
+
 final class MainDocumentAttachmentTypePropertyMetadataFactoryTest extends UnitTestCase
 {
     /**
@@ -81,9 +83,16 @@ final class MainDocumentAttachmentTypePropertyMetadataFactoryTest extends UnitTe
      */
     public function testItSetsNullableRestrictedEnumSchemaForSingleTypeDossier(): void
     {
-        $propertyMetadata = new ApiProperty()->withNativeType(
-            new NullableType(new EnumType(AttachmentType::class)),
-        );
+        $propertyMetadata = new ApiProperty(description: 'The document type')
+            ->withNativeType(new NullableType(new EnumType(AttachmentType::class)))
+            ->withSchema([
+                'description' => 'The document type',
+                'type' => ['string', 'null'],
+                'enum' => array_map(
+                    static fn (AttachmentType $case): string => $case->value,
+                    AttachmentType::cases(),
+                ),
+            ]);
 
         $factory = new MainDocumentAttachmentTypePropertyMetadataFactory(
             $this->createMockedPropertyMetadataFactory(
@@ -98,6 +107,8 @@ final class MainDocumentAttachmentTypePropertyMetadataFactoryTest extends UnitTe
         $schema = $result->getSchema();
         self::assertIsArray($schema);
         self::assertArrayHasKey('anyOf', $schema);
+        self::assertArrayNotHasKey('type', $schema);
+        self::assertArrayNotHasKey('enum', $schema);
         $anyOf = $schema['anyOf'];
         self::assertIsArray($anyOf);
         self::assertCount(2, $anyOf);

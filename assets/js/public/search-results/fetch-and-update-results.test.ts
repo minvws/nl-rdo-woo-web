@@ -34,18 +34,18 @@ describe('The functionality regarding fetching and updating search results', () 
   const getSearchResultsElement = () =>
     document.getElementById('js-search-results');
 
-  it('should make a fetch request to the filters element data url with the search provided params', () => {
+  it('should make a fetch request to the filters element data url with the search provided params', async () => {
     const mockedParams = getMockedParams();
-    fetchAndUpdateResults(mockedParams);
+    await fetchAndUpdateResults(mockedParams);
 
     expect(window.fetch).toHaveBeenCalledWith(
       `https://example.com?${mockedParams}`,
     );
   });
 
-  it('should do nothing if the filters or search results element is not found', () => {
+  it('should do nothing if the filters or search results element is not found', async () => {
     document.body.innerHTML = '';
-    fetchAndUpdateResults(new URLSearchParams());
+    await fetchAndUpdateResults(new URLSearchParams());
 
     expect(window.fetch).not.toHaveBeenCalled();
   });
@@ -83,8 +83,8 @@ describe('The functionality regarding fetching and updating search results', () 
   it('should not throw an error if the response is not valid JSON', async () => {
     window.fetch = vi.fn().mockRejectedValue(new Error('Invalid JSON'));
 
-    expect(async () => {
-      await fetchAndUpdateResults(getMockedParams());
-    }).not.toThrow();
+    await expect(
+      fetchAndUpdateResults(getMockedParams()),
+    ).resolves.toBeUndefined();
   });
 });

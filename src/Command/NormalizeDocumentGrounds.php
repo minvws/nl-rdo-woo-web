@@ -6,19 +6,19 @@ namespace Shared\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Shared\Domain\Ingest\IngestDispatcher;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Attribute\Option;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Throwable;
 use Webmozart\Assert\Assert;
 
-use function array_key_exists;
 use function array_map;
+use function array_merge;
 use function array_unique;
+use function array_values;
 use function explode;
 use function implode;
 use function sprintf;
@@ -29,123 +29,127 @@ class NormalizeDocumentGrounds extends Command
 {
     public const string COMMAND_NAME = 'woopie:normalize-document-grounds';
 
+    private const int BATCH_SIZE = 1000;
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly IngestDispatcher $ingestDispatcher,
     ) {
         parent::__construct();
     }
 
-    protected function configure(): void
-    {
-        $this
-            ->setDefinition([
-                new InputArgument('mapping', InputArgument::REQUIRED, 'The value mapping excel sheet'),
-                new InputOption('dry-run', 'd', InputOption::VALUE_NONE, 'Dry run'),
-            ]);
-    }
+    public function __invoke(
+        OutputInterface $output,
+        #[Argument(name: 'mapping', description: 'The value mapping excel sheet')]
+        string $mappingFilename,
+        #[Option(description: 'Dry run', shortcut: 'd')]
+        bool $dryRun = false,
+        #[Option(
+            name: 'no-dispatch-reindex',
+            description: 'Do not dispatch Elasticsearch reindex messages for changed documents',
+        )]
+        bool $noDispatchReindex = false,
+    ): int {
+        $mapping = $this->loadMapping($mappingFilename);
+        $reindex = ! $noDispatchReindex && ! $dryRun;
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
-        $mappingArgument = $input->getArgument('mapping');
-        Assert::string($mappingArgument);
+        $documentQuery = $this->entityManager->getRepository(Document::class)->createQueryBuilder('d')->select('d')->getQuery();
+        $checked = 0;
+        $changed = [];
 
-        $mapping = $this->loadMapping($mappingArgument);
-        $dryRun = $input->getOption('dry-run');
-
-        $dossierQuery = $this->entityManager->getRepository(Document::class)->createQueryBuilder('d')->select('d')->getQuery();
-        $rowCount = 0;
-
-        foreach ($dossierQuery->toIterable() as $document) {
+        foreach ($documentQuery->toIterable() as $document) {
             Assert::isInstanceOf($document, Document::class);
-            $this->normalizeGrounds($output, $mapping, $document);
+            $currentGrounds = $document->getGrounds();
+            $normalizedGrounds = $this->normalize($currentGrounds, $mapping);
+            if ($normalizedGrounds !== $currentGrounds) {
+                $document->setGrounds($normalizedGrounds);
+                $changed[] = $document;
 
-            $rowCount++;
-            if ($rowCount % 1000 === 0) {
-                if (! $dryRun) {
-                    $this->entityManager->flush();
-                }
-                $this->entityManager->clear();
+                $output->writeln(sprintf(
+                    '<info>%s: updated [%s] to [%s]</info>',
+                    $document->getDocumentNumber()->toString(),
+                    implode(';', $currentGrounds),
+                    implode(';', $normalizedGrounds),
+                ));
+            }
+
+            if (++$checked % self::BATCH_SIZE === 0) {
+                $this->flush($changed, $dryRun, $reindex);
+                $changed = [];
             }
         }
 
+        $this->flush($changed, $dryRun, $reindex);
+
         if ($dryRun) {
-            $output->writeln('<comment>WARNING: THIS IS A DRY RUN, NOTHING WAS UPDATED IN THE DATABASE</comment>');
-        } else {
-            $this->entityManager->flush();
+            $output->writeln('<comment>DRY RUN: nothing was updated in the database</comment>');
         }
 
-        $output->writeln(sprintf('<info>FINISHED, checked %d documents</info>', $rowCount));
+        $output->writeln(sprintf('<info>FINISHED, checked %d documents</info>', $checked));
 
         return self::SUCCESS;
     }
 
     /**
-     * @param array<string, array<array-key, string>> $mapping
+     * @param list<string> $grounds
+     * @param array<string, list<string>> $mapping
+     *
+     * @return list<string>
      */
-    private function normalizeGrounds(OutputInterface $output, array $mapping, Document $document): void
+    private function normalize(array $grounds, array $mapping): array
     {
-        $currentGrounds = $document->getGrounds();
-        $normalizedGrounds = [];
-        foreach ($currentGrounds as $currentGround) {
-            $currentGround = trim($currentGround);
-            if (! array_key_exists($currentGround, $mapping)) {
-                $normalizedGrounds[] = $currentGround;
-                continue;
-            }
-
-            foreach ($mapping[$currentGround] as $mappedGround) {
-                $normalizedGrounds[] = $mappedGround;
-            }
+        $result = [];
+        foreach ($grounds as $ground) {
+            $ground = trim($ground);
+            $result[] = $mapping[$ground] ?? [$ground];
         }
 
-        $normalizedGrounds = array_unique($normalizedGrounds);
-        if ($normalizedGrounds !== $currentGrounds) {
-            $document->setGrounds($normalizedGrounds);
-            $this->entityManager->persist($document);
-            $documentNumber = $document->getDocumentNumber()->toString();
-
-            $output->writeln(sprintf(
-                '<info>%s: updated [%s] to [%s]</info>',
-                $documentNumber,
-                implode(';', $currentGrounds),
-                implode(';', $normalizedGrounds),
-            ));
-        }
+        return array_values(array_unique(array_merge(...$result)));
     }
 
     /**
-     * @return array<string, array<array-key, string>>
+     * @param list<Document> $changed
+     */
+    private function flush(array $changed, bool $dryRun, bool $reindex): void
+    {
+        if (! $dryRun) {
+            $this->entityManager->flush();
+
+            if ($reindex) {
+                foreach ($changed as $document) {
+                    $this->ingestDispatcher->dispatchIngestMetadataOnlyCommandForEntity($document, forceRefresh: false);
+                }
+            }
+        }
+
+        $this->entityManager->clear();
+    }
+
+    /**
+     * @return array<string, list<string>>
      */
     private function loadMapping(string $filename): array
     {
         $reader = IOFactory::createReader('Xlsx');
         $reader->setReadDataOnly(true);
-        try {
-            $spreadsheet = $reader->load($filename);
-        } catch (Throwable) {
-            return [];
-        }
-
+        $spreadsheet = $reader->load($filename);
         $rows = $spreadsheet->getActiveSheet()->toArray();
         unset($rows[0]); // Skip header
 
         $mapping = [];
-        foreach ($rows as $row) {
-            if ($row[0] === null) {
+        foreach ($rows as [$from, $to]) {
+            if ($from === null) {
                 continue;
             }
 
-            if ($row[1] === null) {
-                $normalizedValues = [];
-            } else {
-                Assert::string($row[1]);
-
-                $normalizedValues = explode(';', $row[1]);
-                $normalizedValues = array_map(trim(...), $normalizedValues);
+            Assert::string($from);
+            if ($to !== null) {
+                Assert::scalar($to);
             }
 
-            Assert::string($row[0]);
-            $mapping[trim($row[0])] = $normalizedValues;
+            $mapping[trim($from)] = $to === null
+                ? []
+                : array_map(trim(...), explode(';', (string) $to));
         }
 
         return $mapping;

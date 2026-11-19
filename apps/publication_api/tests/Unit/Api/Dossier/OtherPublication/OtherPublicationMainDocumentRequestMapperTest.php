@@ -34,7 +34,8 @@ final class OtherPublicationMainDocumentRequestMapperTest extends UnitTestCase
             array_map(Ground::from(...), $grounds),
         );
 
-        $mainDocument = OtherPublicationMainDocumentRequestMapper::create($otherPublication, $otherPublicationMainDocumentRequestDto);
+        $otherPublicationMainDocumentRequestMapper = new OtherPublicationMainDocumentRequestMapper();
+        $mainDocument = $otherPublicationMainDocumentRequestMapper->create($otherPublication, $otherPublicationMainDocumentRequestDto);
 
         self::assertSame($otherPublication, $mainDocument->getDossier());
         self::assertSame($fileName->toString(), $mainDocument->getFileInfo()->getName());
@@ -70,7 +71,8 @@ final class OtherPublicationMainDocumentRequestMapperTest extends UnitTestCase
             array_map(Ground::from(...), $grounds),
         );
 
-        $mainDocument = OtherPublicationMainDocumentRequestMapper::update($otherPublication, $otherPublicationMainDocumentRequestDto);
+        $otherPublicationMainDocumentRequestMapper = new OtherPublicationMainDocumentRequestMapper();
+        $mainDocument = $otherPublicationMainDocumentRequestMapper->update($otherPublication, $otherPublicationMainDocumentRequestDto);
 
         self::assertSame($existingMainDocument, $mainDocument);
         self::assertSame($fileName->toString(), $mainDocument->getFileInfo()->getName());
@@ -91,8 +93,10 @@ final class OtherPublicationMainDocumentRequestMapperTest extends UnitTestCase
             $this->getFaker()->attachmentType(OtherPublicationMainDocument::getAllowedTypes()),
         );
 
+        $otherPublicationMainDocumentRequestMapper = new OtherPublicationMainDocumentRequestMapper();
+
         self::expectException(InvalidArgumentException::class);
 
-        OtherPublicationMainDocumentRequestMapper::update($otherPublication, $otherPublicationMainDocumentRequestDto);
+        $otherPublicationMainDocumentRequestMapper->update($otherPublication, $otherPublicationMainDocumentRequestDto);
     }
 }

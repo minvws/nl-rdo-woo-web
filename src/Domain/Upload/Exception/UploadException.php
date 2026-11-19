@@ -63,4 +63,13 @@ class UploadException extends RuntimeException
             $uploadId,
         ));
     }
+
+    public static function forInvalidContextUuid(UploadEntity $uploadEntity, string $key): self
+    {
+        return new self(sprintf(
+            'UploadEntity %s has no valid uuid for context key %s',
+            $uploadEntity->getId(),
+            $key,
+        ));
+    }
 }

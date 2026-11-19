@@ -23,11 +23,29 @@ class UserRouteHelperTest extends UnitTestCase
         self::assertEquals('app_admin_dossiers', $userRouteHelper->getDefaultIndexRouteName());
     }
 
+    public function testGetDefaultIndexRouteNameWhenOnlyContentPagesAuthorized(): void
+    {
+        $authorizationMatrix = Mockery::mock(AuthorizationMatrix::class);
+        $authorizationMatrix->expects('isAuthorized')
+            ->with('dossier', 'read')
+            ->andReturn(false);
+        $authorizationMatrix->expects('isAuthorized')
+            ->with('content_page', 'read')
+            ->andReturn(true);
+
+        $userRouteHelper = new UserRouteHelper($authorizationMatrix);
+
+        self::assertEquals('app_admin_content_pages', $userRouteHelper->getDefaultIndexRouteName());
+    }
+
     public function testGetDefaultIndexRouteNameWhenNotAuthorized(): void
     {
         $authorizationMatrix = Mockery::mock(AuthorizationMatrix::class);
         $authorizationMatrix->expects('isAuthorized')
             ->with('dossier', 'read')
+            ->andReturn(false);
+        $authorizationMatrix->expects('isAuthorized')
+            ->with('content_page', 'read')
             ->andReturn(false);
 
         $userRouteHelper = new UserRouteHelper($authorizationMatrix);

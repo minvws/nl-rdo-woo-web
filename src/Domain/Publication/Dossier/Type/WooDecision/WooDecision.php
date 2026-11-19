@@ -369,7 +369,7 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
     public function setProductionReport(?ProductionReport $productionReport): static
     {
         // set the owning side of the relation if necessary
-        if ($productionReport !== null && $productionReport->getDossier() !== $this) {
+        if ($productionReport instanceof ProductionReport && $productionReport->getDossier() !== $this) {
             $productionReport->setDossier($this);
         }
 

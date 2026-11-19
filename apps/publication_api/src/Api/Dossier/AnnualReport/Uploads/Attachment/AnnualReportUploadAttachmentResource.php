@@ -7,6 +7,7 @@ namespace PublicationApi\Api\Dossier\AnnualReport\Uploads\Attachment;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\OpenApi\Model\Operation;
+use PublicationApi\Api\Uploads\Attachment\UploadAttachmentRequestDtoFactory;
 use PublicationApi\Domain\OpenApi\PathParameter\AttachmentExternalIdLink;
 use PublicationApi\Domain\OpenApi\PathParameter\DossierExternalIdLink;
 use PublicationApi\Domain\OpenApi\PathParameter\OrganisationIdLink;
@@ -29,7 +30,7 @@ use Symfony\Component\HttpFoundation\Response;
             inputFormats: ['binary' => ['application/octet-stream']],
             outputFormats: [],
             status: Response::HTTP_NO_CONTENT,
-            controller: AnnualReportUploadAttachmentRequestDtoFactory::class,
+            controller: UploadAttachmentRequestDtoFactory::class,
             input: false,
             output: false,
             read: false,

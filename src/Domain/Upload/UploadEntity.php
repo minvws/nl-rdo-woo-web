@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Shared\Doctrine\ExternalIdType;
 use Shared\Doctrine\TimestampableTrait;
 use Shared\Domain\Upload\Exception\UploadException;
+use Shared\Domain\Upload\Exception\UploadValidationErrorReason;
 use Shared\Domain\Upload\Exception\UploadValidationException;
 use Shared\Service\Security\User;
 use Shared\Service\Uploader\UploadGroupId;
@@ -56,6 +57,9 @@ class UploadEntity
      */
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $error = null;
+
+    #[ORM\Column(length: 50, nullable: true, enumType: UploadValidationErrorReason::class)]
+    private ?UploadValidationErrorReason $errorReason = null;
 
     /**
      * @var array<string, mixed>|null
@@ -118,6 +122,7 @@ class UploadEntity
         }
 
         $this->error = [$exception->getMessage()];
+        $this->errorReason = $exception->getErrorReason();
 
         $this->status = UploadEntityStatus::VALIDATION_FAILED;
     }
@@ -187,6 +192,11 @@ class UploadEntity
     public function getError(): ?array
     {
         return $this->error;
+    }
+
+    public function getErrorReason(): ?UploadValidationErrorReason
+    {
+        return $this->errorReason;
     }
 
     public function getContext(): InputBag

@@ -72,7 +72,7 @@ describe('the <PublicationFilesList /> component', () => {
     const publicationFileItemComponents =
       getPublicationFileItemComponents(createComponent());
 
-    expect(publicationFileItemComponents.length).toBe(2);
+    expect(publicationFileItemComponents).toHaveLength(2);
 
     [...mockedFiles.values()].forEach((mockedFile, index) => {
       const component = publicationFileItemComponents.at(index);

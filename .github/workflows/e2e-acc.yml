@@ -17,7 +17,7 @@ env:
 jobs:
   e2e-tests-app:
     name: Run E2E tests on Acceptance (app)
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     if: ${{ inputs.test_tag != 'api' }}
     steps:
       - uses: actions/checkout@v7
@@ -85,7 +85,7 @@ jobs:
 
   e2e-tests-api:
     name: Run E2E tests on Acceptance (API)
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     if: ${{ inputs.test_tag == 'test-acc' || inputs.test_tag == 'api' }}
     steps:
       - uses: actions/checkout@v7

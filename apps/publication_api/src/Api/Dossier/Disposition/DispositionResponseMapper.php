@@ -21,7 +21,9 @@ use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
 use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\ValueObject\PlainDate;
 use Webmozart\Assert\Assert;
 
@@ -86,7 +88,7 @@ readonly class DispositionResponseMapper implements DossierResponseMapper
     private function mainDocument(Disposition $disposition): ?DispositionMainDocumentResponseDto
     {
         $mainDocument = $disposition->getMainDocument();
-        if ($mainDocument === null) {
+        if (! $mainDocument instanceof AbstractMainDocument) {
             return null;
         }
 
@@ -100,7 +102,7 @@ readonly class DispositionResponseMapper implements DossierResponseMapper
     private function noticeNotPublic(Disposition $disposition): ?NoticeNotPublicResponseDto
     {
         $noticeNotPublic = $disposition->getNoticeNotPublic();
-        if ($noticeNotPublic === null) {
+        if (! $noticeNotPublic instanceof NoticeNotPublic) {
             return null;
         }
 

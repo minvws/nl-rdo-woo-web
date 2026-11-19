@@ -34,7 +34,7 @@ readonly class ProductionReportDossierFileProvider implements DossierFileProvide
         }
 
         $productionReport = $dossier->getProductionReport();
-        if ($productionReport === null) {
+        if (! $productionReport instanceof ProductionReport) {
             throw DossierFileNotFoundException::forEntity($this->getType(), $dossier, $id);
         }
 

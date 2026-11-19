@@ -63,7 +63,7 @@ enum SourceType: string implements TranslatableInterface
     {
         $fileType = FileType::fromMimeType($mimeType ?? '');
 
-        if ($fileType === null) {
+        if (! $fileType instanceof FileType) {
             return self::UNKNOWN;
         }
 

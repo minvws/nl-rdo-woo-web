@@ -6,14 +6,15 @@ namespace PublicationApi\Tests\Unit\Api\Dossier\DraftDecision;
 
 use InvalidArgumentException;
 use Mockery;
+use PublicationApi\Api\Dossier\DossierMainDocumentSynchronizer;
+use PublicationApi\Api\Dossier\DossierPersister;
 use PublicationApi\Api\Dossier\DraftDecision\DraftDecisionAttachmentSynchronizer;
 use PublicationApi\Api\Dossier\DraftDecision\DraftDecisionMainDocumentRequestDto;
-use PublicationApi\Api\Dossier\DraftDecision\DraftDecisionMainDocumentSynchronizer;
-use PublicationApi\Api\Dossier\DraftDecision\DraftDecisionPersister;
+use PublicationApi\Api\Dossier\DraftDecision\DraftDecisionMainDocumentRequestMapper;
 use PublicationApi\Api\Dossier\DraftDecision\DraftDecisionRequestDto;
 use PublicationApi\Api\Dossier\DraftDecision\DraftDecisionRequestMapper;
-use PublicationApi\Api\Dossier\DraftDecision\DraftDecisionSnapshot;
 use PublicationApi\Api\Dossier\DraftDecision\DraftDecisionStrategy;
+use PublicationApi\Api\Dossier\MainDocumentSnapshot;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecision;
@@ -28,10 +29,11 @@ final class DraftDecisionStrategyTest extends UnitTestCase
     public function testDossierType(): void
     {
         $draftDecisionStrategy = new DraftDecisionStrategy(
-            Mockery::mock(DraftDecisionPersister::class),
+            Mockery::mock(DossierPersister::class),
             Mockery::mock(DraftDecisionRequestMapper::class),
             Mockery::mock(DraftDecisionAttachmentSynchronizer::class),
-            Mockery::mock(DraftDecisionMainDocumentSynchronizer::class),
+            Mockery::mock(DraftDecisionMainDocumentRequestMapper::class),
+            Mockery::mock(DossierMainDocumentSynchronizer::class),
         );
 
         self::assertSame(DraftDecision::class, $draftDecisionStrategy->dossierType());
@@ -76,22 +78,26 @@ final class DraftDecisionStrategyTest extends UnitTestCase
             $documentPrefix,
         )->andReturn($draftDecision);
 
-        $draftDecisionMainDocumentSynchronizer = Mockery::mock(DraftDecisionMainDocumentSynchronizer::class);
-        $draftDecisionMainDocumentSynchronizer->expects('create')->with($draftDecision, $mainDocumentRequestDto);
+        $draftDecisionMainDocumentRequestMapper = Mockery::mock(DraftDecisionMainDocumentRequestMapper::class);
+
+        $dossierMainDocumentSynchronizer = Mockery::mock(DossierMainDocumentSynchronizer::class);
+        $dossierMainDocumentSynchronizer->expects('create')
+            ->with($draftDecision, $mainDocumentRequestDto, $draftDecisionMainDocumentRequestMapper);
 
         $draftDecisionAttachmentSynchronizer = Mockery::mock(DraftDecisionAttachmentSynchronizer::class);
         $draftDecisionAttachmentSynchronizer->expects('create')
             ->with($draftDecision, $draftDecisionRequestDto->attachments)
             ->andReturn($attachmentEvents);
 
-        $draftDecisionPersister = Mockery::mock(DraftDecisionPersister::class);
-        $draftDecisionPersister->expects('persist')->with($draftDecision, null, $attachmentEvents);
+        $dossierPersister = Mockery::mock(DossierPersister::class);
+        $dossierPersister->expects('persist')->with($draftDecision, null, $attachmentEvents);
 
         $draftDecisionStrategy = new DraftDecisionStrategy(
-            $draftDecisionPersister,
+            $dossierPersister,
             $draftDecisionRequestMapper,
             $draftDecisionAttachmentSynchronizer,
-            $draftDecisionMainDocumentSynchronizer,
+            $draftDecisionMainDocumentRequestMapper,
+            $dossierMainDocumentSynchronizer,
         );
 
         self::assertSame($draftDecision, $draftDecisionStrategy->create(
@@ -124,10 +130,11 @@ final class DraftDecisionStrategyTest extends UnitTestCase
         $draftDecisionRequestMapper->expects('create')->andReturn(new DraftDecision());
 
         $draftDecisionStrategy = new DraftDecisionStrategy(
-            Mockery::mock(DraftDecisionPersister::class),
+            Mockery::mock(DossierPersister::class),
             $draftDecisionRequestMapper,
             Mockery::mock(DraftDecisionAttachmentSynchronizer::class),
-            Mockery::mock(DraftDecisionMainDocumentSynchronizer::class),
+            Mockery::mock(DraftDecisionMainDocumentRequestMapper::class),
+            Mockery::mock(DossierMainDocumentSynchronizer::class),
         );
 
         self::expectException(InvalidArgumentException::class);
@@ -167,30 +174,34 @@ final class DraftDecisionStrategyTest extends UnitTestCase
         );
 
         $draftDecision = new DraftDecision();
-        $draftDecisionSnapshot = DraftDecisionSnapshot::of($draftDecision);
+        $mainDocumentSnapshot = MainDocumentSnapshot::of($draftDecision);
         $attachmentEvents = [];
 
         $draftDecisionRequestMapper = Mockery::mock(DraftDecisionRequestMapper::class);
         $draftDecisionRequestMapper->expects('update')
             ->with($draftDecision, $draftDecisionRequestDto, $organisation, $department, $subject);
 
-        $draftDecisionMainDocumentSynchronizer = Mockery::mock(DraftDecisionMainDocumentSynchronizer::class);
-        $draftDecisionMainDocumentSynchronizer->expects('update')->with($draftDecision, $mainDocumentRequestDto);
+        $draftDecisionMainDocumentRequestMapper = Mockery::mock(DraftDecisionMainDocumentRequestMapper::class);
+
+        $dossierMainDocumentSynchronizer = Mockery::mock(DossierMainDocumentSynchronizer::class);
+        $dossierMainDocumentSynchronizer->expects('update')
+            ->with($draftDecision, $mainDocumentRequestDto, $draftDecisionMainDocumentRequestMapper);
 
         $draftDecisionAttachmentSynchronizer = Mockery::mock(DraftDecisionAttachmentSynchronizer::class);
         $draftDecisionAttachmentSynchronizer->expects('update')
             ->with($draftDecision, $draftDecisionRequestDto->attachments)
             ->andReturn($attachmentEvents);
 
-        $draftDecisionPersister = Mockery::mock(DraftDecisionPersister::class);
-        $draftDecisionPersister->expects('snapshot')->with($draftDecision)->andReturn($draftDecisionSnapshot);
-        $draftDecisionPersister->expects('persist')->with($draftDecision, $draftDecisionSnapshot, $attachmentEvents);
+        $dossierPersister = Mockery::mock(DossierPersister::class);
+        $dossierPersister->expects('snapshot')->with($draftDecision)->andReturn($mainDocumentSnapshot);
+        $dossierPersister->expects('persist')->with($draftDecision, $mainDocumentSnapshot, $attachmentEvents);
 
         $draftDecisionStrategy = new DraftDecisionStrategy(
-            $draftDecisionPersister,
+            $dossierPersister,
             $draftDecisionRequestMapper,
             $draftDecisionAttachmentSynchronizer,
-            $draftDecisionMainDocumentSynchronizer,
+            $draftDecisionMainDocumentRequestMapper,
+            $dossierMainDocumentSynchronizer,
         );
 
         $draftDecisionStrategy->update($draftDecision, $draftDecisionRequestDto, $organisation, $department, $subject);

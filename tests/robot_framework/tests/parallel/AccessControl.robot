@@ -31,6 +31,7 @@ Users
   organisation_admin  ${TRUE}  ${TRUE}  ${TRUE}  ${TRUE}  ${TRUE}
   dossier_admin  ${FALSE}  ${FALSE}  ${FALSE}  ${FALSE}  ${FALSE}
   view_access  ${FALSE}  ${FALSE}  ${FALSE}  ${FALSE}  ${FALSE}
+  content_admin  ${FALSE}  ${FALSE}  ${FALSE}  ${FALSE}  ${FALSE}
 
 Super Admin
   [Template]  Verify Permissions On Super Admin
@@ -45,6 +46,7 @@ Departments
   organisation_admin  ${FALSE}  ${TRUE}  ${FALSE}
   dossier_admin  ${FALSE}  ${FALSE}  ${FALSE}
   view_access  ${FALSE}  ${FALSE}  ${FALSE}
+  content_admin  ${FALSE}  ${FALSE}  ${FALSE}
 
 Department Landingpages
   [Documentation]  The order of execution is important here, the super admin should go first so the org admin sees the edit link.
@@ -54,6 +56,7 @@ Department Landingpages
   organisation_admin  ${TRUE}  ${TRUE}
   dossier_admin  ${FALSE}  ${FALSE}
   view_access  ${FALSE}  ${FALSE}
+  content_admin  ${FALSE}  ${FALSE}
 
 Subjects
   [Template]  Verify Permissions On Subjects
@@ -62,6 +65,7 @@ Subjects
   organisation_admin  ${TRUE}  ${TRUE}  ${TRUE}
   dossier_admin  ${FALSE}  ${FALSE}  ${FALSE}
   view_access  ${FALSE}  ${FALSE}  ${FALSE}
+  content_admin  ${FALSE}  ${FALSE}  ${FALSE}
 
 Organisations
   [Template]  Verify Permissions On Organisations
@@ -70,6 +74,26 @@ Organisations
   organisation_admin  ${FALSE}  ${FALSE}  ${FALSE}
   dossier_admin  ${FALSE}  ${FALSE}  ${FALSE}
   view_access  ${FALSE}  ${FALSE}  ${FALSE}
+  content_admin  ${FALSE}  ${FALSE}  ${FALSE}
+
+Content Pages
+  [Template]  Verify Permissions On Content Pages
+  # ${role}  ${read}  ${update}
+  super_admin  ${TRUE}  ${TRUE}
+  content_admin  ${TRUE}  ${TRUE}
+  organisation_admin  ${FALSE}  ${FALSE}
+  dossier_admin  ${FALSE}  ${FALSE}
+  view_access  ${FALSE}  ${FALSE}
+
+Content Admin Lands On Content Pages And Cannot Open Admin Pages
+  Login Admin With Role  content_admin
+  Get Url  $=  /balie/content-pages
+  Menu Does Not Contain Item With E2E Name  nav-publications
+  Go To  ${URL_ADMIN}/admin
+  Verify Page Error  403
+  Go To  ${URL_ADMIN}/elastic
+  Verify Page Error  403
+  No-Click Logout
 
 
 *** Keywords ***
@@ -82,6 +106,7 @@ Suite Setup
   Create Test User  organisation=E2E Test Organisation  role=organisation_admin
   Create Test User  organisation=E2E Test Organisation  role=dossier_admin
   Create Test User  organisation=E2E Test Organisation  role=view_access
+  Create Test User  organisation=E2E Test Organisation  role=content_admin
 
 Verify Permissions On Users
   [Arguments]  ${role}  ${create}  ${read}  ${update}  ${delete}  ${organisation_only}
@@ -191,3 +216,22 @@ Verify Permissions On Organisations
   END
   No-Click Logout
   # Delete wordt niet gebruikt, wel in matrix
+
+Verify Permissions On Content Pages
+  [Arguments]  ${role}  ${read}  ${update}
+  Login Admin With Role  ${role}
+  IF  not ${read}
+    Menu Does Not Contain Item With E2E Name  nav-content-pages
+    Go To  ${URL_ADMIN}/content-pages
+    Verify Page Error  403
+  ELSE
+    Click  //*[@data-e2e-name="nav-content-pages"]
+    Get Text  //main[@id="inhoud"]//h1  should be  Contentpagina's
+    IF  ${update}
+      # Saves without changes, so the ContentPages suite running in parallel is not affected
+      Click  //*[@data-e2e-name="content-page-edit"][contains(@href,'balie-contact')]
+      Click  //*[@id="content_page_submit"]
+      Success Alert Is Visible  De content is aangepast
+    END
+  END
+  No-Click Logout

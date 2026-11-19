@@ -49,7 +49,7 @@ final class DossierNumberChangeDetector
 
     public function postUpdate(AbstractDossier $dossier, PostUpdateEventArgs $event): void
     {
-        if ($this->pendingEvent === null) {
+        if (! $this->pendingEvent instanceof DossierNumberChangedEvent) {
             return;
         }
 

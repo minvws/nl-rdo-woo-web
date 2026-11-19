@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Form\Dossier\WooDecision;
 
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Upload\FileType\FileType as FileTypeEnum;
 use Symfony\Component\Form\AbstractType;
@@ -49,7 +50,7 @@ class InventoryType extends AbstractType
                 'label' => $inventoryRequired ? 'admin.inventory.submit_label' : 'global.save_and_continue',
             ]);
 
-        if ($dossier->getProductionReport() !== null) {
+        if ($dossier->getProductionReport() instanceof ProductionReport) {
             $builder->add('cancel', SubmitType::class, [
                 'label' => 'global.cancel',
                 'attr' => [

@@ -36,7 +36,7 @@ class AndTermFilter implements FilterInterface
         foreach ($input->getStringValues() as $value) {
             $query->addFilter(
                 Query::term(
-                    field: ($nestedPath ? $nestedPath->value . '.' : '') . $facet->getPath(),
+                    field: ($nestedPath instanceof ElasticNestedField ? $nestedPath->value . '.' : '') . $facet->getPath(),
                     value: $value,
                 ),
             );

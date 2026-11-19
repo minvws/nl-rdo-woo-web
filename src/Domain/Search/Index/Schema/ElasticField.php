@@ -41,6 +41,7 @@ enum ElasticField: string
     case DOCUMENT_ID = 'document_id';
     case THREAD_ID = 'thread_id';
     case JUDGEMENT = 'judgement';
+    case LINKS = 'links';
     case DOCUMENT_PAGES = 'document_pages';
     case CONTENT = 'content';
     case CONTENT_FOR_SUGGESTIONS = 'content_for_suggestions';

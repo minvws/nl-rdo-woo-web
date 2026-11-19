@@ -6,13 +6,13 @@ namespace PublicationApi\Tests\Unit\Api\Dossier\RequestForAdvice;
 
 use Mockery;
 use PublicationApi\Api\Dossier\DossierAttachmentSynchronizer;
-use PublicationApi\Api\Dossier\NoticeNotPublicSynchronizer;
+use PublicationApi\Api\Dossier\DossierMainDocumentOrNoticeSynchronizer;
+use PublicationApi\Api\Dossier\DossierPersister;
+use PublicationApi\Api\Dossier\MainDocumentSnapshot;
 use PublicationApi\Api\Dossier\RequestForAdvice\RequestForAdviceMainDocumentRequestDto;
-use PublicationApi\Api\Dossier\RequestForAdvice\RequestForAdviceMainDocumentSynchronizer;
-use PublicationApi\Api\Dossier\RequestForAdvice\RequestForAdvicePersister;
+use PublicationApi\Api\Dossier\RequestForAdvice\RequestForAdviceMainDocumentRequestMapper;
 use PublicationApi\Api\Dossier\RequestForAdvice\RequestForAdviceRequestDto;
 use PublicationApi\Api\Dossier\RequestForAdvice\RequestForAdviceRequestMapper;
-use PublicationApi\Api\Dossier\RequestForAdvice\RequestForAdviceSnapshot;
 use PublicationApi\Api\Dossier\RequestForAdvice\RequestForAdviceStrategy;
 use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicRequestDto;
 use Shared\Domain\Department\Department;
@@ -32,11 +32,11 @@ final class RequestForAdviceStrategyTest extends UnitTestCase
     public function testDossierType(): void
     {
         $requestForAdviceStrategy = new RequestForAdviceStrategy(
-            Mockery::mock(RequestForAdvicePersister::class),
+            Mockery::mock(DossierPersister::class),
             Mockery::mock(RequestForAdviceRequestMapper::class),
             Mockery::mock(DossierAttachmentSynchronizer::class),
-            Mockery::mock(RequestForAdviceMainDocumentSynchronizer::class),
-            Mockery::mock(NoticeNotPublicSynchronizer::class),
+            Mockery::mock(RequestForAdviceMainDocumentRequestMapper::class),
+            Mockery::mock(DossierMainDocumentOrNoticeSynchronizer::class),
         );
 
         self::assertSame(RequestForAdvice::class, $requestForAdviceStrategy->dossierType());
@@ -86,23 +86,26 @@ final class RequestForAdviceStrategyTest extends UnitTestCase
             )
             ->andReturn($requestForAdvice);
 
-        $requestForAdviceMainDocumentSynchronizer = Mockery::mock(RequestForAdviceMainDocumentSynchronizer::class);
-        $requestForAdviceMainDocumentSynchronizer->expects('create')->with($requestForAdvice, $mainDocumentRequestDto);
+        $requestForAdviceMainDocumentRequestMapper = Mockery::mock(RequestForAdviceMainDocumentRequestMapper::class);
+
+        $dossierMainDocumentOrNoticeSynchronizer = Mockery::mock(DossierMainDocumentOrNoticeSynchronizer::class);
+        $dossierMainDocumentOrNoticeSynchronizer->expects('create')
+            ->with($requestForAdvice, $mainDocumentRequestDto, null, $requestForAdviceMainDocumentRequestMapper);
 
         $dossierAttachmentSynchronizer = Mockery::mock(DossierAttachmentSynchronizer::class);
         $dossierAttachmentSynchronizer->expects('create')
             ->with($requestForAdvice, $requestForAdviceRequestDto->attachments)
             ->andReturn($attachmentEvents);
 
-        $requestForAdvicePersister = Mockery::mock(RequestForAdvicePersister::class);
-        $requestForAdvicePersister->expects('persist')->with($requestForAdvice, null, $attachmentEvents);
+        $dossierPersister = Mockery::mock(DossierPersister::class);
+        $dossierPersister->expects('persist')->with($requestForAdvice, null, $attachmentEvents);
 
         $requestForAdviceStrategy = new RequestForAdviceStrategy(
-            $requestForAdvicePersister,
+            $dossierPersister,
             $requestForAdviceRequestMapper,
             $dossierAttachmentSynchronizer,
-            $requestForAdviceMainDocumentSynchronizer,
-            Mockery::mock(NoticeNotPublicSynchronizer::class),
+            $requestForAdviceMainDocumentRequestMapper,
+            $dossierMainDocumentOrNoticeSynchronizer,
         );
 
         self::assertSame($requestForAdvice, $requestForAdviceStrategy->create(
@@ -148,21 +151,24 @@ final class RequestForAdviceStrategyTest extends UnitTestCase
         $requestForAdviceRequestMapper = Mockery::mock(RequestForAdviceRequestMapper::class);
         $requestForAdviceRequestMapper->expects('create')->andReturn($requestForAdvice);
 
-        $noticeNotPublicSynchronizer = Mockery::mock(NoticeNotPublicSynchronizer::class);
-        $noticeNotPublicSynchronizer->expects('create')->with($requestForAdvice, $noticeNotPublicRequestDto);
+        $requestForAdviceMainDocumentRequestMapper = Mockery::mock(RequestForAdviceMainDocumentRequestMapper::class);
+
+        $dossierMainDocumentOrNoticeSynchronizer = Mockery::mock(DossierMainDocumentOrNoticeSynchronizer::class);
+        $dossierMainDocumentOrNoticeSynchronizer->expects('create')
+            ->with($requestForAdvice, null, $noticeNotPublicRequestDto, $requestForAdviceMainDocumentRequestMapper);
 
         $dossierAttachmentSynchronizer = Mockery::mock(DossierAttachmentSynchronizer::class);
         $dossierAttachmentSynchronizer->expects('create')->andReturn($attachmentEvents);
 
-        $requestForAdvicePersister = Mockery::mock(RequestForAdvicePersister::class);
-        $requestForAdvicePersister->expects('persist')->with($requestForAdvice, null, $attachmentEvents);
+        $dossierPersister = Mockery::mock(DossierPersister::class);
+        $dossierPersister->expects('persist')->with($requestForAdvice, null, $attachmentEvents);
 
         $requestForAdviceStrategy = new RequestForAdviceStrategy(
-            $requestForAdvicePersister,
+            $dossierPersister,
             $requestForAdviceRequestMapper,
             $dossierAttachmentSynchronizer,
-            Mockery::mock(RequestForAdviceMainDocumentSynchronizer::class),
-            $noticeNotPublicSynchronizer,
+            $requestForAdviceMainDocumentRequestMapper,
+            $dossierMainDocumentOrNoticeSynchronizer,
         );
 
         self::assertSame($requestForAdvice, $requestForAdviceStrategy->create(
@@ -203,33 +209,33 @@ final class RequestForAdviceStrategyTest extends UnitTestCase
         );
 
         $requestForAdvice = new RequestForAdvice();
-        $requestForAdviceSnapshot = RequestForAdviceSnapshot::of($requestForAdvice);
+        $mainDocumentSnapshot = MainDocumentSnapshot::of($requestForAdvice);
         $attachmentEvents = [];
 
         $requestForAdviceRequestMapper = Mockery::mock(RequestForAdviceRequestMapper::class);
         $requestForAdviceRequestMapper->expects('update')->with($requestForAdvice, $requestForAdviceRequestDto, $organisation, $department, $subject);
 
-        $noticeNotPublicSynchronizer = Mockery::mock(NoticeNotPublicSynchronizer::class);
-        $noticeNotPublicSynchronizer->expects('delete')->with($requestForAdvice);
+        $requestForAdviceMainDocumentRequestMapper = Mockery::mock(RequestForAdviceMainDocumentRequestMapper::class);
 
-        $requestForAdviceMainDocumentSynchronizer = Mockery::mock(RequestForAdviceMainDocumentSynchronizer::class);
-        $requestForAdviceMainDocumentSynchronizer->expects('update')->with($requestForAdvice, $mainDocumentRequestDto);
+        $dossierMainDocumentOrNoticeSynchronizer = Mockery::mock(DossierMainDocumentOrNoticeSynchronizer::class);
+        $dossierMainDocumentOrNoticeSynchronizer->expects('update')
+            ->with($requestForAdvice, $mainDocumentRequestDto, null, $requestForAdviceMainDocumentRequestMapper);
 
         $dossierAttachmentSynchronizer = Mockery::mock(DossierAttachmentSynchronizer::class);
         $dossierAttachmentSynchronizer->expects('update')
             ->with($requestForAdvice, $requestForAdviceRequestDto->attachments)
             ->andReturn($attachmentEvents);
 
-        $requestForAdvicePersister = Mockery::mock(RequestForAdvicePersister::class);
-        $requestForAdvicePersister->expects('snapshot')->with($requestForAdvice)->andReturn($requestForAdviceSnapshot);
-        $requestForAdvicePersister->expects('persist')->with($requestForAdvice, $requestForAdviceSnapshot, $attachmentEvents);
+        $dossierPersister = Mockery::mock(DossierPersister::class);
+        $dossierPersister->expects('snapshot')->with($requestForAdvice)->andReturn($mainDocumentSnapshot);
+        $dossierPersister->expects('persist')->with($requestForAdvice, $mainDocumentSnapshot, $attachmentEvents);
 
         $requestForAdviceStrategy = new RequestForAdviceStrategy(
-            $requestForAdvicePersister,
+            $dossierPersister,
             $requestForAdviceRequestMapper,
             $dossierAttachmentSynchronizer,
-            $requestForAdviceMainDocumentSynchronizer,
-            $noticeNotPublicSynchronizer,
+            $requestForAdviceMainDocumentRequestMapper,
+            $dossierMainDocumentOrNoticeSynchronizer,
         );
 
         $requestForAdviceStrategy->update($requestForAdvice, $requestForAdviceRequestDto, $organisation, $department, $subject);
@@ -261,31 +267,31 @@ final class RequestForAdviceStrategyTest extends UnitTestCase
         );
 
         $requestForAdvice = new RequestForAdvice();
-        $requestForAdviceSnapshot = RequestForAdviceSnapshot::of($requestForAdvice);
+        $mainDocumentSnapshot = MainDocumentSnapshot::of($requestForAdvice);
         $attachmentEvents = [];
 
         $requestForAdviceRequestMapper = Mockery::mock(RequestForAdviceRequestMapper::class);
         $requestForAdviceRequestMapper->expects('update')->with($requestForAdvice, $requestForAdviceRequestDto, $organisation, $department, null);
 
-        $requestForAdviceMainDocumentSynchronizer = Mockery::mock(RequestForAdviceMainDocumentSynchronizer::class);
-        $requestForAdviceMainDocumentSynchronizer->expects('delete')->with($requestForAdvice);
+        $requestForAdviceMainDocumentRequestMapper = Mockery::mock(RequestForAdviceMainDocumentRequestMapper::class);
 
-        $noticeNotPublicSynchronizer = Mockery::mock(NoticeNotPublicSynchronizer::class);
-        $noticeNotPublicSynchronizer->expects('update')->with($requestForAdvice, $noticeNotPublicRequestDto);
+        $dossierMainDocumentOrNoticeSynchronizer = Mockery::mock(DossierMainDocumentOrNoticeSynchronizer::class);
+        $dossierMainDocumentOrNoticeSynchronizer->expects('update')
+            ->with($requestForAdvice, null, $noticeNotPublicRequestDto, $requestForAdviceMainDocumentRequestMapper);
 
         $dossierAttachmentSynchronizer = Mockery::mock(DossierAttachmentSynchronizer::class);
         $dossierAttachmentSynchronizer->expects('update')->andReturn($attachmentEvents);
 
-        $requestForAdvicePersister = Mockery::mock(RequestForAdvicePersister::class);
-        $requestForAdvicePersister->expects('snapshot')->with($requestForAdvice)->andReturn($requestForAdviceSnapshot);
-        $requestForAdvicePersister->expects('persist')->with($requestForAdvice, $requestForAdviceSnapshot, $attachmentEvents);
+        $dossierPersister = Mockery::mock(DossierPersister::class);
+        $dossierPersister->expects('snapshot')->with($requestForAdvice)->andReturn($mainDocumentSnapshot);
+        $dossierPersister->expects('persist')->with($requestForAdvice, $mainDocumentSnapshot, $attachmentEvents);
 
         $requestForAdviceStrategy = new RequestForAdviceStrategy(
-            $requestForAdvicePersister,
+            $dossierPersister,
             $requestForAdviceRequestMapper,
             $dossierAttachmentSynchronizer,
-            $requestForAdviceMainDocumentSynchronizer,
-            $noticeNotPublicSynchronizer,
+            $requestForAdviceMainDocumentRequestMapper,
+            $dossierMainDocumentOrNoticeSynchronizer,
         );
 
         $requestForAdviceStrategy->update($requestForAdvice, $requestForAdviceRequestDto, $organisation, $department, null);

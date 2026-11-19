@@ -204,8 +204,9 @@ Verify Document Filetype
   Generic Download Click  //a[@data-e2e-name="download-file-link"]  ${file_type}
   Go Back
 
-Select First Public Dossier
-  Click  (//table[@data-e2e-name="dossiers-table"]/tbody/tr[td[contains(.,'Openbaar')]]//td//a)[1]
+Select First Public Woo Decision
+  [Documentation]  Filters on type, since parallel suites publish other dossier types in the same organisation.
+  Click  (//table[@data-e2e-name="dossiers-table"]/tbody/tr[td[contains(.,'Openbaar')] and td[contains(.,'Woo-besluit')]]//td//a)[1]
 
 Click Continue To Publish
   Wait For Load State  networkidle

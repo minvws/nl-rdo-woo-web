@@ -41,7 +41,7 @@ class DateRangeFilter implements FilterInterface
             return;
         }
 
-        $rangeQuery = Query::range(($nestedPath ? $nestedPath->value . '.' : '') . $facet->getPath());
+        $rangeQuery = Query::range(($nestedPath instanceof ElasticNestedField ? $nestedPath->value . '.' : '') . $facet->getPath());
         match ($this->comparisonOperator) {
             'lte' => $rangeQuery->lte($rangeDate),
             'gte' => $rangeQuery->gte($rangeDate),

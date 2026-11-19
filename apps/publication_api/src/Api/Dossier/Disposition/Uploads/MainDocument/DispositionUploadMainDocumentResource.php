@@ -7,6 +7,7 @@ namespace PublicationApi\Api\Dossier\Disposition\Uploads\MainDocument;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\OpenApi\Model\Operation;
+use PublicationApi\Api\Uploads\MainDocument\UploadMainDocumentRequestDtoFactory;
 use PublicationApi\Domain\OpenApi\PathParameter\DossierExternalIdLink;
 use PublicationApi\Domain\OpenApi\PathParameter\OrganisationIdLink;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,7 +27,7 @@ use Symfony\Component\HttpFoundation\Response;
             inputFormats: ['binary' => ['application/octet-stream']],
             outputFormats: [],
             status: Response::HTTP_NO_CONTENT,
-            controller: DispositionUploadMainDocumentRequestDtoFactory::class,
+            controller: UploadMainDocumentRequestDtoFactory::class,
             input: false,
             output: false,
             read: false,
@@ -39,7 +40,10 @@ use Symfony\Component\HttpFoundation\Response;
     openapi: new Operation(
         tags: ['Disposition'],
         summary: 'Upload the main document file',
-        description: 'Uploads the file for the dossier\'s main document, which must already be declared via `mainDocument`.',
+        description: 'Uploads the file for the dossier\'s main document, which must already be declared via `mainDocument`.'
+            . "\n\nWhen an Excel file (xlsx or xls) is uploaded, its first row is used as the column names. Hidden columns are shown."
+            . ' Macros and formatting are not included.'
+            . ' The file must contain one worksheet and a header row; invalid files return HTTP 422.',
     ),
 )]
 final readonly class DispositionUploadMainDocumentResource

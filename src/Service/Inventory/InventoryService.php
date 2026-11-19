@@ -6,54 +6,48 @@ namespace Shared\Service\Inventory;
 
 use Doctrine\ORM\EntityManagerInterface;
 use RuntimeException;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Publication\SourceType;
+use Shared\Domain\Upload\FileType\FileExtension;
 use Shared\Exception\Import\InventoryCannotBeLoadedFromStorageException;
 use Shared\Service\Inventory\Reader\InventoryReaderFactory;
 use Shared\Service\Inventory\Reader\InventoryReaderInterface;
 use Shared\Service\Storage\EntityStorageService;
-use SplFileInfo;
+
+use function sprintf;
 
 /**
  * This class will process an inventory and generates document entities from the given data.
  * Note that this class does not handle the content of the documents itself, just the metadata.
  */
-class InventoryService
+readonly class InventoryService
 {
     public function __construct(
-        private readonly EntityManagerInterface $doctrine,
-        private readonly EntityStorageService $entityStorageService,
-        private readonly InventoryReaderFactory $readerFactory,
+        private EntityManagerInterface $doctrine,
+        private EntityStorageService $entityStorageService,
+        private InventoryReaderFactory $readerFactory,
     ) {
     }
 
-    public function getReader(ProductionReportProcessRun $run): InventoryReaderInterface
+    public function getReader(EntityWithFileInfo $run): InventoryReaderInterface
     {
         if (! $run->getFileInfo()->isUploaded()) {
             throw new RuntimeException('Input file missing, cannot process inventory');
         }
 
-        $tmpFilename = $this->entityStorageService->downloadEntity($run);
-        if (! $tmpFilename) {
+        $stream = $this->entityStorageService->retrieveResourceEntity($run);
+        if ($stream === null) {
             throw new InventoryCannotBeLoadedFromStorageException();
         }
 
-        $run->setTmpFilename($tmpFilename);
-
         $inventoryReader = $this->readerFactory->create($run->getFileInfo()->getMimetype() ?? '');
-        $inventoryReader->open($tmpFilename);
+        $inventoryReader->open($stream);
 
         return $inventoryReader;
-    }
-
-    public function cleanupTmpFile(ProductionReportProcessRun $run): void
-    {
-        if ($run->getTmpFilename()) {
-            $this->entityStorageService->removeDownload($run->getTmpFilename());
-            $run->setTmpFilename(null);
-        }
     }
 
     public function removeInventories(WooDecision $dossier): bool
@@ -65,13 +59,13 @@ class InventoryService
             return false;
         }
 
-        if ($inventory) {
+        if ($inventory instanceof Inventory) {
             $this->entityStorageService->deleteAllFilesForEntity($inventory);
             $this->doctrine->remove($inventory);
             $dossier->setInventory(null);
         }
 
-        if ($productionReport) {
+        if ($productionReport instanceof ProductionReport) {
             $this->entityStorageService->deleteAllFilesForEntity($productionReport);
             $this->doctrine->remove($productionReport);
             $dossier->setProductionReport(null);
@@ -90,20 +84,14 @@ class InventoryService
 
         $file = $inventory->getFileInfo();
         $file->setSourceType(SourceType::SPREADSHEET);
-        $file->setType('xlsx');
+        $file->setType(FileExtension::XLSX->value);
 
-        $defaultFilename = 'production-report-' . $run->getDossier()->getDossierNumber() . '.xlsx';
+        $defaultFilename = sprintf('production-report-%s.%s', $run->getDossier()->getDossierNumber(), FileExtension::XLSX->value);
         $file->setName($run->getFileInfo()->getName() ?? $defaultFilename);
 
         $this->doctrine->persist($inventory);
 
-        $tmpFilename = $run->getTmpFilename();
-        if (! $tmpFilename) {
-            throw new InventoryCannotBeLoadedFromStorageException();
-        }
-
-        $fileInfo = new SplFileInfo($tmpFilename);
-        if (! $this->entityStorageService->storeEntity($fileInfo, $inventory, false)) {
+        if (! $this->entityStorageService->copyEntity($run, $inventory)) {
             throw new RuntimeException('Cannot store production report');
         }
     }

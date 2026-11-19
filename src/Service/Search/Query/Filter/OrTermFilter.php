@@ -35,7 +35,7 @@ class OrTermFilter implements FilterInterface
 
         $query->addFilter(
             Query::terms(
-                field: ($nestedPath ? $nestedPath->value . '.' : '') . $facet->getPath(),
+                field: ($nestedPath instanceof ElasticNestedField ? $nestedPath->value . '.' : '') . $facet->getPath(),
                 values: $input->getStringValues(),
             ),
         );

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\EventSubscriber;
 
+use PublicationApi\Domain\OpenApi\ProblemDetails;
 use PublicationApi\Domain\OpenApi\ProblemDetailsFactory;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,7 +21,7 @@ final readonly class ProblemDetailsExceptionSubscriber
     public function __invoke(ExceptionEvent $event): void
     {
         $problemDetails = $this->problemDetailsFactory->build($event->getThrowable());
-        if ($problemDetails === null) {
+        if (! $problemDetails instanceof ProblemDetails) {
             return;
         }
 

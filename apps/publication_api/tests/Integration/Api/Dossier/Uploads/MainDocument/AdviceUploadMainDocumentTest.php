@@ -46,7 +46,7 @@ final class AdviceUploadMainDocumentTest extends ApiPublicationV1UploadTestCase
         );
     }
 
-    public function testUploadOnPublishedDossierReturnsValidationError(): void
+    public function testUploadOnPublishedDossier(): void
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
@@ -56,21 +56,22 @@ final class AdviceUploadMainDocumentTest extends ApiPublicationV1UploadTestCase
             'departments' => [$department],
             'status' => DossierStatus::PUBLISHED,
         ]);
-
-        $client = self::createPublicationApiClient();
-        $client->request(Request::METHOD_PUT, sprintf(
-            '/api/publication/v1/organisation/%s/dossiers/advice/external/%s/uploads/main-document',
-            $organisation->getId(),
-            $advice->getExternalId(),
-        ), [
-            'headers' => [
-                'Content-Type' => 'application/octet-stream',
-            ],
-            'body' => $this->getTestFileContent('1008.pdf'),
+        $adviceMainDocument = AdviceMainDocumentFactory::createOne([
+            'dossier' => $advice,
         ]);
 
-        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
-        self::assertJsonContains(['violations' => [['message' => 'document upload is not allowed for a published dossier']]]);
+        $this->assertUpload(
+            url: sprintf(
+                '/api/publication/v1/organisation/%s/dossiers/advice/external/%s/uploads/main-document',
+                $organisation->getId(),
+                $advice->getExternalId(),
+            ),
+            dossierId: $advice->getId()->toRfc4122(),
+            entityId: $adviceMainDocument->getId()->toRfc4122(),
+            entityFileName: $adviceMainDocument->getFileInfo()->getName(),
+            uploadGroupId: UploadGroupId::MAIN_DOCUMENTS,
+            entityParameterKey: 'mainDocumentId',
+        );
     }
 
     public function testUploadWithoutFile(): void

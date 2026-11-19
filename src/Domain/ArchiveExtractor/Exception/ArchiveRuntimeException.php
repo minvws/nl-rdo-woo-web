@@ -14,7 +14,7 @@ final class ArchiveRuntimeException extends RuntimeException implements ArchiveE
 {
     public static function forExtractionFailure(?Throwable $e = null): self
     {
-        $previousMessagePart = $e === null
+        $previousMessagePart = ! $e instanceof Throwable
             ? ''
             : sprintf(': %s', $e->getMessage());
 

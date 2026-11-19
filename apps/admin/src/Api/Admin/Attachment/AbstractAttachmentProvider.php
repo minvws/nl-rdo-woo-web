@@ -43,7 +43,7 @@ abstract readonly class AbstractAttachmentProvider implements ProviderInterface
                 ->toArray();
         }
 
-        if ($operation instanceof Post || $attachmentId === null) {
+        if ($operation instanceof Post || ! $attachmentId instanceof Uuid) {
             return null;
         }
 

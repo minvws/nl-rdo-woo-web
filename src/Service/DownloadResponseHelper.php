@@ -28,7 +28,7 @@ readonly class DownloadResponseHelper
      */
     public function getReponseForEntityAndStream(?EntityWithFileInfo $entity, $stream): StreamedResponse
     {
-        if (! $entity || ! $entity->getFileInfo()->isUploaded()) {
+        if (! $entity instanceof EntityWithFileInfo || ! $entity->getFileInfo()->isUploaded()) {
             throw new NotFoundHttpException('File is not available for download');
         }
 
@@ -54,7 +54,7 @@ readonly class DownloadResponseHelper
 
     public function getResponseForEntityWithFileInfo(?EntityWithFileInfo $entity): StreamedResponse
     {
-        if (! $entity || ! $entity->getFileInfo()->isUploaded()) {
+        if (! $entity instanceof EntityWithFileInfo || ! $entity->getFileInfo()->isUploaded()) {
             throw new NotFoundHttpException('File is not available for download');
         }
 

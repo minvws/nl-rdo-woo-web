@@ -26,7 +26,7 @@ Suite Setup
   Select Organisation
 
 Go To ContentPage Admin
-  Go To  ${URL_ADMIN}/admin/content-pages
+  Go To  ${URL_ADMIN}/content-pages
 
 Update Content Page
   [Arguments]  ${slug}  ${title}  ${content}

@@ -8,7 +8,11 @@ import {
   Mock,
   MockInstance,
 } from 'vitest';
-import { uploadFile, UploadStatus } from './upload';
+import {
+  uploadFile,
+  UploadStatus,
+  UploadValidationErrorReason,
+} from './upload';
 
 describe('The "uploadFile" function', () => {
   let fetchSpy: MockInstance;
@@ -119,7 +123,11 @@ describe('The "uploadFile" function', () => {
       type: 'mocked/mime-type',
     });
 
-    const { endpoint, payload, withCallbacks = true } = options;
+    const {
+      endpoint = 'mocked-endpoint',
+      payload,
+      withCallbacks = true,
+    } = options;
 
     onErrorSpy = vi.fn();
     onProgressSpy = vi.fn();
@@ -187,16 +195,6 @@ describe('The "uploadFile" function', () => {
     expect(formData.get('another')).toBe('another_payload');
   });
 
-  test('should upload the file to "/balie/upload" by default', async () => {
-    await triggerUploadFile();
-
-    expect(xmlHttpRequestMock1.open).toHaveBeenCalledWith(
-      'POST',
-      '/balie/upload',
-      true,
-    );
-  });
-
   test('should call the provided onProgress callback with the correct progress value', async () => {
     await triggerUploadFile();
     await vi.advanceTimersByTimeAsync(6000);
@@ -220,16 +218,41 @@ describe('The "uploadFile" function', () => {
     });
 
     describe('handling the response from the status endpoint', () => {
-      test('should call the provided onSuccess callback when the request fails since we can assume this endpoint is not implemented yet', async () => {
-        fetchSpy.mockResolvedValue(new Error('Not implemented'));
+      test('should call the provided onError callback when the status endpoint keeps responding with an error status', async () => {
+        fetchSpy.mockResolvedValue({ status: 500 } as unknown as Response);
 
         await triggerUploadFile();
         await vi.advanceTimersByTimeAsync(6000);
+        await vi.advanceTimersByTimeAsync(250 * 3);
 
-        expect(onSuccessSpy).toHaveBeenCalledWith('mocked-upload-uuid', {
-          mimeType: 'mocked/mime-type',
-          uploadUuid: 'mocked-upload-uuid',
+        expect(fetchSpy).toHaveBeenCalledTimes(3);
+        expect(onErrorSpy).toHaveBeenCalledWith({
+          validationErrorReason: null,
         });
+        expect(onSuccessSpy).not.toHaveBeenCalled();
+      });
+
+      test('should retry the status request after a temporary failure', async () => {
+        fetchSpy.mockRejectedValueOnce(new TypeError('Failed to fetch'));
+
+        await triggerUploadFile();
+        await vi.advanceTimersByTimeAsync(6000);
+        await vi.advanceTimersByTimeAsync(250 * 3);
+
+        expect(fetchSpy).toHaveBeenCalledTimes(2);
+        expect(onSuccessSpy).toHaveBeenCalledTimes(1);
+        expect(onErrorSpy).not.toHaveBeenCalled();
+      });
+
+      test('should not call the provided onError callback when the onSuccess callback throws', async () => {
+        onSuccessSpy.mockImplementation(() => {
+          throw new Error('onSuccess failed');
+        });
+
+        await triggerUploadFile();
+        await vi.advanceTimersByTimeAsync(6000).catch(() => {});
+
+        expect(onErrorSpy).not.toHaveBeenCalled();
       });
 
       test('should call the provided onSuccess callback when the response says the file is stored', async () => {
@@ -254,16 +277,15 @@ describe('The "uploadFile" function', () => {
         await vi.advanceTimersByTimeAsync(6000);
 
         expect(onErrorSpy).toHaveBeenCalledWith({
-          isTechnialError: true,
-          isUnsafeError: false,
-          isWhiteListError: false,
+          validationErrorReason: null,
         });
       });
 
-      test('should call the provided onError callback when the response says the file failed validation', async () => {
+      test('should call the provided onError callback with the validation error reason when the response says the file failed validation', async () => {
         fetchSpy.mockResolvedValue({
           status: 200,
           json: vi.fn().mockResolvedValue({
+            errorReason: UploadValidationErrorReason.InvalidExtension,
             status: UploadStatus.ValidationFailed,
           }),
         } as unknown as Response);
@@ -272,10 +294,48 @@ describe('The "uploadFile" function', () => {
         await vi.advanceTimersByTimeAsync(6000);
 
         expect(onErrorSpy).toHaveBeenCalledWith({
-          isTechnialError: false,
-          isUnsafeError: true,
-          isWhiteListError: false,
+          validationErrorReason: UploadValidationErrorReason.InvalidExtension,
         });
+      });
+
+      test('should poll the status endpoint again after 250 ms when the response says the upload is not finished yet', async () => {
+        fetchSpy
+          .mockResolvedValueOnce({
+            status: 200,
+            json: vi.fn().mockResolvedValue({
+              status: UploadStatus.Incomplete,
+            }),
+          } as unknown as Response)
+          .mockResolvedValueOnce({
+            status: 200,
+            json: vi.fn().mockResolvedValue({
+              status: UploadStatus.Stored,
+            }),
+          } as unknown as Response);
+
+        await triggerUploadFile();
+        await vi.advanceTimersByTimeAsync(6000);
+
+        expect(fetchSpy).toHaveBeenCalledTimes(1);
+        expect(onSuccessSpy).not.toHaveBeenCalled();
+
+        await vi.advanceTimersByTimeAsync(250);
+
+        expect(fetchSpy).toHaveBeenCalledTimes(2);
+        expect(onSuccessSpy).toHaveBeenCalledTimes(1);
+      });
+
+      test('should call the provided onError callback when the request to the status endpoint keeps throwing', async () => {
+        fetchSpy.mockRejectedValue(new TypeError('Failed to fetch'));
+
+        await triggerUploadFile();
+        await vi.advanceTimersByTimeAsync(6000);
+        await vi.advanceTimersByTimeAsync(250 * 3);
+
+        expect(onErrorSpy).toHaveBeenCalledWith({
+          validationErrorReason: null,
+        });
+        expect(onSuccessSpy).not.toHaveBeenCalled();
       });
     });
   });
@@ -309,10 +369,6 @@ describe('The "uploadFile" function', () => {
     });
 
     await vi.advanceTimersByTimeAsync(3000);
-    expect(onErrorSpy).toHaveBeenCalledWith({
-      isTechnialError: true,
-      isUnsafeError: false,
-      isWhiteListError: false,
-    });
+    expect(onErrorSpy).toHaveBeenCalledWith({ validationErrorReason: null });
   });
 });

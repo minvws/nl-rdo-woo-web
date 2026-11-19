@@ -7,6 +7,7 @@ namespace PublicationApi\Api\Dossier\RequestForAdvice\Uploads\MainDocument;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\OpenApi\Model\Operation;
+use PublicationApi\Api\Uploads\MainDocument\UploadMainDocumentRequestDtoFactory;
 use PublicationApi\Domain\OpenApi\PathParameter\DossierExternalIdLink;
 use PublicationApi\Domain\OpenApi\PathParameter\OrganisationIdLink;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,7 +25,7 @@ use Symfony\Component\HttpFoundation\Response;
             inputFormats: ['binary' => ['application/octet-stream']],
             outputFormats: [],
             status: Response::HTTP_NO_CONTENT,
-            controller: RequestForAdviceUploadMainDocumentRequestDtoFactory::class,
+            controller: UploadMainDocumentRequestDtoFactory::class,
             input: false,
             output: false,
             read: false,

@@ -39,7 +39,7 @@ env:
 jobs:
   e2e-tests-app:
     name: Run E2E tests on app
-    runs-on: ${{ inputs.app_runner || 'ubuntu-latest-l' }}
+    runs-on: ${{ inputs.app_runner || 'ubuntu-26.04-l' }}
     if: ${{ inputs.test_tag != 'api' }}
     timeout-minutes: 60
     steps:
@@ -81,7 +81,7 @@ jobs:
 
   e2e-tests-api:
     name: Run E2E tests on API
-    runs-on: ${{ inputs.api_runner || 'ubuntu-latest-m' }}
+    runs-on: ${{ inputs.api_runner || 'ubuntu-26.04-m' }}
     if:
       ${{ (github.event_name == 'schedule' && inputs.test_tag != 'limits') || inputs.test_tag == 'ci' ||
       inputs.test_tag == 'api' }}

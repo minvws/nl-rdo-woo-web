@@ -27,7 +27,7 @@ final class TenantTranslationsTest extends SharedWebTestCase
     public static function tenantTranslationIntroLabelOgaDataProvider(): array
     {
         return [
-            'minfin' => [TenantId::MINFIN, 'OpenFIN'],
+            'minfin' => [TenantId::MINFIN, 'OpenMinFin'],
             'minvws' => [TenantId::MINVWS, 'OpenVWS'],
         ];
     }

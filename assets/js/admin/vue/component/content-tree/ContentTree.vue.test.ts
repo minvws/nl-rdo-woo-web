@@ -1,5 +1,5 @@
 import AddButton from '@admin-fe/component/button/AddButton.vue';
-import { flushPromises, mount } from '@vue/test-utils';
+import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { describe, expect, test } from 'vitest';
 import ContentTree from './ContentTree.vue';
 import ContentTreeNode from './ContentTreeNode.vue';
@@ -95,16 +95,13 @@ describe('The "ContentTree" component', () => {
   const getHeadingTags = (component: ReturnType<typeof createComponent>) =>
     findHeadings(component).map((heading) => heading.element.tagName);
 
-  const getOwnButtons = (
-    wrapper: ReturnType<typeof createComponent>,
-    element: Element | null = null,
-  ) =>
+  const getOwnButtons = (wrapper: VueWrapper, element: Element | null = null) =>
     wrapper
       .findAll('button')
       .filter((button) => button.element.closest('[data-level]') === element);
 
   const getOwnAddButton = (
-    wrapper: ReturnType<typeof createComponent>,
+    wrapper: VueWrapper,
     element: Element | null = null,
   ) =>
     wrapper
@@ -119,15 +116,20 @@ describe('The "ContentTree" component', () => {
   const getNodeRemoveButton = (node: ReturnType<typeof getNodes>[number]) =>
     getOwnButtons(node, node.element).find((button) =>
       button.classes().includes('bhr-btn-ghost-danger'),
-    );
+    )!;
 
-  const getNodeMoveButton = (
+  const findNodeMoveButton = (
     node: ReturnType<typeof getNodes>[number],
     direction: 'up' | 'down',
   ) =>
     getOwnButtons(node, node.element).find((button) =>
       button.text().includes(direction === 'down' ? 'omlaag' : 'omhoog'),
     );
+
+  const getNodeMoveButton = (
+    node: ReturnType<typeof getNodes>[number],
+    direction: 'up' | 'down',
+  ) => findNodeMoveButton(node, direction)!;
 
   const getTreeAddButton = (component: ReturnType<typeof createComponent>) =>
     getOwnAddButton(component);
@@ -419,8 +421,8 @@ describe('The "ContentTree" component', () => {
   test('should not render move buttons for a node without siblings', () => {
     const rootNode = getNodes(createComponent())[0];
 
-    expect(getNodeMoveButton(rootNode, 'down')).toBeUndefined();
-    expect(getNodeMoveButton(rootNode, 'up')).toBeUndefined();
+    expect(findNodeMoveButton(rootNode, 'down')).toBeUndefined();
+    expect(findNodeMoveButton(rootNode, 'up')).toBeUndefined();
   });
 
   test('should render move buttons for a node that has siblings', () => {

@@ -14,15 +14,31 @@ readonly class ElasticHighlights
     public static function getPaths(): array
     {
         return [
-            self::highlightPath(
-                ElasticPath::pagesContent(),
-            ),
-            self::highlightPath(
-                ElasticPath::dossiersTitle(),
-            ),
-            self::highlightPath(
-                ElasticPath::dossiersSummary(),
-            ),
+            self::highlightPath(ElasticPath::pagesContent()),
+            self::highlightPath(ElasticPath::dossiersTitle()),
+            self::highlightPath(ElasticPath::dossiersSummary()),
+        ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function getTopLevelPaths(): array
+    {
+        return [
+            self::highlightPath(ElasticPath::title()),
+            self::highlightPath(ElasticPath::summary()),
+        ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function getContentTreePaths(): array
+    {
+        return [
+            self::highlightPath(ElasticPath::contentTreeTitle()),
+            self::highlightPath(ElasticPath::contentTreeBody()),
         ];
     }
 

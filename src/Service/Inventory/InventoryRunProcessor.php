@@ -88,10 +88,6 @@ readonly class InventoryRunProcessor
                 ],
             );
         } finally {
-            if ($run->isFinal()) {
-                $this->inventoryService->cleanupTmpFile($run);
-            }
-
             if ($this->doctrine->isOpen()) {
                 $this->doctrine->persist($run);
                 $this->doctrine->flush();
@@ -164,7 +160,7 @@ readonly class InventoryRunProcessor
 
         $dossier = $run->getDossier();
         $changeset = $run->getChangeset();
-        if ($changeset === null) {
+        if (! $changeset instanceof InventoryChangeset) {
             throw new RuntimeException('No changeset available during inventory update');
         }
 

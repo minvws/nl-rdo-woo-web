@@ -20,7 +20,9 @@ vi.mock('@admin-fe/composables', () => ({
 }));
 
 describe('The "PublicationFileForm" component', () => {
-  const createComponent = () =>
+  const createComponent = (
+    props: { shouldValidateExcelFiles?: boolean } = {},
+  ) =>
     mount(PublicationFileForm, {
       props: {
         endpoint: 'mocked-endpoint',
@@ -37,7 +39,7 @@ describe('The "PublicationFileForm" component', () => {
         isEditMode: false,
         languageOptions: [{ label: 'Dutch', value: 'nl' }],
         maxLength: 1,
-        uploadGroupId: 'mocked-upload-group-id',
+        ...props,
       },
       shallow: true,
       global: {
@@ -72,6 +74,9 @@ describe('The "PublicationFileForm" component', () => {
   const getReferenceComponent = (component = createComponent()) =>
     component.findComponent({ name: 'InputReference' });
 
+  const getExcelFilesInfoElement = (component = createComponent()) =>
+    component.find('[data-e2e-name="excel-files-info"]');
+
   beforeEach(() => {
     mockedInputStore = undefined;
     vi.resetAllMocks();
@@ -88,7 +93,6 @@ describe('The "PublicationFileForm" component', () => {
           label: 'mocked-label',
         },
       ],
-      groupId: 'mocked-upload-group-id',
       displayMaxOneFileMessage: true,
     });
   });
@@ -118,6 +122,25 @@ describe('The "PublicationFileForm" component', () => {
       minLength: 0,
       options: [{ citation: 'mocked-citation', label: 'mocked-label' }],
       values: ['mocked-ground-1', 'mocked-ground-2'],
+    });
+  });
+
+  describe('the info message about Excel files', () => {
+    test('should not be displayed by default', () => {
+      expect(getExcelFilesInfoElement().exists()).toBe(false);
+    });
+
+    test('should not be displayed when "shouldValidateExcelFiles" is false', () => {
+      const component = createComponent({ shouldValidateExcelFiles: false });
+
+      expect(getExcelFilesInfoElement(component).exists()).toBe(false);
+    });
+
+    test('should be displayed as an info alert when "shouldValidateExcelFiles" is true', () => {
+      const component = createComponent({ shouldValidateExcelFiles: true });
+
+      expect(getExcelFilesInfoElement(component).exists()).toBe(true);
+      expect(getAlertComponent(component).props('type')).toBe('info');
     });
   });
 
@@ -164,7 +187,7 @@ describe('The "PublicationFileForm" component', () => {
     test('should make a request to the endpoint with the correct arguments', async () => {
       createComponent();
 
-      formSubmitFunction({
+      await formSubmitFunction({
         name: 'mocked-name',
         size: 100,
         type: 'mocked-type',

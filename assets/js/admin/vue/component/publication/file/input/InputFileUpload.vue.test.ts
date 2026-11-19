@@ -17,7 +17,6 @@ describe('The "InputFileUpload" component', () => {
         displayMaxOneFileMessage,
         fileInfo: null,
         fileLimits: mockedFileLimits,
-        groupId: 'mocked-group-id',
         value: 'mocked-value',
       },
       shallow: true,
@@ -35,12 +34,6 @@ describe('The "InputFileUpload" component', () => {
     expect(getInputFileComponent(createComponent(true)).props('helpText')).toBe(
       'Je kunt maximaal 1 bestand uploaden',
     );
-  });
-
-  test('should pass a payload containing the provided group id', () => {
-    expect(getInputFileComponent().props('payload')).toEqual({
-      groupId: 'mocked-group-id',
-    });
   });
 
   test('should pass the provided file limits', () => {

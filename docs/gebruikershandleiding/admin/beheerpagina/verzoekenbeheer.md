@@ -9,6 +9,6 @@ Omdat een verzoek of ‘inquiry’ speciaal voor de verzoeker is, is deze anders
 op verschillende manieren zijn geïndexeerd.
 
 | Actie                | Toelichting                                                                                                                                                                                                                                                           |
-| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Regenerate inventory | Wanneer er aanpassingen worden gedaan aan de data van het verzoek dan wordt deze met behulp van deze knop ook geüpdatet naar de voorkant (inventarislijst).  Dit gebeurd in principe automatisch maar in uitzonderlijke gevallen kan dit hier handmatig worden gedaan |
 | Regenerate archives  | Wanneer documenten worden veranderd in een wob-verzoek, kunnen veranderingen met behulp van deze functionaliteit doorgevoerd worden. Dit gebeurt in principe automatisch maar in uitzonderlijke gevallen kan dit hier handmatig worden gedaan                         |

@@ -8,6 +8,7 @@ use Mockery;
 use Shared\Command\BatchDownloadRefresh;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Shared\Tests\Unit\UnitTestCase;
@@ -28,12 +29,12 @@ class BatchDownloadRefreshTest extends UnitTestCase
 
         $batchDownloadService->expects('refresh')
             ->with(Mockery::on(static function (BatchDownloadScope $scope) use ($dossierA): bool {
-                return $scope->wooDecision === $dossierA && $scope->inquiry === null;
+                return $scope->wooDecision === $dossierA && ! $scope->inquiry instanceof Inquiry;
             }));
 
         $batchDownloadService->expects('refresh')
             ->with(Mockery::on(static function (BatchDownloadScope $scope) use ($dossierB): bool {
-                return $scope->wooDecision === $dossierB && $scope->inquiry === null;
+                return $scope->wooDecision === $dossierB && ! $scope->inquiry instanceof Inquiry;
             }));
 
         $command = new BatchDownloadRefresh($wooDecisionRepository, $batchDownloadService);

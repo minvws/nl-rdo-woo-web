@@ -6,18 +6,17 @@ namespace Shared\Controller\Admin;
 
 use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
-use Shared\Domain\Search\Index\Rollover\RolloverParameters;
 use Shared\Domain\Search\Index\Rollover\RolloverService;
 use Shared\Form\Elastic\ActivateIndexType;
 use Shared\Form\Elastic\DeleteIndexType;
-use Shared\Form\Elastic\RolloverParametersType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Webmozart\Assert\Assert;
 
 use function reset;
 
@@ -60,17 +59,12 @@ class ElasticController extends AbstractController
         $breadcrumbs->addRouteItem('admin.elastic.generic', 'app_admin_elastic');
         $breadcrumbs->addItem('admin.elastic.new_rollover');
 
-        $form = $this->createForm(
-            RolloverParametersType::class,
-            $this->rolloverService->getDefaultRolloverParameters(),
-        );
+        $form = $this->createForm(FormType::class);
+        $form->add('submit', SubmitType::class, ['label' => 'global.save']);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            Assert::isInstanceOf($data, RolloverParameters::class);
-
-            $this->rolloverService->initiateRollover($data);
+            $this->rolloverService->initiateRollover();
 
             $this->addFlash('backend', ['success' => $this->translator->trans('admin.elastic.rollover_initiated')]);
 

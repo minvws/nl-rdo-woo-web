@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils';
 import { describe, expect, test } from 'vitest';
 import ImmutableInputs from './ImmutableInputs.vue';
 
-describe('The "<ImmutableValues />" component', () => {
+describe('The <ImmutableInputs> component', () => {
   const createComponent = () => {
     return mount(ImmutableInputs, {
       props: {
@@ -15,7 +15,7 @@ describe('The "<ImmutableValues />" component', () => {
   test('should display each provided value in a hidden input field', () => {
     const inputFields = createComponent().findAll('input');
 
-    expect(inputFields.length).toBe(2);
+    expect(inputFields).toHaveLength(2);
     expect(inputFields.at(0)?.attributes()).toMatchObject({
       hidden: '',
       name: 'mocked-name[0]',

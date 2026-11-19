@@ -8,6 +8,7 @@ use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use InvalidArgumentException;
 use Shared\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\ViewModel\NoticeNotPublicViewFactory;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
@@ -15,6 +16,7 @@ use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\ViewModel\AnnualReportViewFactory;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -61,11 +63,11 @@ class AnnualReportController extends AbstractController
         );
         $noticeNotPublic = $annualReport->getNoticeNotPublic();
 
-        if ($document === null && $noticeNotPublic === null) {
+        if (! $document instanceof AbstractMainDocument && ! $noticeNotPublic instanceof NoticeNotPublic) {
             throw new InvalidArgumentException('either mainDocument or NoticeNotPublic must be set');
         }
 
-        if ($document !== null) {
+        if ($document instanceof AbstractMainDocument) {
             $parameters['document'] = $this->mainDocumentViewFactory->make($annualReport, $document);
             $parameters['noticeNotPublic'] = null;
         } else {

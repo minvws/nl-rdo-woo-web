@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier;
 
-use PublicationApi\FeatureFlag\DossierUpdateGuard;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\DossierRepository;
@@ -17,7 +16,6 @@ readonly class DossierRequestHandler
         private DossierNumberValidator $dossierNumberValidator,
         private DossierRepository $dossierRepository,
         private DossierSupportService $dossierSupportService,
-        private DossierUpdateGuard $dossierUpdateGuard,
     ) {
     }
 
@@ -42,13 +40,13 @@ readonly class DossierRequestHandler
         $department = $this->dossierSupportService->getDepartment($organisation, $dossierRequestDto->departmentId);
         $dossier = $this->dossierRepository->findByOrganisationAndExternalId($organisation, $dossierExternalId);
 
-        if ($dossier !== null && ! $dossier instanceof $dossierType) {
+        if ($dossier instanceof AbstractDossier && ! $dossier instanceof $dossierType) {
             throw ExternalIdInUseException::forExternalIdAlreadyUsed($dossier->getType());
         }
 
         $dossierStrategy->validateRequest($dossierRequestDto);
 
-        if ($dossier === null) {
+        if (! $dossier instanceof AbstractDossier) {
             $documentPrefix = $organisation->getPrefix()->toString();
             $this->dossierNumberValidator->validate($dossierRequestDto->dossierNumber, $documentPrefix);
 
@@ -63,8 +61,6 @@ readonly class DossierRequestHandler
         }
 
         Assert::isInstanceOf($dossier, $dossierType);
-
-        $this->dossierUpdateGuard->assertDossierIsEditable($dossier);
 
         $this->dossierNumberValidator->validate($dossierRequestDto->dossierNumber, $dossier->getDocumentPrefix(), $dossier->getId());
 

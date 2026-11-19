@@ -1,10 +1,17 @@
 import { mount, VueWrapper } from '@vue/test-utils';
 import { describe, expect, test } from 'vitest';
 import { nextTick } from 'vue';
+import type { PublicationSearchResult } from './interface';
 import SearchResultsListbox from './SearchResultsListbox.vue';
 
 describe('The "SearchResultsListbox" component', () => {
-  const createResult = (id: string) => ({ id, title: `mocked-${id}` });
+  const createResult = (id: string): PublicationSearchResult => ({
+    id,
+    link: `mocked-link-${id}`,
+    number: null,
+    title: `mocked-${id}`,
+    type: 'document',
+  });
   const mockedResults = [createResult('abc'), createResult('def')];
 
   const createComponent = () =>

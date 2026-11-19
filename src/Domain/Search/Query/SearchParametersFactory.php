@@ -116,7 +116,7 @@ readonly class SearchParametersFactory
             );
         }
 
-        if ($dossierType !== null) {
+        if ($dossierType instanceof DossierType) {
             $facetInputs = $facetInputs->withFacetInput(
                 FacetKey::TYPE,
                 new StringValuesFacetInput(
@@ -126,8 +126,8 @@ readonly class SearchParametersFactory
             );
         }
 
-        if ($resultType !== null) {
-            if ($resultType === SearchResultType::DOSSIER && $dossierType !== null) {
+        if ($resultType instanceof SearchResultType) {
+            if ($resultType === SearchResultType::DOSSIER && $dossierType instanceof DossierType) {
                 $dossierTypes = [ElasticDocumentType::fromDossierType($dossierType)->value];
             } else {
                 $dossierTypes = ElasticDocumentType::getMainTypeValues();

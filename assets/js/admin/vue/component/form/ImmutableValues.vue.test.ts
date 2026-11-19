@@ -21,7 +21,7 @@ describe('The "<ImmutableValues />" component', () => {
     ]);
 
     const listItems = getListItems(component);
-    expect(listItems.length).toBe(2);
+    expect(listItems).toHaveLength(2);
     expect(listItems.at(0)?.text()).toBe('mocked-immutable-value-1');
     expect(listItems.at(1)?.text()).toBe('mocked-immutable-value-2');
 
@@ -31,7 +31,7 @@ describe('The "<ImmutableValues />" component', () => {
   test('should display the immutable values in a paragraph when there is only one of them', () => {
     const component = createComponent(['mocked-immutable-value-1']);
 
-    expect(getListItems(component).length).toBe(0);
+    expect(getListItems(component)).toHaveLength(0);
     expect(getParagraphElement(component).text()).toBe(
       'mocked-immutable-value-1',
     );

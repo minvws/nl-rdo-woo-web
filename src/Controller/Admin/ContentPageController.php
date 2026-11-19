@@ -27,11 +27,10 @@ class ContentPageController extends AbstractController
     ) {
     }
 
-    #[Route('/balie/admin/content-pages', self::ROUTE_NAME_CONTENT_PAGES, methods: ['GET'])]
+    #[Route('/balie/content-pages', self::ROUTE_NAME_CONTENT_PAGES, methods: ['GET'])]
     #[IsGranted('AuthMatrix.content_page.read')]
     public function index(Breadcrumbs $breadcrumbs): Response
     {
-        $breadcrumbs->addRouteItem('global.admin', 'app_admin');
         $breadcrumbs->addItem('admin.content_pages.manage');
 
         return $this->render('admin/content-page/index.html.twig', [
@@ -39,7 +38,7 @@ class ContentPageController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/admin/content-pages/{slug}', self::ROUTE_NAME_CONTENT_PAGE_EDIT, methods: ['GET', 'POST'])]
+    #[Route('/balie/content-pages/{slug}', self::ROUTE_NAME_CONTENT_PAGE_EDIT, methods: ['GET', 'POST'])]
     #[IsGranted('AuthMatrix.content_page.update')]
     public function edit(
         #[MapEntity(mapping: ['slug' => 'slug'])]
@@ -47,7 +46,6 @@ class ContentPageController extends AbstractController
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {
-        $breadcrumbs->addRouteItem('global.admin', 'app_admin');
         $breadcrumbs->addRouteItem('admin.content_pages.manage', 'app_admin_content_pages');
         $breadcrumbs->addItem('admin.global.edit');
 

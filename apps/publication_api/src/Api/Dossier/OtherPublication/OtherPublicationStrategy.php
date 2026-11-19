@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace PublicationApi\Api\Dossier\OtherPublication;
 
 use PublicationApi\Api\Dossier\DossierAttachmentSynchronizer;
+use PublicationApi\Api\Dossier\DossierMainDocumentOrNoticeSynchronizer;
+use PublicationApi\Api\Dossier\DossierPersister;
 use PublicationApi\Api\Dossier\DossierRequestDtoInterface;
 use PublicationApi\Api\Dossier\DossierStrategy;
-use PublicationApi\Api\Dossier\NoticeNotPublicSynchronizer;
-use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicRequestDto;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
@@ -23,11 +23,11 @@ use Webmozart\Assert\Assert;
 readonly class OtherPublicationStrategy implements DossierStrategy
 {
     public function __construct(
-        private OtherPublicationPersister $otherPublicationPersister,
+        private DossierPersister $dossierPersister,
         private OtherPublicationRequestMapper $otherPublicationRequestMapper,
         private DossierAttachmentSynchronizer $dossierAttachmentSynchronizer,
-        private OtherPublicationMainDocumentSynchronizer $otherPublicationMainDocumentSynchronizer,
-        private NoticeNotPublicSynchronizer $noticeNotPublicSynchronizer,
+        private OtherPublicationMainDocumentRequestMapper $otherPublicationMainDocumentRequestMapper,
+        private DossierMainDocumentOrNoticeSynchronizer $dossierMainDocumentOrNoticeSynchronizer,
     ) {
     }
 
@@ -60,15 +60,16 @@ readonly class OtherPublicationStrategy implements DossierStrategy
             $documentPrefix,
         );
 
-        if ($dossierRequestDto->mainDocument !== null) {
-            $this->otherPublicationMainDocumentSynchronizer->create($otherPublication, $dossierRequestDto->mainDocument);
-        } else {
-            $this->noticeNotPublicSynchronizer->create($otherPublication, self::noticeNotPublic($dossierRequestDto));
-        }
+        $this->dossierMainDocumentOrNoticeSynchronizer->create(
+            $otherPublication,
+            $dossierRequestDto->mainDocument,
+            $dossierRequestDto->noticeNotPublic,
+            $this->otherPublicationMainDocumentRequestMapper,
+        );
 
         $attachmentEvents = $this->dossierAttachmentSynchronizer->create($otherPublication, $dossierRequestDto->attachments);
 
-        $this->otherPublicationPersister->persist($otherPublication, null, $attachmentEvents);
+        $this->dossierPersister->persist($otherPublication, null, $attachmentEvents);
 
         return $otherPublication;
     }
@@ -85,26 +86,17 @@ readonly class OtherPublicationStrategy implements DossierStrategy
 
         $this->otherPublicationRequestMapper->update($dossier, $dossierRequestDto, $organisation, $department, $subject);
 
-        $otherPublicationSnapshot = $this->otherPublicationPersister->snapshot($dossier);
+        $mainDocumentSnapshot = $this->dossierPersister->snapshot($dossier);
 
-        if ($dossierRequestDto->mainDocument !== null) {
-            $this->noticeNotPublicSynchronizer->delete($dossier);
-            $this->otherPublicationMainDocumentSynchronizer->update($dossier, $dossierRequestDto->mainDocument);
-        } else {
-            $this->otherPublicationMainDocumentSynchronizer->delete($dossier);
-            $this->noticeNotPublicSynchronizer->update($dossier, self::noticeNotPublic($dossierRequestDto));
-        }
+        $this->dossierMainDocumentOrNoticeSynchronizer->update(
+            $dossier,
+            $dossierRequestDto->mainDocument,
+            $dossierRequestDto->noticeNotPublic,
+            $this->otherPublicationMainDocumentRequestMapper,
+        );
 
         $attachmentEvents = $this->dossierAttachmentSynchronizer->update($dossier, $dossierRequestDto->attachments);
 
-        $this->otherPublicationPersister->persist($dossier, $otherPublicationSnapshot, $attachmentEvents);
-    }
-
-    private static function noticeNotPublic(OtherPublicationRequestDto $otherPublicationRequestDto): NoticeNotPublicRequestDto
-    {
-        $noticeNotPublic = $otherPublicationRequestDto->noticeNotPublic;
-        Assert::notNull($noticeNotPublic);
-
-        return $noticeNotPublic;
+        $this->dossierPersister->persist($dossier, $mainDocumentSnapshot, $attachmentEvents);
     }
 }

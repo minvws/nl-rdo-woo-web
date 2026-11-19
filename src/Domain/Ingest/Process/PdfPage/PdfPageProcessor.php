@@ -27,7 +27,7 @@ readonly class PdfPageProcessor
         Assert::true($entity->getFileInfo()->isPaginatable(), 'Entity is not paginatable');
 
         $processingContext = $this->contextFactory->createContext($entity, $pageNr);
-        if ($processingContext === null) {
+        if (! $processingContext instanceof PdfPageProcessingContext) {
             return;
         }
 

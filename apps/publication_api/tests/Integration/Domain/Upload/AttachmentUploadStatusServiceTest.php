@@ -57,7 +57,7 @@ class AttachmentUploadStatusServiceTest extends ApiPublicationV1TestCase
             ]),
         ]);
         $uploadEntity->finishUploading('filename', 1);
-        $uploadEntity->failValidation(new UploadValidationException());
+        $uploadEntity->failValidation(UploadValidationException::forUnsafeFile());
 
         $attachmentUploadStatusService = self::fromContainer(AttachmentUploadStatusService::class);
         $uploadStatus = $attachmentUploadStatusService->getUploadStatus($wooDecisionAttachment);

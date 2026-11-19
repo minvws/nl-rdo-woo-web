@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Domain\WooIndex\Builder;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Shared\Domain\WooIndex\Exception\WooIndexInvalidArgumentException;
 use Shared\Domain\WooIndex\Producer\DiWooDocument;
 use Shared\Domain\WooIndex\Producer\Url;
+use Shared\Domain\WooIndex\Producer\UrlReference;
 
 final readonly class SitemapUrlBuilder
 {
@@ -26,7 +28,7 @@ final readonly class SitemapUrlBuilder
 
     private function writeChangefreq(DiWooXMLWriter $writer, Url $url): void
     {
-        if ($url->changefreq === null) {
+        if (! $url->changefreq instanceof Changefreq) {
             return;
         }
 
@@ -112,7 +114,7 @@ final readonly class SitemapUrlBuilder
 
     private function writeIsPartOf(DiWooXMLWriter $writer, DiWooDocument $document): void
     {
-        if ($document->isPartOf === null) {
+        if (! $document->isPartOf instanceof UrlReference) {
             return;
         }
 
@@ -126,7 +128,7 @@ final readonly class SitemapUrlBuilder
 
     private function writeHasParts(DiWooXMLWriter $writer, DiWooDocument $document): void
     {
-        if ($document->hasParts === null || $document->hasParts->isEmpty()) {
+        if (! $document->hasParts instanceof ArrayCollection || $document->hasParts->isEmpty()) {
             return;
         }
 

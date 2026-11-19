@@ -140,13 +140,14 @@ services:
       - woopie
     environment:
       APP_ID: WORKER
+      LOG_STDERR_LEVEL: info
     stop_signal: SIGINT
     restart: unless-stopped
     command:
       [
         "bash",
         "-c",
-        "wait-for-it rabbitmq:5672 --timeout=0 --strict -- symfony run --watch=config,src,templates,vendor php -d memory_limit=-1 bin/console --tenant=minvws messenger:consume --memory-limit=1G -vv high esupdater ingestor global api_documents",
+        "wait-for-it rabbitmq:5672 --timeout=0 --strict -- symfony run --watch=config,src,templates,vendor php -d memory_limit=-1 bin/console --tenant=minvws messenger:consume --memory-limit=1G --quiet high esupdater ingestor global api_documents",
       ]
 
   worker_minfin:
@@ -164,13 +165,14 @@ services:
       - woopie
     environment:
       APP_ID: WORKER
+      LOG_STDERR_LEVEL: info
     stop_signal: SIGINT
     restart: unless-stopped
     command:
       [
         "bash",
         "-c",
-        "wait-for-it rabbitmq:5672 --timeout=0 --strict -- symfony run --watch=config,src,templates,vendor php -d memory_limit=-1 bin/console --tenant=minfin messenger:consume --memory-limit=1G -vv high esupdater ingestor global api_documents",
+        "wait-for-it rabbitmq:5672 --timeout=0 --strict -- symfony run --watch=config,src,templates,vendor php -d memory_limit=-1 bin/console --tenant=minfin messenger:consume --memory-limit=1G --quiet high esupdater ingestor global api_documents",
       ]
 
   tika:
@@ -181,7 +183,7 @@ services:
       - woopie
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.29
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.19.23
     labels:
       com.symfony.server.service-ignore: true
     environment:
@@ -351,3 +353,10 @@ services:
     volumes:
       - ./certs/dev:/certs:ro
       - ./tests/schemathesis/reports:/reports
+
+  utils:
+    profiles: [tools]
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/utils:0.1.0
+    labels:
+      com.symfony.server.service-ignore: true
+    network_mode: none

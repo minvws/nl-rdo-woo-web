@@ -3,7 +3,7 @@
 <!-- TOC -->
 - [Elasticsearch index specs](#elasticsearch-index-specs)
   - [Indices and aliases](#indices-and-aliases)
-  - [Mapping versions](#mapping-versions)
+  - [Mapping](#mapping)
   - [Document structure](#document-structure)
     - [Document types](#document-types)
     - [Field groups](#field-groups)
@@ -11,9 +11,9 @@
   - [Creating and rolling over an index](#creating-and-rolling-over-an-index)
 <!-- TOC -->
 
-The mappings live in [config/elastic/](../../config/elastic/) as `mapping-v1.json` … `mapping-vN.json`, with shared
-settings in `settings.json`. The newest `mapping-vN.json` is authoritative; this document describes its shape rather than
-copying it, so that it does not go stale on the next mapping version.
+The current mapping lives in [config/elastic/mapping.json](../../config/elastic/mapping.json), with shared settings in
+`settings.json`. The mapping contains an `_meta.version` value for identifying the schema deployed to an index; the
+filename is intentionally not versioned.
 
 ## Indices and aliases
 
@@ -30,22 +30,22 @@ These are defined per tenant in `tenants/<tenant>/config/services.yaml`, and the
 `<TENANT>_ELASTICSEARCH_INDEX_PREFIX`. The concrete index behind the aliases is named by whoever created it; the local
 setup creates `<tenant>-initial`.
 
-## Mapping versions
+## Mapping
 
-Each mapping file declares its own version:
+The mapping declares its own version:
 
 ```json
 {
-    "_meta": { "version": 32 },
+    "_meta": { "version": 33 },
     "properties": { }
 }
 ```
 
-`Shared\Domain\Search\Index\Rollover\MappingService` globs `config/elastic/mapping-v*.json` to resolve the latest
-version, which is what `latest` means on the command line.
+`Shared\Domain\Search\Index\Rollover\MappingService` always reads `config/elastic/mapping.json`. A new schema change
+updates this file and increments `_meta.version`; the version is metadata, not a selector for creating an index.
 
-Adding a mapping change means adding a **new** file rather than editing an existing one, so that a running cluster can be
-migrated by rolling over from the old version to the new one.
+Adding a mapping change means updating the single source file and rolling over to a new index. Existing indices retain
+their own mapping and `_meta.version`, so an operator can promote the previous index again if the new rollover fails.
 
 ## Document structure
 
@@ -94,15 +94,16 @@ Broadly, the root properties fall into:
 |------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Identity and type      | `id`, `type`, `toplevel_type`, `sublevel_type`, `document_number`, `publication_context`                                                                                                                                 |
 | File metadata          | `file_type`, `file_size`, `mime_type`, `source_type`, `filename`, `document_pages`                                                                                                                                       |
-| Document metadata      | `date`, `family_id`, `document_id`, `thread_id`, `judgement`, `grounds`                                                                                                                                                  |
+| Document metadata      | `date`, `family_id`, `document_id`, `thread_id`, `judgement`, `grounds`, `links`                                                                                                                                         |
 | Dossier (denormalised) | `dossier_number`, `prefixed_dossier_number`, `title`, `summary`, `status`, `document_prefix`, `publication_reason`, `decision`, `decision_date`, `publication_date`, `date_from`, `date_to`, `date_range`, `date_period` |
 | Relations              | `departments`, `department_names`, `subject`, `subject_names`, `organisation_id`, `inquiry_ids`, `inquiry_numbers`, `referred_document_numbers`                                                                          |
 | Content                | `pages.content`, `content_tree.title`, `content_tree.body`, `content_for_suggestions`                                                                                                                                    |
 | Visibility             | `has_visible_content_tree`                                                                                                                                                                                               |
 
-Mapping v32 deliberately retires the legacy `referred_document_nrs` field and retains `referred_document_numbers`.
-Unlike the additive mapping change originally specified in #7787, this version also removes that obsolete property.
-The current indexing code writes `referred_document_numbers`; older mapping files remain unchanged.
+The current mapping deliberately retires the legacy `referred_document_nrs` field and retains
+`referred_document_numbers`. Unlike the additive mapping change originally specified in #7787, this version also
+removes that obsolete property. The current indexing code writes `referred_document_numbers`; `_meta.version` records
+the schema revision deployed to each new index.
 
 ## Analysis
 
@@ -118,11 +119,8 @@ Index management goes through `Shared\Domain\Search\Index\ElasticIndex\ElasticIn
 `woopie:index:*` commands (see [commands.md](commands.md)):
 
 ```shell
-# Create an index with the newest mapping and point both aliases at it
-bin/console --tenant=minvws woopie:index:create minvws-initial latest --read --write
-
-# Create an index with a specific mapping version
-bin/console --tenant=minvws woopie:index:create minvws-v32 32
+# Create an index with the current mapping and point both aliases at it
+bin/console --tenant=minvws woopie:index:create minvws-initial --read --write
 
 # Move an alias
 bin/console --tenant=minvws woopie:index:alias <index> <alias>

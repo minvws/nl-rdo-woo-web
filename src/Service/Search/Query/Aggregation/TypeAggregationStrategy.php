@@ -6,6 +6,7 @@ namespace Shared\Service\Search\Query\Aggregation;
 
 use Erichard\ElasticQueryBuilder\Aggregation\AbstractAggregation;
 use Erichard\ElasticQueryBuilder\Constants\SortDirections;
+use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Index\Schema\ElasticField;
 use Shared\Domain\Search\Query\Facet\Facet;
 use Shared\Domain\Search\Query\SearchParameters;
@@ -32,7 +33,7 @@ readonly class TypeAggregationStrategy implements AggregationStrategyInterface
                     field: ElasticField::SUBLEVEL_TYPE->value,
                 ),
             ],
-        );
+        )->setExclude(ElasticDocumentType::getStandaloneTypeValues());
     }
 
     public function excludeOwnFilters(): bool

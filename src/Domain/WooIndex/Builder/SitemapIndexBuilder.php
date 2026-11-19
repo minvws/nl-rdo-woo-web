@@ -68,7 +68,7 @@ final class SitemapIndexBuilder
     {
         $writer = DiWooXMLWriter::toStream($stream);
 
-        if ($this->writerFactoryConfigurator !== null) {
+        if ($this->writerFactoryConfigurator instanceof Closure) {
             ($this->writerFactoryConfigurator)($writer);
         }
 

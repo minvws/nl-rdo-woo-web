@@ -10,12 +10,14 @@ use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\SourceType;
 use Shared\Service\Inventory\Sanitizer\InventoryDocumentMapper;
 use Shared\Service\Inventory\Sanitizer\InventoryDocumentUrlStrategyInterface;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DocumentId;
 use Shared\ValueObject\DocumentNumber;
 use Shared\ValueObject\DossierTitle;
+use Shared\ValueObject\PlainDate;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class InventoryDocumentMapperTest extends UnitTestCase
@@ -67,6 +69,10 @@ class InventoryDocumentMapperTest extends UnitTestCase
         $document->expects('isSuspended')->andReturnTrue();
         $document->expects('getLinks')->andReturn($urls);
         $document->expects('getRefersTo')->times(2)->andReturn(new ArrayCollection([$referredDocA, $referredDocB]));
+        $document->expects('getThreadId')->andReturn(456);
+        $document->expects('getFamilyId')->andReturn(123);
+        $document->expects('getDocumentDate')->andReturn(PlainDate::create('2026-10-28'));
+        $document->expects('getFileInfo->getSourceType')->andReturn(SourceType::EMAIL);
 
         $this->translator
             ->expects('trans')

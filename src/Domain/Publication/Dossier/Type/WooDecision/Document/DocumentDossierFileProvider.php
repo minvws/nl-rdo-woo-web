@@ -38,7 +38,7 @@ readonly class DocumentDossierFileProvider implements DossierFileProviderInterfa
 
         $document = $this->documentRepository->findOneByDossierAndId($dossier, Uuid::fromString($id));
         if (
-            $document === null
+            ! $document instanceof Document
             || $document->shouldBeUploaded() === false
             || ! $this->authorizationChecker->isGranted(DossierVoter::VIEW, $document)
         ) {

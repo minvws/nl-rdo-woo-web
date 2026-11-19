@@ -79,7 +79,6 @@ class InventoryRunProcessorTest extends UnitTestCase
         $this->reader->allows('getCount')->andReturn(50);
 
         $this->inventoryService->expects('getReader')->with($this->run)->andReturn($this->reader);
-        $this->inventoryService->expects('cleanupTmpFile')->with($this->run);
 
         parent::setUp();
     }
@@ -103,7 +102,6 @@ class InventoryRunProcessorTest extends UnitTestCase
         $this->run->expects('addGenericError')->with($importError);
         $this->run->expects('fail');
         $this->run->expects('isConfirmed')->andReturnFalse();
-        $this->run->expects('isFinal')->andReturnTrue();
         $this->run->expects('isPending')->andReturnTrue();
 
         $this->entityManager->expects('persist')->with($this->run)->times(2);
@@ -127,7 +125,6 @@ class InventoryRunProcessorTest extends UnitTestCase
 
         $this->run->expects('addGenericError')->with($importError);
         $this->run->expects('fail');
-        $this->run->expects('isFinal')->andReturnTrue();
         $this->run->expects('isPending')->andReturnTrue();
         $this->entityManager->expects('isOpen')->andReturnTrue();
         $this->entityManager->expects('persist')->with($this->run)->times(2);
@@ -153,7 +150,6 @@ class InventoryRunProcessorTest extends UnitTestCase
         $changeset->expects('getResultingTotalDocumentCount')->andReturn(234);
 
         $this->run->expects('hasErrors')->andReturnFalse();
-        $this->run->expects('isFinal')->andReturnTrue();
         $this->run->expects('isPending')->andReturnTrue();
         $this->run->expects('isConfirmed')->andReturnTrue();
         $this->run->expects('setChangeset');
@@ -199,7 +195,6 @@ class InventoryRunProcessorTest extends UnitTestCase
         $changeset->expects('getResultingTotalDocumentCount')->andReturn(InventoryRunProcessor::MAX_DOCUMENTS + 1);
 
         $this->run->expects('hasErrors')->andReturnTrue();
-        $this->run->expects('isFinal')->andReturnTrue();
         $this->run->expects('isPending')->andReturnTrue();
         $this->run->expects('isConfirmed')->andReturnFalse();
         $importError = Mockery::on(
@@ -227,7 +222,6 @@ class InventoryRunProcessorTest extends UnitTestCase
         $changeset->expects('getResultingTotalDocumentCount')->andReturn(10);
 
         $this->run->expects('hasErrors')->andReturnFalse();
-        $this->run->expects('isFinal')->andReturnTrue();
         $this->run->expects('isPending')->andReturnTrue();
         $this->run->expects('isConfirmed')->andReturnTrue();
         $this->run->expects('setChangeset');
@@ -302,7 +296,6 @@ class InventoryRunProcessorTest extends UnitTestCase
         $this->run->expects('addGenericError')->with($importError);
         $this->run->expects('fail');
         $this->run->expects('isConfirmed')->andReturnFalse();
-        $this->run->expects('isFinal')->andReturnTrue();
 
         $this->entityManager->expects('isOpen')->andReturnTrue();
         $this->entityManager->expects('persist')->with($this->run)->times(2);
@@ -333,7 +326,6 @@ class InventoryRunProcessorTest extends UnitTestCase
         );
         $this->run->expects('addGenericError')->with($importError);
         $this->run->expects('fail');
-        $this->run->expects('isFinal')->andReturnTrue();
 
         $this->entityManager->expects('isOpen')->andReturnTrue();
         $this->entityManager->expects('persist')
@@ -362,7 +354,6 @@ class InventoryRunProcessorTest extends UnitTestCase
         $this->run->expects('isPending')->andReturnTrue();
         $this->run->expects('addGenericError')->with($importError);
         $this->run->expects('fail');
-        $this->run->expects('isFinal')->andReturnTrue();
 
         $this->entityManager->expects('isOpen')->andReturnFalse();
         $this->entityManager->expects('persist')->with($this->run);
@@ -398,8 +389,6 @@ class InventoryRunProcessorTest extends UnitTestCase
             ->andReturnTrue();
         $this->run->expects('addGenericError')->with($importError);
         $this->run->expects('fail');
-        $this->run->expects('isFinal')
-            ->andReturnTrue();
 
         $this->entityManager->expects('isOpen')
             ->andReturnFalse();
@@ -442,7 +431,6 @@ class InventoryRunProcessorTest extends UnitTestCase
         $this->run->expects('hasErrors')->andReturnFalse();
         $this->run->expects('setChangeset');
         $this->run->expects('isConfirmed')->andReturnFalse();
-        $this->run->expects('isFinal')->andReturnTrue();
 
         $this->entityManager->expects('isOpen')->andReturnTrue();
         $this->entityManager->expects('persist')->with($this->run)->times(2);

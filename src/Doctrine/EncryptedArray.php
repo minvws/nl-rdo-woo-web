@@ -12,6 +12,7 @@ use Doctrine\DBAL\Types\TextType;
 use Override;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use SensitiveParameter;
 use Shared\Service\Encryption\EncryptionServiceInterface;
 use Throwable;
 use Webmozart\Assert\Assert;
@@ -29,7 +30,7 @@ use const JSON_THROW_ON_ERROR;
  */
 class EncryptedArray extends TextType
 {
-    public const TYPE = 'encrypted_array';
+    public const string TYPE = 'encrypted_array';
 
     /**
      * See Kernel.php boot() on how and what is injected.
@@ -39,8 +40,10 @@ class EncryptedArray extends TextType
     }
 
     #[Override]
-    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
-    {
+    public function convertToDatabaseValue(
+        #[SensitiveParameter] $value,
+        AbstractPlatform $platform,
+    ): ?string {
         if ($value === null) {
             return null;
         }
@@ -64,8 +67,10 @@ class EncryptedArray extends TextType
      * @throws ConversionException
      */
     #[Override]
-    public function convertToPHPValue($value, AbstractPlatform $platform): mixed
-    {
+    public function convertToPHPValue(
+        #[SensitiveParameter] $value,
+        AbstractPlatform $platform,
+    ): mixed {
         $value = parent::convertToPHPValue($value, $platform);
 
         if ($value === null || $value === '') {

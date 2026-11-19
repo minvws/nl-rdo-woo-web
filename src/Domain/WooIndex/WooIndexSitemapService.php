@@ -62,7 +62,7 @@ readonly class WooIndexSitemapService
     public function getCurrentSitemapIndexUrl(): ?Url
     {
         $wooIndexSitemap = $this->wooIndexSitemapRepository->lastFinished();
-        if ($wooIndexSitemap === null) {
+        if (! $wooIndexSitemap instanceof WooIndexSitemap) {
             return null;
         }
 

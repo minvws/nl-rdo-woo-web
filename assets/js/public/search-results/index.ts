@@ -54,7 +54,7 @@ export const searchResults = () => {
     window.addEventListener(
       'popstate',
       () => {
-        executeFetchAndUpdateResults(getSearchParams());
+        void executeFetchAndUpdateResults(getSearchParams());
       },
       { signal: abortController.signal },
     );

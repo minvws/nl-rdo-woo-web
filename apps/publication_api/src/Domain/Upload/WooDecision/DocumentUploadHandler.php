@@ -6,15 +6,17 @@ namespace PublicationApi\Domain\Upload\WooDecision;
 
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
 use Shared\Domain\Upload\Event\UploadValidatedEvent;
+use Shared\Domain\Upload\UploadContextReader;
 use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
-use Symfony\Component\Uid\Uuid;
 
 #[AsEventListener]
 final readonly class DocumentUploadHandler
 {
-    public function __construct(private WooDecisionDispatcher $wooDecisionDispatcher)
-    {
+    public function __construct(
+        private WooDecisionDispatcher $wooDecisionDispatcher,
+        private UploadContextReader $uploadContextReader,
+    ) {
     }
 
     public function __invoke(UploadValidatedEvent $event): void
@@ -24,7 +26,7 @@ final readonly class DocumentUploadHandler
             return;
         }
 
-        $wooDecisionId = Uuid::fromString($uploadEntity->getContext()->getString('dossierId'));
+        $wooDecisionId = $this->uploadContextReader->getDossierId($uploadEntity);
         $this->wooDecisionDispatcher->dispatchProcessUploadedDocumentsCommand($wooDecisionId, $uploadEntity->getId());
     }
 }

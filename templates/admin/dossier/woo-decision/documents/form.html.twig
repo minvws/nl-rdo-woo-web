@@ -59,7 +59,7 @@
 
     <twig:Admin:Publication:WooDecision:AddDocuments
         continueLaterUrl="{{ path('app_admin_dossier', { documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) }}"
-        dossier="{{ dossier }}"
+        dossierId="{{ dossier.id }}"
         nextStepUrl="{{ path(workflowStatus.nextStep.routeName, { documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) }}"
         uploadGroupId="{{ uploadGroupId }}"
     />

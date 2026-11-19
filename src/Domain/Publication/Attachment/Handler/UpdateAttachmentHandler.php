@@ -7,9 +7,12 @@ namespace Shared\Domain\Publication\Attachment\Handler;
 use Shared\Domain\Publication\Attachment\AttachmentDispatcher;
 use Shared\Domain\Publication\Attachment\Command\UpdateAttachmentCommand;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
 use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use Shared\Domain\Upload\Process\EntityUploadStorer;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -62,15 +65,15 @@ readonly class UpdateAttachmentHandler
 
     private function mapProperties(UpdateAttachmentCommand $command, AbstractAttachment $entity): void
     {
-        if ($command->formalDate !== null) {
+        if ($command->formalDate instanceof PlainDate) {
             $entity->setFormalDate($command->formalDate);
         }
 
-        if ($command->type !== null) {
+        if ($command->type instanceof AttachmentType) {
             $entity->setType($command->type);
         }
 
-        if ($command->language !== null) {
+        if ($command->language instanceof AttachmentLanguage) {
             $entity->setLanguage($command->language);
         }
 

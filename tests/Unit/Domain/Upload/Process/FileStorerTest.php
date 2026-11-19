@@ -9,10 +9,10 @@ use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Publication\FileInfo;
 use Shared\Domain\Upload\Process\FileProcessException;
 use Shared\Domain\Upload\Process\FileStorer;
-use Shared\Domain\Upload\UploadedFile;
 use Shared\Service\Storage\EntityStorageService;
 use Shared\Service\Storage\ThumbnailStorageService;
 use Shared\Tests\Unit\UnitTestCase;
@@ -25,7 +25,7 @@ final class FileStorerTest extends UnitTestCase
     private EntityStorageService&MockInterface $entityStorageService;
     private ThumbnailStorageService&MockInterface $thumbnailStorageService;
     private FileInfo&MockInterface $fileInfo;
-    private UploadedFile&MockInterface $file;
+    private EntityWithFileInfo&MockInterface $source;
     private Document&MockInterface $document;
     private FileStorer $fileStorer;
 
@@ -38,7 +38,7 @@ final class FileStorerTest extends UnitTestCase
         $this->entityStorageService = Mockery::mock(EntityStorageService::class);
         $this->thumbnailStorageService = Mockery::mock(ThumbnailStorageService::class);
         $this->fileInfo = Mockery::mock(FileInfo::class);
-        $this->file = Mockery::mock(UploadedFile::class);
+        $this->source = Mockery::mock(EntityWithFileInfo::class);
         $this->document = Mockery::mock(Document::class);
 
         $this->fileStorer = new FileStorer(
@@ -61,12 +61,12 @@ final class FileStorerTest extends UnitTestCase
             ->andReturnFalse();
 
         $this->entityStorageService
-            ->expects('storeEntity')
-            ->with($this->file, $this->document)
+            ->expects('copyEntity')
+            ->with($this->source, $this->document)
             ->andReturnTrue();
 
-        $this->file
-            ->expects('getOriginalFileExtension')
+        $this->source
+            ->expects('getFileInfo->getType')
             ->andReturn('pdf');
 
         $this->fileInfo
@@ -80,7 +80,7 @@ final class FileStorerTest extends UnitTestCase
         $this->doctrine->expects('persist')->with($this->document);
         $this->doctrine->expects('flush');
 
-        $this->fileStorer->storeForDocument($this->file, $this->document, $documentId);
+        $this->fileStorer->storeForDocument($this->source, $this->document, $documentId);
     }
 
     public function testStoreForAlreadyUploadedDocumentRemovedOldFilesFirst(): void
@@ -97,12 +97,12 @@ final class FileStorerTest extends UnitTestCase
         $this->thumbnailStorageService->expects('deleteAllThumbsForEntity')->with($this->document);
 
         $this->entityStorageService
-            ->expects('storeEntity')
-            ->with($this->file, $this->document)
+            ->expects('copyEntity')
+            ->with($this->source, $this->document)
             ->andReturnTrue();
 
-        $this->file
-            ->expects('getOriginalFileExtension')
+        $this->source
+            ->expects('getFileInfo->getType')
             ->andReturn('pdf');
 
         $this->fileInfo
@@ -116,7 +116,7 @@ final class FileStorerTest extends UnitTestCase
         $this->doctrine->expects('persist')->with($this->document);
         $this->doctrine->expects('flush');
 
-        $this->fileStorer->storeForDocument($this->file, $this->document, $documentId);
+        $this->fileStorer->storeForDocument($this->source, $this->document, $documentId);
     }
 
     public function testStoreForDocumentWithFailure(): void
@@ -130,13 +130,18 @@ final class FileStorerTest extends UnitTestCase
             ->andReturnFalse();
 
         $this->entityStorageService
-            ->expects('storeEntity')
-            ->with($this->file, $this->document)
+            ->expects('copyEntity')
+            ->with($this->source, $this->document)
             ->andReturnFalse();
 
-        $this->file->expects('getPathname')
+        $sourceFileInfo = Mockery::mock(FileInfo::class);
+        $sourceFileInfo->expects('getPath')
             ->times(3)
             ->andReturn($expectedPath = 'path');
+
+        $this->source->expects('getFileInfo')
+            ->times(3)
+            ->andReturn($sourceFileInfo);
 
         $this->logger
             ->expects('error')
@@ -145,8 +150,8 @@ final class FileStorerTest extends UnitTestCase
                 'path' => $expectedPath,
             ]);
 
-        $this->expectExceptionObject(FileProcessException::forFailingToStoreDocument($this->file, $documentId));
+        $this->expectExceptionObject(FileProcessException::forFailingToStoreDocument($this->source, $documentId));
 
-        $this->fileStorer->storeForDocument($this->file, $this->document, $documentId);
+        $this->fileStorer->storeForDocument($this->source, $this->document, $documentId);
     }
 }

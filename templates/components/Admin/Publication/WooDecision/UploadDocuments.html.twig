@@ -1,17 +1,16 @@
 <div {{ vue_component('GenericController', {
     componentName: componentName,
 
-    dossierId: dossier.id,
     fileLimits: uploadGroupId.fileLimits | default([]),
     maxFileSize: 1024 * 1024 * 1024 * 5,
     maxCombinedFileSize: LIMIT_TOTAL_DOCUMENTS_FILE_SIZE_IN_GIB * 1024 * 1024 * 1024,
     nextStepUrl: nextStepUrl | default,
     continueLaterUrl: continueLaterUrl | default,
-    confirmEndpoint: path('api_uploader_woo_decision_confirm_changes', { dossierId: dossier.id }),
-    rejectEndpoint: path('api_uploader_woo_decision_reject_changes', { dossierId: dossier.id }),
-    processEndpoint: path('api_uploader_woo_decision_process', { dossierId: dossier.id }),
-    statusEndpoint: path('api_uploader_woo_decision_status', { dossierId: dossier.id }),
-    uploadEndpoint: path('app_admin_upload'),
+    confirmEndpoint: path('api_uploader_woo_decision_confirm_changes', { dossierId: dossierId }),
+    rejectEndpoint: path('api_uploader_woo_decision_reject_changes', { dossierId: dossierId }),
+    processEndpoint: path('api_uploader_woo_decision_process', { dossierId: dossierId }),
+    statusEndpoint: path('api_uploader_woo_decision_status', { dossierId: dossierId }),
+    uploadEndpoint: this.uploadEndpoint,
 }) }}>
     <div class="min-h-80"></div>
 </div>

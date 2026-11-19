@@ -8,13 +8,17 @@ use DateTimeImmutable;
 use Exception;
 use Generator;
 use IteratorAggregate;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Shared\Exception\Import\DateCannotBeParsedException;
 use Shared\Service\Inventory\InventoryDataHelper;
 use Webmozart\Assert\Assert;
 
+use function date_default_timezone_get;
 use function intval;
+use function is_float;
+use function is_int;
 use function strval;
 use function trim;
 
@@ -79,26 +83,41 @@ class ExcelReader implements IteratorAggregate, FileReaderInterface
 
     public function getDateTime(int $rowIndex, string $columnName): DateTimeImmutable
     {
-        $value = $this->getString($rowIndex, $columnName);
+        $value = $this->getCell($rowIndex, $columnName);
+        Assert::nullOrScalar($value);
 
-        try {
-            return InventoryDataHelper::toDateTimeImmutable($value);
-        } catch (Exception) {
-            throw new DateCannotBeParsedException($value);
-        }
+        return $this->toDateTime($value);
     }
 
     public function getOptionalDateTime(int $rowIndex, string $columnName): ?DateTimeImmutable
     {
-        $value = $this->getOptionalString($rowIndex, $columnName);
+        if (! $this->hasColumn($columnName)) {
+            return null;
+        }
+
+        $value = $this->getCell($rowIndex, $columnName);
+        Assert::nullOrScalar($value);
+
         if ($value === null || $value === '') {
             return null;
         }
 
+        return $this->toDateTime($value);
+    }
+
+    private function toDateTime(bool|float|int|string|null $value): DateTimeImmutable
+    {
         try {
-            return InventoryDataHelper::toDateTimeImmutable($value);
+            // Cells formatted as a date in Excel contain a serial date number
+            if (is_int($value) || is_float($value)) {
+                return DateTimeImmutable::createFromMutable(
+                    Date::excelToDateTimeObject($value, date_default_timezone_get()),
+                );
+            }
+
+            return InventoryDataHelper::toDateTimeImmutable(strval($value));
         } catch (Exception) {
-            throw new DateCannotBeParsedException($value);
+            throw new DateCannotBeParsedException(strval($value));
         }
     }
 

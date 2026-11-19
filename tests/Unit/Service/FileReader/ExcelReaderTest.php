@@ -7,6 +7,8 @@ namespace Shared\Tests\Unit\Service\FileReader;
 use DateTimeImmutable;
 use Mockery;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 use Shared\Exception\Import\DateCannotBeParsedException;
 use Shared\Service\FileReader\ExcelReader;
@@ -178,6 +180,23 @@ class ExcelReaderTest extends UnitTestCase
             [new DateTimeImmutable('2022-10-09 13:34'), null],
             $dates,
         );
+    }
+
+    public function testGetDateTimeAndGetOptionalDateTimeParseExcelDateCells(): void
+    {
+        $headerMap = Mockery::mock(HeaderMap::class);
+        $headerMap->allows('has')->with('date')->andReturnTrue();
+        $headerMap->allows('getCellCoordinate')->with('date')->andReturn('A');
+
+        $worksheet = new Spreadsheet()->getActiveSheet();
+        $worksheet->setCellValue('A2', Date::PHPToExcel(new DateTimeImmutable('2022-10-09 13:34')));
+        $worksheet->setCellValue('A3', 44843);
+
+        $excelReader = new ExcelReader($worksheet, $headerMap);
+
+        self::assertEquals(new DateTimeImmutable('2022-10-09 13:34'), $excelReader->getDateTime(2, 'date'));
+        self::assertEquals(new DateTimeImmutable('2022-10-09 13:34'), $excelReader->getOptionalDateTime(2, 'date'));
+        self::assertEquals(new DateTimeImmutable('2022-10-09'), $excelReader->getOptionalDateTime(3, 'date'));
     }
 
     public function testGetOptionalDateTimeReturnsNullForNonExistingColumn(): void

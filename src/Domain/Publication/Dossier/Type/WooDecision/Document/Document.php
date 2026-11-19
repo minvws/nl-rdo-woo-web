@@ -362,7 +362,7 @@ class Document extends AbstractPublicationItem
             return false;
         }
 
-        if (! $this->judgement) {
+        if (! $this->judgement instanceof Judgement) {
             return false;
         }
 

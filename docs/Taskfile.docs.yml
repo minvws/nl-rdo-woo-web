@@ -3,7 +3,7 @@ version: '3.50.0'
 
 vars:
   # See tags for latest version: https://hub.docker.com/r/davidanson/markdownlint-cli2/tags
-  MARKDOWNLINT_VERSION: v0.22.0
+  MARKDOWNLINT_VERSION: v0.24.0
   TENANT: '{{ .TENANT | default "minvws" }}'
 
 tasks:
@@ -22,8 +22,17 @@ tasks:
     desc: Auto fix lint errors in documentation
     run: once
     cmds:
+      - task: fix-tables
       - task: lint
         vars: { SUB_CMD: --fix }
+
+  fix-tables:
+    desc: Align table spacing in Markdown files
+    cmds:
+      # dotglob so hidden directories (e.g. .github) are covered too.
+      - task: :dc:run:admin
+        vars:
+          SUB_CMD: bash -c "shopt -s globstar dotglob && pnpm dlx --yes markdown-table-formatter **/*.md"
 
   sphinx:shell:
     desc: Start a shell in the sphinx container

@@ -11,9 +11,11 @@ use Shared\Exception\Import\MissingHeadersException;
 use Shared\Exception\Import\SpreadsheetCannotBeOpenedException;
 use Shared\Service\FileReader\ExcelReaderFactory;
 use Shared\Service\Inquiry\InquiryLinkImportParser;
+use Shared\Service\Inquiry\InquiryLinkImportRow;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
+use function array_map;
 use function iterator_to_array;
 use function sprintf;
 
@@ -23,18 +25,14 @@ class InquiryLinkImportParserTest extends UnitTestCase
     {
         $input = new UploadedFile(sprintf('%s/input-publicationcontext.xlsx', __DIR__), 'input-publicationcontext.xlsx');
 
-        $this->assertMatchesSnapshot(
-            iterator_to_array($this->getParser()->parse($input, 'TEST')),
-        );
+        $this->assertMatchesSnapshot($this->parseToArray($input));
     }
 
     public function testParseFallsBackToPrefixAndMatterForTheDocumentNumber(): void
     {
         $input = new UploadedFile(sprintf('%s/input.xlsx', __DIR__), 'input.xlsx');
 
-        $this->assertMatchesSnapshot(
-            iterator_to_array($this->getParser()->parse($input, 'TEST')),
-        );
+        $this->assertMatchesSnapshot($this->parseToArray($input));
     }
 
     public function testParseThrowsExceptionWhenBothColumnsArePresent(): void
@@ -87,6 +85,20 @@ class InquiryLinkImportParserTest extends UnitTestCase
     {
         return new InquiryLinkImportParser(
             new ExcelReaderFactory(),
+        );
+    }
+
+    /**
+     * @return array<int, array{documentNumber: string, inquiryNumbers: array<array-key, string>}>
+     */
+    private function parseToArray(UploadedFile $input): array
+    {
+        return array_map(
+            static fn (InquiryLinkImportRow $row): array => [
+                'documentNumber' => $row->documentNumber->toString(),
+                'inquiryNumbers' => $row->inquiryNumbers,
+            ],
+            iterator_to_array($this->getParser()->parse($input, 'TEST')),
         );
     }
 }

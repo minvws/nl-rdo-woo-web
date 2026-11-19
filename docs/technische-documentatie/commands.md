@@ -138,18 +138,18 @@ Checks if there are pages that are not yet indexed in ElasticSearch.
 
 ```shell
 bin/console --tenant=minvws woopie:index:alias <index> <alias>
-bin/console --tenant=minvws woopie:index:create <name> <version> [--read] [--write]
+bin/console --tenant=minvws woopie:index:create <name> [--read] [--write]
 bin/console --tenant=minvws woopie:index:delete <index>
 ```
 
 Creates or deletes an elasticsearch index. It is also possible to create an alias for an index.
 
-For `woopie:index:create`, `<version>` is the mapping version to use (see [elastic_index.md](elastic_index.md)) or
-`latest` for the newest one. Pass `--read` and/or `--write` to point the read and write aliases at the new index
-straight away, which is what the local setup does:
+For `woopie:index:create`, the current mapping from `config/elastic/mapping.json` is always used (see
+[elastic_index.md](elastic_index.md)). Pass `--read` and/or `--write` to point the read and write aliases at the new
+index straight away, which is what the local setup does:
 
 ```shell
-bin/console --tenant=minvws woopie:index:create minvws-initial latest --read --write
+bin/console --tenant=minvws woopie:index:create minvws-initial --read --write
 ```
 
 ### Ingestion
@@ -306,11 +306,12 @@ Creates a new keypair for auditlog encryption.
 ### Normalize document grounds
 
 ```shell
-bin/console --tenant=minvws woopie:normalize-document-grounds <mapping> [--dry-run]
+bin/console --tenant=minvws woopie:normalize-document-grounds <mapping> [--dry-run] [--no-dispatch-reindex]
 ```
 
 Normalize the 'grounds' values for woo-decision documents based on an Excel input file as mapping. The path to that
-spreadsheet is required. Use `--dry-run` (`-d`) to see what would change without writing anything.
+spreadsheet is required. Changed documents are re-indexed by default; use `--no-dispatch-reindex` to disable that.
+Use `--dry-run` (`-d`) to see what would change without writing anything.
 
 ### Generate publication context
 
@@ -339,8 +340,7 @@ bin/console --tenant=minvws woopie:dev:clean-sheet --index <index> [--force] [--
 
 Resets data from search index, database, file storage and message queue. `--index` names the Elasticsearch index to
 reset. `--force` skips the confirmation prompt, `--users` also resets users, and `--keep-subjects` preserves subjects.
-The retained legacy `document_prefix` table is not cleared by this command. Locally, prefer `task cleansheet`, which
-passes sensible defaults and clears the S3 buckets too.
+Locally, prefer `task cleansheet`, which passes sensible defaults and clears the S3 buckets too.
 
 ### Content extraction
 

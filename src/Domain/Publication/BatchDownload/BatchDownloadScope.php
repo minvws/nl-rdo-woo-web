@@ -41,6 +41,6 @@ class BatchDownloadScope
      */
     public function containsBothInquiryAndWooDecision(): bool
     {
-        return $this->wooDecision !== null && $this->inquiry !== null;
+        return $this->wooDecision instanceof WooDecision && $this->inquiry instanceof Inquiry;
     }
 }

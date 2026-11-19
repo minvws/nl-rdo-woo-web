@@ -86,7 +86,7 @@ final class ZipStreamBatchArchiver implements BatchArchiver
     {
         try {
             $fileSize = 0;
-            if ($this->zipStream !== null) {
+            if ($this->zipStream instanceof ZipStream) {
                 $fileSize = $this->zipStream->finish();
                 unset($this->zipStream);
             }
@@ -108,7 +108,7 @@ final class ZipStreamBatchArchiver implements BatchArchiver
 
     public function cleanup(): bool
     {
-        if ($this->zipStream !== null) {
+        if ($this->zipStream instanceof ZipStream) {
             try {
                 $this->zipStream->finish();
                 unset($this->zipStream);

@@ -1,6 +1,6 @@
-FROM composer/composer:2.10.3-bin AS composer
+FROM composer/composer:2.11.1-bin AS composer
 
-FROM php:8.4.26-apache-trixie
+FROM php:8.4.27-apache-trixie
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 

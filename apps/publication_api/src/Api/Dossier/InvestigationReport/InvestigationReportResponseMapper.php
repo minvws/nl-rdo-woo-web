@@ -21,7 +21,9 @@ use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\ValueObject\PlainDate;
 use Webmozart\Assert\Assert;
 
@@ -86,7 +88,7 @@ readonly class InvestigationReportResponseMapper implements DossierResponseMappe
     private function mainDocument(InvestigationReport $investigationReport): ?InvestigationReportMainDocumentResponseDto
     {
         $mainDocument = $investigationReport->getMainDocument();
-        if ($mainDocument === null) {
+        if (! $mainDocument instanceof AbstractMainDocument) {
             return null;
         }
 
@@ -100,7 +102,7 @@ readonly class InvestigationReportResponseMapper implements DossierResponseMappe
     private function noticeNotPublic(InvestigationReport $investigationReport): ?NoticeNotPublicResponseDto
     {
         $noticeNotPublic = $investigationReport->getNoticeNotPublic();
-        if ($noticeNotPublic === null) {
+        if (! $noticeNotPublic instanceof NoticeNotPublic) {
             return null;
         }
 

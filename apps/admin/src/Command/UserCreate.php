@@ -102,7 +102,7 @@ class UserCreate extends Command
     protected function askOrganisation(InputInterface $input, SymfonyStyle $io): false|Organisation
     {
         $oldestOrganisation = $this->organisationRepository->oldest();
-        if ($oldestOrganisation === null) {
+        if (! $oldestOrganisation instanceof Organisation) {
             $io->error('This tenant does not have any organisation yet! Aborting...');
 
             return false;

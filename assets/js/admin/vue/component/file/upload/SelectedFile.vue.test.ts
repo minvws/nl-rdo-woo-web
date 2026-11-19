@@ -40,10 +40,12 @@ describe('The <SelectedFile /> component', () => {
 
   interface Options {
     enableAutoUpload?: boolean;
+    endpoint?: string;
   }
 
   const createComponent = (options: Partial<Options> = {}) => {
-    const { enableAutoUpload = false } = options;
+    const { enableAutoUpload = false, endpoint = 'mocked-upload-endpoint' } =
+      options;
     return mount(SelectedFile, {
       props: {
         enableAutoUpload,
@@ -55,7 +57,7 @@ describe('The <SelectedFile /> component', () => {
       },
       global: {
         provide: {
-          [UPLOAD_AREA_ENDPOINT]: 'mocked-upload-endpoint',
+          [UPLOAD_AREA_ENDPOINT]: endpoint,
         },
         renderStubDefaultSlot: true,
       },
@@ -120,7 +122,21 @@ describe('The <SelectedFile /> component', () => {
     );
   });
 
+  test('should render without an upload endpoint when auto upload is disabled', () => {
+    const component = createComponent({ endpoint: undefined });
+
+    expect(component.html()).toContain('mock-file.txt');
+  });
+
   describe('when auto upload is enabled', () => {
+    test('should throw when no upload endpoint is provided', () => {
+      vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      expect(() =>
+        createComponent({ enableAutoUpload: true, endpoint: '' }),
+      ).toThrow('No upload endpoint provided');
+    });
+
     test('should emit the uploading event when the component is mounted', async () => {
       const component = createComponent({ enableAutoUpload: true });
 
@@ -212,11 +228,7 @@ describe('The <SelectedFile /> component', () => {
       expect(getErrorIconComponent(component)).toBeFalsy();
       expect(component.emitted('uploadError')).toBeFalsy();
 
-      const mockedUploadError = {
-        isTechnialError: false,
-        isUnsafeError: false,
-        isWhiteListError: true,
-      };
+      const mockedUploadError = { validationErrorReason: null };
 
       providedOnError(mockedUploadError);
       await nextTick();

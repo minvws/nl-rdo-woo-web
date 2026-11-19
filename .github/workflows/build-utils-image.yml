@@ -1,0 +1,17 @@
+name: Build Utils image
+
+on:
+  workflow_dispatch:
+    inputs:
+      image-tag:
+        description: "The tag of the image to build"
+        required: true
+
+jobs:
+  build:
+    name: Build
+    uses: ./.github/workflows/build-image.yml
+    with:
+      image: utils
+      dockerfile: docker/utils/Dockerfile
+      image-tag: ${{ inputs.image-tag }}

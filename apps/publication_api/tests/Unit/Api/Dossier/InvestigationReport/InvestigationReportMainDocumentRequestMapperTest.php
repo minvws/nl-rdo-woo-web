@@ -34,7 +34,8 @@ final class InvestigationReportMainDocumentRequestMapperTest extends UnitTestCas
             array_map(Ground::from(...), $grounds),
         );
 
-        $mainDocument = InvestigationReportMainDocumentRequestMapper::create($investigationReport, $investigationReportMainDocumentRequestDto);
+        $investigationReportMainDocumentRequestMapper = new InvestigationReportMainDocumentRequestMapper();
+        $mainDocument = $investigationReportMainDocumentRequestMapper->create($investigationReport, $investigationReportMainDocumentRequestDto);
 
         self::assertSame($investigationReport, $mainDocument->getDossier());
         self::assertSame($fileName->toString(), $mainDocument->getFileInfo()->getName());
@@ -70,7 +71,8 @@ final class InvestigationReportMainDocumentRequestMapperTest extends UnitTestCas
             array_map(Ground::from(...), $grounds),
         );
 
-        $mainDocument = InvestigationReportMainDocumentRequestMapper::update($investigationReport, $investigationReportMainDocumentRequestDto);
+        $investigationReportMainDocumentRequestMapper = new InvestigationReportMainDocumentRequestMapper();
+        $mainDocument = $investigationReportMainDocumentRequestMapper->update($investigationReport, $investigationReportMainDocumentRequestDto);
 
         self::assertSame($existingMainDocument, $mainDocument);
         self::assertSame($fileName->toString(), $mainDocument->getFileInfo()->getName());
@@ -91,8 +93,10 @@ final class InvestigationReportMainDocumentRequestMapperTest extends UnitTestCas
             $this->getFaker()->attachmentType(InvestigationReportMainDocument::getAllowedTypes()),
         );
 
+        $investigationReportMainDocumentRequestMapper = new InvestigationReportMainDocumentRequestMapper();
+
         self::expectException(InvalidArgumentException::class);
 
-        InvestigationReportMainDocumentRequestMapper::update($investigationReport, $investigationReportMainDocumentRequestDto);
+        $investigationReportMainDocumentRequestMapper->update($investigationReport, $investigationReportMainDocumentRequestDto);
     }
 }

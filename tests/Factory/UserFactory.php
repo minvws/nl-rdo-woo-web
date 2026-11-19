@@ -55,6 +55,13 @@ final class UserFactory extends PersistentObjectFactory
         ]);
     }
 
+    public function asContentAdmin(): self
+    {
+        return $this->with([
+            'roles' => [Roles::ROLE_CONTENT_ADMIN],
+        ]);
+    }
+
     public function isEnabled(): self
     {
         return $this->with([

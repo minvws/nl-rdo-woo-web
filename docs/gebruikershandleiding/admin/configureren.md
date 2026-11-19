@@ -1,6 +1,6 @@
 # Configuratie van de organisatie
 
-Iedere concernorganisatie krijgt een eigen organisatie in het uploadportaal van het Woo Publicatieplatform. Deze organisatie
+Iedere concernorganisatie krijgt een eigen organisatie in de Balie van het Woo Publicatieplatform. Deze organisatie
 kunnen we configureren aan de hand van een aantal parameters. Zie onderstaande fictieve organisatie ‘Concernorganisatie Woo’.
 
 ![De figuur laat zien hoe de naam van de organisatie, het verantwoordelijke bestuursorgaan en de prefix van de organisatie kunnen worden veranderd](img/organisatie_configuratie.png)
@@ -11,12 +11,12 @@ via <woo-platform@irealisatie.nl>.
 
 ## Naam organisatie
 
-Als naam van de organisatie in het uploadportaal kan de volledige naam of een afkorting van de concernorganisatie worden gebruikt.
+Als naam van de organisatie in de Balie kan de volledige naam of een afkorting van de concernorganisatie worden gebruikt.
 Deze naam wordt niet getoond op de publieke website maar is wel zichtbaar in de balie.
 
 ## Verantwoordelijke bestuursorganen
 
-Aan iedere organisatie in het uploadportaal kunnen we één of meerdere bestuursorganen koppelen namens wie gepubliceerd kan worden.
+Aan iedere organisatie in de Balie kunnen we één of meerdere bestuursorganen koppelen namens wie gepubliceerd kan worden.
 Dit is in ieder geval het eigen bestuursorgaan en kan daarnaast een ander bestuursorgaan zijn.
 Bij het aanmaken van een nieuwe publicatie wordt gevraagd wie het verantwoordelijke bestuursorgaan is van de publicatie.
 Er kan gekozen worden uit de bestuursorganen die zijn gekoppeld aan de organisatie.

@@ -4,30 +4,17 @@ declare(strict_types=1);
 
 namespace Shared\Exception\Import;
 
-use function sprintf;
-use function strval;
-
-final class InvalidThreadIdException extends ImportException
+final class InvalidThreadIdException extends RowImportException
 {
     public const string MESSAGE_KEY = 'publication.dossier.error.invalid_thread_id';
 
-    public function __construct(public readonly int $rowIndex)
+    public function __construct(int $rowIndex)
     {
-        parent::__construct(sprintf('ThreadId in row #%d is invalid', $rowIndex));
+        parent::__construct($rowIndex, 'Invalid thread ID');
     }
 
     public function getMessageKey(): string
     {
         return InvalidThreadIdException::MESSAGE_KEY;
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    public function getMessageData(): array
-    {
-        return [
-            '{rownumber}' => strval($this->rowIndex),
-        ];
     }
 }

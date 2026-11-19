@@ -46,7 +46,7 @@ class HistoryRepository extends ServiceEntityRepository
 
             if ($type == HistoryService::TYPE_DOCUMENT) {
                 $cutOffDate = $this->getPublicHistoryCutOffDate($identifier);
-                if ($cutOffDate === null) {
+                if (! $cutOffDate instanceof PlainDate) {
                     return [];
                 }
 

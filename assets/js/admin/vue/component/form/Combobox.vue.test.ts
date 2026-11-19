@@ -136,7 +136,7 @@ describe('The "Combobox" component', () => {
       const component = createComponent();
       const options = getOptionsListItems(component);
 
-      expect(options.length).toBe(3);
+      expect(options).toHaveLength(3);
       expect(options.at(0)?.text()).toBe('Mocked option 1');
       expect(options.at(1)?.text()).toBe('Mocked option 2');
       expect(options.at(2)?.text()).toBe('Mocked option 3');
@@ -146,7 +146,7 @@ describe('The "Combobox" component', () => {
       const component = createComponent({ value: 'Mocked option 2' });
       const options = getOptionsListItems(component);
 
-      expect(options.length).toBe(1);
+      expect(options).toHaveLength(1);
       expect(options.at(0)?.text()).toBe('Mocked option 2');
     });
 
@@ -156,7 +156,7 @@ describe('The "Combobox" component', () => {
       });
       const options = getOptionsListItems(component);
 
-      expect(options.length).toBe(2);
+      expect(options).toHaveLength(2);
       expect(options.at(0)?.text()).toBe('Mocked option 1');
       expect(options.at(1)?.text()).toBe('Mocked option 3');
     });

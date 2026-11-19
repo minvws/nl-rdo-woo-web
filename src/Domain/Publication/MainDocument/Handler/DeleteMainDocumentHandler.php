@@ -10,6 +10,7 @@ use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Domain\Publication\MainDocument\Command\DeleteMainDocumentCommand;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Domain\Publication\MainDocument\Event\MainDocumentDeletedEvent;
@@ -49,7 +50,7 @@ readonly class DeleteMainDocumentHandler
         Assert::isInstanceOf($documentRepository, MainDocumentRepositoryInterface::class);
 
         $mainDocument = $documentRepository->findOneByDossierId($dossier->getId());
-        if ($mainDocument === null) {
+        if (! $mainDocument instanceof AbstractMainDocument) {
             throw new MainDocumentNotFoundException();
         }
 

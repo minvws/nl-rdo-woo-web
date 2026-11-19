@@ -13,6 +13,7 @@ use PublicationApi\Api\Pagination\CursorPageFactory;
 use PublicationApi\Domain\Exception\EntityNotFoundException;
 use Shared\Domain\HasId;
 use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Subject\Subject;
 use Shared\Domain\Publication\Subject\SubjectPreviewUrlGenerator;
 use Shared\Domain\Publication\Subject\SubjectRepository;
 use Shared\Service\ApiPlatformService;
@@ -81,8 +82,8 @@ final readonly class SubjectProvider implements ProviderInterface
     private function provideSingle(Organisation $organisation, Uuid $subjectId): SubjectDetailResponseDto
     {
         $subject = $this->subjectRepository->findByOrganisationAndId($organisation, $subjectId);
-        if ($subject === null) {
-            throw EntityNotFoundException::for('Subject', $subjectId);
+        if (! $subject instanceof Subject) {
+            throw EntityNotFoundException::for('Subject', $subjectId->toString());
         }
 
         return SubjectMapper::fromEntityWithDetail($subject, $this->subjectPreviewUrlGenerator);

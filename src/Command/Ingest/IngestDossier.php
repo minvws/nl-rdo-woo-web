@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Command\Ingest;
 
 use Shared\Domain\Ingest\IngestDispatcher;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -48,7 +49,7 @@ class IngestDossier extends Command
         Assert::string($dossierNumber);
 
         $dossier = $this->repository->findOneBy(['documentPrefix' => $prefix, 'dossierNumber' => $dossierNumber]);
-        if (! $dossier) {
+        if (! $dossier instanceof AbstractDossier) {
             $output->writeln(sprintf('<error>Dossier with prefix %s and dossierNumber %s not found</error>', $prefix, $dossierNumber));
 
             return self::FAILURE;

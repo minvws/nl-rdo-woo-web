@@ -39,7 +39,7 @@ readonly class InquiryService
     {
         $inquiry = $this->doctrine->getRepository(Inquiry::class)->findOneBy(['organisation' => $organisation, 'inquiryNumber' => $inquiryNumber]);
 
-        if (! $inquiry) {
+        if (! $inquiry instanceof Inquiry) {
             $inquiry = new Inquiry();
             $inquiry->setInquiryNumber($inquiryNumber);
             $inquiry->setOrganisation($organisation);
@@ -211,7 +211,7 @@ readonly class InquiryService
 
     private function addDossierToInquiry(Inquiry $inquiry, ?WooDecision $dossier, string $inquiryNumber): bool
     {
-        if (! $dossier || $inquiry->getDossiers()->contains($dossier)) {
+        if (! $dossier instanceof WooDecision || $inquiry->getDossiers()->contains($dossier)) {
             return false;
         }
 

@@ -1,10 +1,20 @@
 import { mount, VueWrapper } from '@vue/test-utils';
 import { describe, expect, test } from 'vitest';
+import type { PublicationSearchResult } from './interface';
 import SearchResults from './SearchResults.vue';
 
 describe('The "SearchResults" component', () => {
-  const mockedDocumentResults = [{ type: 'document' }];
-  const mockedPublicationResults = [{ type: 'dossier' }];
+  const createResult = (
+    type: PublicationSearchResult['type'],
+  ): PublicationSearchResult => ({
+    id: `mocked-${type}`,
+    link: `mocked-link-${type}`,
+    number: null,
+    title: `mocked-title-${type}`,
+    type,
+  });
+  const mockedDocumentResults = [createResult('document')];
+  const mockedPublicationResults = [createResult('dossier')];
 
   const createComponent = (
     results = [...mockedDocumentResults, ...mockedPublicationResults],

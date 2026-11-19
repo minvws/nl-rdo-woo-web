@@ -7,13 +7,10 @@ namespace Shared\Domain\Search\Index\Rollover;
 use RuntimeException;
 
 use function file_get_contents;
-use function glob;
-use function in_array;
 use function is_array;
+use function is_int;
 use function is_readable;
 use function json_decode;
-use function max;
-use function preg_match;
 
 readonly class MappingService
 {
@@ -25,9 +22,20 @@ readonly class MappingService
     /**
      * @return array<array-key, mixed>
      */
-    public function getMapping(int $version): array
+    public function getMapping(): array
     {
-        return $this->readJson("mapping-v{$version}.json");
+        return $this->readJson('mapping.json');
+    }
+
+    public function getMappingVersion(): int
+    {
+        $mapping = $this->getMapping();
+        $metadata = $mapping['_meta'] ?? null;
+        if (! is_array($metadata) || ! is_int($metadata['version'] ?? null)) {
+            throw new RuntimeException('Mapping version is missing or invalid');
+        }
+
+        return $metadata['version'];
     }
 
     /**
@@ -36,23 +44,6 @@ readonly class MappingService
     public function getSettings(): array
     {
         return $this->readJson('settings.json');
-    }
-
-    public function getLatestMappingVersion(): int
-    {
-        $versions = $this->getMappingVersions();
-        if ($versions === []) {
-            return -1;
-        }
-
-        return max($versions);
-    }
-
-    public function isValidMappingVersion(int $version): bool
-    {
-        $versions = $this->getMappingVersions();
-
-        return in_array($version, $versions);
     }
 
     /**
@@ -76,27 +67,5 @@ readonly class MappingService
         }
 
         return $data;
-    }
-
-    /**
-     * @return array<array-key, int>
-     */
-    private function getMappingVersions(): array
-    {
-        $versions = [];
-        $dir = $this->rootDir . '/config/elastic/';
-        $filenames = glob($dir . 'mapping-v*.json');
-        if ($filenames === false) {
-            return [];
-        }
-
-        foreach ($filenames as $filename) {
-            if (preg_match('/mapping-v(\d+)\.json/', $filename, $matches)) {
-                $version = (int) $matches[1];
-                $versions[] = $version;
-            }
-        }
-
-        return $versions;
     }
 }

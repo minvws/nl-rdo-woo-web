@@ -47,7 +47,7 @@ final readonly class UrlProducer
         $chunkGen = null;
 
         while ($producer->valid()) {
-            if ($chunkGen !== null && $chunkGen->valid()) {
+            if ($chunkGen instanceof Generator && $chunkGen->valid()) {
                 throw UnconsumedPreviousChunkGeneratorException::create();
             }
 

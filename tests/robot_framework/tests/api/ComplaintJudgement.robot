@@ -4,6 +4,7 @@ Documentation       Tests for the Complaint Judgement endpoint, utilizing a cust
 Library             DataDriver  reader_class=libraries/yaml_reader.py  file_path=files/api/complaintjudgement.yaml
 Resource            ../../resources/API.resource
 Resource            ../../resources/Dossier.resource
+Resource            ../../resources/SpreadsheetAPI.resource
 Suite Setup         Suite Setup
 Test Template       Complaint Judgement Test Case
 Test Tags           api  api-complaintjudgement

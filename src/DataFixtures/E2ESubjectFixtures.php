@@ -26,7 +26,7 @@ class E2ESubjectFixtures extends Fixture implements DependentFixtureInterface, F
         $subjectName = 'E2E Test Subject';
 
         $existingSubject = $manager->getRepository(Subject::class)->findOneBy(['name' => $subjectName]);
-        if ($existingSubject) {
+        if ($existingSubject instanceof Subject) {
             return;
         }
 

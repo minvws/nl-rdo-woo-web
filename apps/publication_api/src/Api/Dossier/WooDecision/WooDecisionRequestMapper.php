@@ -49,9 +49,7 @@ readonly class WooDecisionRequestMapper implements DossierRequestMapper
         Assert::isInstanceOf($dossierRequestDto, WooDecisionRequestDto::class);
 
         $dossier->setDateFrom($dossierRequestDto->dateFrom);
-        if ($dossierRequestDto->dateTo !== null) {
-            $dossier->setDateTo($dossierRequestDto->dateTo);
-        }
+        $dossier->setDateTo($dossierRequestDto->dateTo);
         $dossier->setDecision($dossierRequestDto->decision);
         $dossier->setDepartments([$department]);
         $dossier->setDossierNumber($dossierRequestDto->dossierNumber);

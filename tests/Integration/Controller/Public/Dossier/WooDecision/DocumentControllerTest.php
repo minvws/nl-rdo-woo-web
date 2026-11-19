@@ -109,6 +109,7 @@ final class DocumentControllerTest extends SharedWebTestCase
         $document = DocumentFactory::createOne([
             'dossiers' => [$firstDossier, $secondDossier],
             'documentNumber' => 'PREF-MAT-101',
+            'judgement' => Judgement::PUBLIC,
             'fileInfo' => FileInfoFactory::new(['name' => 'shared.pdf']),
         ]);
 
@@ -125,6 +126,10 @@ final class DocumentControllerTest extends SharedWebTestCase
         self::assertResponseIsSuccessful();
         self::assertStringContainsString('shared.pdf', (string) $client->getResponse()->getContent());
         self::assertStringContainsString('pref-mat-101', (string) $client->getResponse()->getContent());
+        self::assertSame(
+            '/document/pref-mat-101/download',
+            $client->getCrawler()->filter('[data-e2e-name="download-file-link"]')->attr('href'),
+        );
     }
 
     public function testCanonicalDocumentPageReturnsNotFoundForUnpublishedDocument(): void
@@ -191,5 +196,43 @@ final class DocumentControllerTest extends SharedWebTestCase
         $breadcrumbs = $client->getCrawler()->filter('[data-e2e-name="breadcrumb"]');
         self::assertCount(2, $breadcrumbs);
         self::assertSame($dossierUrl, $breadcrumbs->eq(1)->attr('href'));
+    }
+
+    public function testCanonicalDownloadReturnsNotFoundForUnpublishedDocument(): void
+    {
+        $client = static::createClient();
+        $dossier = WooDecisionFactory::new()->concept()->create();
+        DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNumber' => 'PREF-MAT-103',
+        ]);
+
+        $client->request('GET', '/document/PREF-MAT-103/download');
+
+        self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+    }
+
+    public function testDossierDependentDownloadRedirectsToCanonicalDownload(): void
+    {
+        $client = static::createClient();
+        $firstDossier = WooDecisionFactory::new()->published()->create();
+        $secondDossier = WooDecisionFactory::new()->published()->create();
+        $document = DocumentFactory::createOne([
+            'dossiers' => [$firstDossier, $secondDossier],
+            'documentNumber' => 'PREF-MAT-201',
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::new(['name' => 'shared.pdf']),
+        ]);
+
+        foreach ([$firstDossier, $secondDossier] as $dossier) {
+            $client->request('GET', sprintf(
+                '/dossier/%s/%s/file/download/document/%s',
+                $dossier->getDocumentPrefix(),
+                $dossier->getDossierNumber(),
+                $document->getId(),
+            ));
+
+            self::assertResponseRedirects('/document/pref-mat-201/download', Response::HTTP_MOVED_PERMANENTLY);
+        }
     }
 }

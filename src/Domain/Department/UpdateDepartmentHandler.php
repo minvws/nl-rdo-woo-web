@@ -26,7 +26,7 @@ class UpdateDepartmentHandler
     public function __invoke(UpdateDepartmentCommand $message): void
     {
         $department = $this->departmentRepository->find($message->getUuid());
-        if (! $department) {
+        if (! $department instanceof Department) {
             throw new RuntimeException('Cannot find department with UUID ' . $message->getUuid());
         }
 

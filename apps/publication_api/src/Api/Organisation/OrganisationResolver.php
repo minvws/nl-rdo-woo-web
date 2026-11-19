@@ -34,7 +34,7 @@ readonly class OrganisationResolver implements OrganisationResolverInterface
 
         $organisation = $this->organisationRepository->find($organisationId);
         if ($organisation === null) {
-            throw EntityNotFoundException::for('Organisation', $organisationId);
+            throw EntityNotFoundException::for('Organisation', $organisationId->toString());
         }
 
         return $organisation;

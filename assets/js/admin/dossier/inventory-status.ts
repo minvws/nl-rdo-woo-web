@@ -1,9 +1,20 @@
 import { hideElement } from '@utils';
 
+interface InventoryStatusResponse {
+  content: string;
+  inventoryStatus: {
+    hasErrors: boolean;
+    needsConfirmation: boolean;
+    needsUpdate: boolean;
+  };
+}
+
 export const dossierInventoryStatus = () => {
   const WAIT_FOR = 3000;
+  const MAX_CONSECUTIVE_FAILURES = 5;
 
   let abortController: AbortController | null = null;
+  let consecutiveFailures = 0;
   let placeholderElement: HTMLElement | null = null;
   let timeoutId: NodeJS.Timeout | null = null;
 
@@ -14,12 +25,49 @@ export const dossierInventoryStatus = () => {
     }
 
     abortController = new AbortController();
-    updateStatus(placeholderElement.dataset.endpoint || '');
+    void updateStatus(placeholderElement.dataset.endpoint || '');
+  };
+
+  const scheduleNextUpdate = (endpoint: string) => {
+    timeoutId = setTimeout(() => {
+      cleanupTimeout();
+
+      void updateStatus(endpoint);
+    }, WAIT_FOR);
+  };
+
+  const handleRequestFailure = (error: unknown, endpoint: string) => {
+    const isAborted =
+      error instanceof DOMException && error.name === 'AbortError';
+    if (isAborted) {
+      return;
+    }
+
+    consecutiveFailures += 1;
+    if (consecutiveFailures < MAX_CONSECUTIVE_FAILURES) {
+      scheduleNextUpdate(endpoint);
+    }
   };
 
   const updateStatus = async (endpoint: string) => {
-    const response = await fetch(endpoint, { signal: abortController?.signal });
-    const { content, inventoryStatus } = await response.json();
+    let content: string;
+    let inventoryStatus: InventoryStatusResponse['inventoryStatus'];
+
+    try {
+      const response = await fetch(endpoint, {
+        signal: abortController?.signal,
+      });
+      if (!response.ok) {
+        throw new Error(`Unexpected response status ${response.status}`);
+      }
+
+      ({ content, inventoryStatus } = await response.json());
+    } catch (error) {
+      handleRequestFailure(error, endpoint);
+      return;
+    }
+
+    consecutiveFailures = 0;
 
     if (placeholderElement) {
       placeholderElement.innerHTML = content;
@@ -42,11 +90,7 @@ export const dossierInventoryStatus = () => {
       return;
     }
 
-    timeoutId = setTimeout(() => {
-      cleanupTimeout();
-
-      updateStatus(endpoint);
-    }, WAIT_FOR);
+    scheduleNextUpdate(endpoint);
   };
 
   const cleanupTimeout = () => {

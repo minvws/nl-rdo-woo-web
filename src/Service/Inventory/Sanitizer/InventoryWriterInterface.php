@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Service\Inventory\Sanitizer;
 
+use Shared\Domain\Upload\FileType\FileExtension;
+
 interface InventoryWriterInterface
 {
     public function open(string $filename): void;
@@ -17,5 +19,5 @@ interface InventoryWriterInterface
 
     public function close(): void;
 
-    public function getFileExtension(): string;
+    public function getFileExtension(): FileExtension;
 }
